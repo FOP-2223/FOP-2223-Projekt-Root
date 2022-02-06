@@ -18,7 +18,7 @@ repositories {
 // This is to prevent the grader from being present in the submission jar
 
 submit {
-    assignmentId = "h10"
+    assignmentId = "projekt"
     studentId = "ab12cdef"
     firstName = "sol_first"
     lastName = "sol_last"
