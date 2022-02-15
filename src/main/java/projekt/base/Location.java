@@ -1,11 +1,18 @@
 package projekt.base;
 
+import java.util.Comparator;
+
 /**
  * A tuple for the x- and y-coordinates of a point.
  */
-public final class Location {
+public final class Location implements Comparable<Location> {
+
+    private final static Comparator<Location> COMPARATOR =
+        Comparator.comparing(Location::getX).thenComparing(Location::getY);
+
     private final int x;
     private final int y;
+    private final int hashcode;
 
     /**
      * Instantiates a new {@link Location} object using {@code x} and {@code y} as coordinates.
@@ -16,6 +23,7 @@ public final class Location {
     public Location(int x, int y) {
         this.x = x;
         this.y = y;
+        hashcode = 509 * x + 31 * y;
     }
 
     /**
@@ -56,5 +64,32 @@ public final class Location {
      */
     public Location subtract(Location other) {
         return new Location(x - other.x, y - other.y);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%d|%d", x, y);
+    }
+
+    @Override
+    public int compareTo(Location o) {
+        return COMPARATOR.compare(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return hashcode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Location location = (Location) o;
+        return x == location.x && y == location.y;
     }
 }

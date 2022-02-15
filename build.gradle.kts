@@ -31,6 +31,7 @@ val grader: SourceSet by sourceSets.creating {
 
 dependencies {
     implementation("org.jetbrains:annotations:23.0.0")
+    implementation("com.google.guava:guava:31.0.1-jre")
     "graderCompileOnly"("org.sourcegrade:jagr-launcher:0.4.0-SNAPSHOT")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 }
