@@ -1,4 +1,4 @@
-package projekt.delivery;
+package projekt.delivery.vehicle;
 
 import org.jetbrains.annotations.Nullable;
 import projekt.base.Location;
@@ -15,8 +15,8 @@ class RegionImpl implements Region {
     private final Map<Location, NodeImpl> nodes = new HashMap<>();
     private final Map<Location, Map<Location, EdgeImpl>> edges = new HashMap<>();
     private final List<EdgeImpl> allEdges = new ArrayList<>();
-    private final Collection<NodeImpl> unmodifiableNodes = Collections.unmodifiableCollection(nodes.values());
-    private final Collection<EdgeImpl> unmodifiableEdges = Collections.unmodifiableCollection(allEdges);
+    private final Collection<Node> unmodifiableNodes = Collections.unmodifiableCollection(nodes.values());
+    private final Collection<Edge> unmodifiableEdges = Collections.unmodifiableCollection(allEdges);
 
     public RegionImpl() {
     }
@@ -48,12 +48,12 @@ class RegionImpl implements Region {
     }
 
     @Override
-    public Collection<? extends Node> getNodes() {
+    public Collection<Node> getNodes() {
         return unmodifiableNodes;
     }
 
     @Override
-    public Collection<? extends Edge> getEdges() {
+    public Collection<Edge> getEdges() {
         return unmodifiableEdges;
     }
 }

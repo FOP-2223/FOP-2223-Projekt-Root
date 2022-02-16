@@ -4,7 +4,7 @@ import projekt.base.*;
 import projekt.delivery.ConfirmedOrder;
 import projekt.delivery.ProblemInstance;
 import projekt.food.*;
-import projekt.delivery.Vehicle;
+import projekt.delivery.vehicle.Vehicle;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -61,7 +61,7 @@ public class ProblemInstanceIO {
                             }
 
                             @Override
-                            public Stream<Food> streamFood() {
+                            public Stream<Food> getFood() {
                                 return foods.stream();
                             }
 

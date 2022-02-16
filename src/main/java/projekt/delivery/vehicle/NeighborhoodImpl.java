@@ -1,6 +1,8 @@
-package projekt.delivery;
+package projekt.delivery.vehicle;
 
 import projekt.base.Location;
+import projekt.delivery.vehicle.NodeImpl;
+import projekt.delivery.vehicle.Region;
 
 import java.util.Set;
 

@@ -1,7 +1,8 @@
-package projekt.delivery;
+package projekt.delivery.vehicle;
 
 import projekt.base.Location;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,17 +31,17 @@ class RegionBuilderImpl implements Region.Builder {
     }
 
     @Override
-    public Region.Builder addEdge(Location locationA, Location locationB) {
+    public Region.Builder addEdge(Location locationA, Location locationB, Duration duration) {
         if (locationA.compareTo(locationB) < 0) {
-            addSortedEdge(locationA, locationB);
+            addSortedEdge(locationA, locationB, duration);
         } else {
-            addSortedEdge(locationB, locationA);
+            addSortedEdge(locationB, locationA, duration);
         }
         return null;
     }
 
-    private void addSortedEdge(Location locationA, Location locationB) {
-        if (!edges.add(new EdgeBuilder(locationA, locationB))) {
+    private void addSortedEdge(Location locationA, Location locationB, Duration duration) {
+        if (!edges.add(new EdgeBuilder(locationA, locationB, duration))) {
             throw new IllegalArgumentException("Duplicate edge connecting %s to %s".formatted(locationA, locationB));
         }
     }
@@ -91,9 +92,9 @@ class RegionBuilderImpl implements Region.Builder {
         }
     }
 
-    record EdgeBuilder(Location locationA, Location locationB) {
+    record EdgeBuilder(Location locationA, Location locationB, Duration duration) {
         EdgeImpl build(Region region) {
-            return new EdgeImpl(region, locationA, locationB);
+            return new EdgeImpl(region, locationA, locationB, duration);
         }
     }
 }

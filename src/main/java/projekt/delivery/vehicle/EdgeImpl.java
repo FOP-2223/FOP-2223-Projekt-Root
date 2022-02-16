@@ -1,7 +1,8 @@
-package projekt.delivery;
+package projekt.delivery.vehicle;
 
 import projekt.base.Location;
 
+import java.time.Duration;
 import java.util.Comparator;
 
 class EdgeImpl implements Region.Edge {
@@ -12,15 +13,18 @@ class EdgeImpl implements Region.Edge {
     private final Region region;
     private final Location locationA;
     private final Location locationB;
+    private final Duration duration;
 
     EdgeImpl(
         Region region,
         Location locationA,
-        Location locationB
+        Location locationB,
+        Duration duration
     ) {
         this.region = region;
         this.locationA = locationA;
         this.locationB = locationB;
+        this.duration = duration;
     }
 
     @Override
@@ -36,6 +40,11 @@ class EdgeImpl implements Region.Edge {
     @Override
     public Region.Node getNodeB() {
         return getRegion().getNode(locationB);
+    }
+
+    @Override
+    public Duration getDuration() {
+        return duration;
     }
 
     @Override

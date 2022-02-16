@@ -1,9 +1,10 @@
-package projekt.delivery;
+package projekt.delivery.vehicle;
 
 import org.jetbrains.annotations.Nullable;
 import projekt.base.DistanceCalculator;
 import projekt.base.Location;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Set;
 
@@ -14,13 +15,15 @@ public interface Region {
         return new RegionBuilderImpl();
     }
 
+    // O(1)
     @Nullable Node getNode(Location location);
 
+    // O(1)
     @Nullable Edge getEdge(Location locationA, Location locationB);
 
-    Collection<? extends Node> getNodes();
+    Collection<Node> getNodes();
 
-    Collection<? extends Edge> getEdges();
+    Collection<Edge> getEdges();
 
     interface Component<C extends Component<C>> extends Comparable<C> {
 
@@ -39,9 +42,12 @@ public interface Region {
     }
 
     interface Edge extends Component<Edge> {
+
         Node getNodeA();
 
         Node getNodeB();
+
+        Duration getDuration();
     }
 
     interface Neighborhood extends Node {
@@ -58,7 +64,7 @@ public interface Region {
 
         Builder addNeighborhood(Location location, double distance);
 
-        Builder addEdge(Location locationA, Location locationB);
+        Builder addEdge(Location locationA, Location locationB, Duration duration);
 
         Region build();
     }

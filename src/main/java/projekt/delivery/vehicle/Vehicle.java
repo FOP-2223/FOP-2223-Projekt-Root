@@ -1,8 +1,11 @@
-package projekt.delivery;
+package projekt.delivery.vehicle;
 
+import projekt.delivery.FoodNotSupportedException;
 import projekt.food.Food;
+import projekt.food.FoodType;
 
-import java.util.stream.Stream;
+import java.util.Collection;
+import java.util.Deque;
 
 public interface Vehicle {
 
@@ -17,6 +20,18 @@ public interface Vehicle {
      */
     Region.Component<?> getComponent();
 
+    /**
+     * Deletes the entire move queue and moves directly to the provided {@link Region.Node}.
+     */
+    void moveDirect(Region.Node node);
+
+    /**
+     * Adds the provided {@link Region.Node} to the move queue.
+     */
+    void moveQueued(Region.Node node);
+
+    Deque<Region.Node> getMoveQueue();
+
     int getId();
 
     /**
@@ -27,17 +42,17 @@ public interface Vehicle {
     /**
      *
      */
-    Stream<Food> streamFood();
+    Collection<Food> getFood();
+
+    Collection<FoodType<?, ?>> getCompatibleFoodTypes();
 
     /**
-     *
-     * @param food
      * @throws FoodNotSupportedException if the vehicle does not support the provided food
      */
     void addFood(Food food) throws VehicleOverloadedException;
 
     // TODO: allow appending of own methods?
     default double getCurrentWeight() {
-        return streamFood().mapToDouble(Food::getWeight).sum();
+        return getFood().stream().mapToDouble(Food::getWeight).sum();
     }
 }

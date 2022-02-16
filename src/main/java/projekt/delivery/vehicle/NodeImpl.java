@@ -1,4 +1,4 @@
-package projekt.delivery;
+package projekt.delivery.vehicle;
 
 import org.jetbrains.annotations.Nullable;
 import projekt.base.Location;
