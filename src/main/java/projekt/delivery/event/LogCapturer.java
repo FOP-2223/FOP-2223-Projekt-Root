@@ -20,7 +20,7 @@ public class LogCapturer implements EventListenerCapable<Event> {
     }
 
     @Override
-    public EventListener<Event> getListener() {
+    public EventListener<? super Event> getListener() {
         return listener;
     }
 
