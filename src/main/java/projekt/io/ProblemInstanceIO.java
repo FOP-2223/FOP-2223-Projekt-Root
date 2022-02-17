@@ -3,6 +3,9 @@ package projekt.io;
 import projekt.base.*;
 import projekt.delivery.ConfirmedOrder;
 import projekt.delivery.ProblemInstance;
+import projekt.delivery.vehicle.Region;
+import projekt.delivery.vehicle.VehicleManager;
+import projekt.delivery.vehicle.VehicleOverloadedException;
 import projekt.food.*;
 import projekt.delivery.vehicle.Vehicle;
 
@@ -25,6 +28,7 @@ import java.util.stream.Stream;
  * See https://de.wikipedia.org/wiki/ISO_8601#Darstellung
  */
 
+// FIXME: fix serialization of vehicle information (id, location, compatible foods, etc.)
 public class ProblemInstanceIO {
 
     private static final Map<String, DistanceCalculator> DISTANCE_CALCULATOR_LOOKUP = Map.of(
@@ -44,33 +48,7 @@ public class ProblemInstanceIO {
             bufferedReader
                 .lines()
                 .forEach(s -> {
-                    if (s.charAt(0) == 'V') {
-                        String[] splitString = s.substring(2).split(": ");
-
-                        vehicleList.add(new Vehicle() {
-                            private final List<Food> foods = new ArrayList<>();
-
-                            @Override
-                            public int getId() {
-                                return Integer.parseInt(splitString[0]);
-                            }
-
-                            @Override
-                            public double getCapacity() {
-                                return Double.parseDouble(splitString[1]);
-                            }
-
-                            @Override
-                            public Stream<Food> getFood() {
-                                return foods.stream();
-                            }
-
-                            @Override
-                            public void addFood(Food food) {
-                                foods.add(food);
-                            }
-                        });
-                    } else if (s.charAt(0) == 'O') {
+                    if (s.charAt(0) == 'O') {
                         String[] lineData = s.substring(2).split(", ", 6);
 
                         orderList.add(new ConfirmedOrder(
@@ -93,29 +71,6 @@ public class ProblemInstanceIO {
         }
 
         return new ProblemInstance(DISTANCE_CALCULATOR_LOOKUP.get(distanceType), vehicleList, orderList);
-    }
-
-    private static Food parseFood(String foodString) {
-        /*
-         * [0]: food type
-         * [1]: food variant
-         * [2]: extras (seperated by "|")
-         */
-        String[] foodData = foodString.split(" ");
-
-        return FoodType
-            .parse(foodData[0])
-            .getFoodVariants()
-            .stream()
-            .filter(currentFoodVariant -> currentFoodVariant.getName().equals(foodData[1]))
-            .findAny()
-            .orElseThrow()
-            .create(
-                Arrays
-                    .stream(foodData[2].split("\\|"))
-                    .map(s -> (Extra<? super Food.Config>) Extras.ALL.get(s))
-                    .collect(Collectors.toList())
-            );
     }
 
     public void writeProblemInstances(Writer writer, ProblemInstance problemInstance) {
@@ -148,5 +103,28 @@ public class ProblemInstanceIO {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static Food parseFood(String foodString) {
+        /*
+         * [0]: food type
+         * [1]: food variant
+         * [2]: extras (seperated by "|")
+         */
+        String[] foodData = foodString.split(" ");
+
+        return FoodType
+            .parse(foodData[0])
+            .getFoodVariants()
+            .stream()
+            .filter(currentFoodVariant -> currentFoodVariant.getName().equals(foodData[1]))
+            .findAny()
+            .orElseThrow()
+            .create(
+                Arrays
+                    .stream(foodData[2].split("\\|"))
+                    .map(s -> (Extra<? super Food.Config>) Extras.ALL.get(s))
+                    .collect(Collectors.toList())
+            );
     }
 }
