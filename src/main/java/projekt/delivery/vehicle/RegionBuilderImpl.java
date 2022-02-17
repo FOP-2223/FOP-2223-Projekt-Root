@@ -15,23 +15,23 @@ class RegionBuilderImpl implements Region.Builder {
     private final Set<EdgeBuilder> edges = new HashSet<>();
 
     @Override
-    public Region.Builder addNode(Location location) {
-        if (nodes.putIfAbsent(location, new NodeBuilder(location)) != null) {
+    public Region.Builder addNode(String name, Location location) {
+        if (nodes.putIfAbsent(location, new NodeBuilder(name, location)) != null) {
             throw new IllegalArgumentException("Duplicate node at location " + location);
         }
         return this;
     }
 
     @Override
-    public Region.Builder addNeighborhood(Location location, double distance) {
-        if (nodes.putIfAbsent(location, new NeighborhoodBuilder(location, distance)) != null) {
+    public Region.Builder addNeighborhood(String name, Location location, double distance) {
+        if (nodes.putIfAbsent(location, new NeighborhoodBuilder(name, location, distance)) != null) {
             throw new IllegalArgumentException("Duplicate node at location " + location);
         }
         return this;
     }
 
     @Override
-    public Region.Builder addEdge(Location locationA, Location locationB, Duration duration) {
+    public Region.Builder addEdge(String name, Location locationA, Location locationB, Duration duration) {
         if (locationA.compareTo(locationB) < 0) {
             addSortedEdge(locationA, locationB, duration);
         } else {
@@ -59,10 +59,13 @@ class RegionBuilderImpl implements Region.Builder {
     }
 
     private static class NodeBuilder {
-        final Location location;
-        final Set<Location> connections = new HashSet<>();
 
-        private NodeBuilder(Location location) {
+        protected final String name;
+        protected final Location location;
+        protected final Set<Location> connections = new HashSet<>();
+
+        private NodeBuilder(String name, Location location) {
+            this.name = name;
             this.location = location;
         }
 
@@ -72,29 +75,29 @@ class RegionBuilderImpl implements Region.Builder {
 
         NodeImpl build(Region region) {
             // may only be used once as the backing map for connections is not copied
-            return new NodeImpl(region, location, Collections.unmodifiableSet(connections));
+            return new NodeImpl(region, name, location, Collections.unmodifiableSet(connections));
         }
     }
 
     private static class NeighborhoodBuilder extends NodeBuilder {
 
-        final double distance;
+        protected final double distance;
 
-        public NeighborhoodBuilder(Location location, double distance) {
-            super(location);
+        public NeighborhoodBuilder(String name, Location location, double distance) {
+            super(name, location);
             this.distance = distance;
         }
 
         @Override
         NeighborhoodImpl build(Region region) {
             // may only be used once as the backing map for connections is not copied
-            return new NeighborhoodImpl(region, location, Collections.unmodifiableSet(connections), distance);
+            return new NeighborhoodImpl(region, name, location, Collections.unmodifiableSet(connections), distance);
         }
     }
 
-    record EdgeBuilder(Location locationA, Location locationB, Duration duration) {
+    record EdgeBuilder(String name, Location locationA, Location locationB, Duration duration) {
         EdgeImpl build(Region region) {
-            return new EdgeImpl(region, locationA, locationB, duration);
+            return new EdgeImpl(region, name, locationA, locationB, duration);
         }
     }
 }

@@ -28,6 +28,8 @@ public interface Region {
     interface Component<C extends Component<C>> extends Comparable<C> {
 
         Region getRegion();
+
+        String getName();
     }
 
     interface Node extends Component<Node> {
@@ -60,11 +62,11 @@ public interface Region {
 
     interface Builder {
 
-        Builder addNode(Location location);
+        Builder addNode(String name, Location location);
 
-        Builder addNeighborhood(Location location, double distance);
+        Builder addNeighborhood(String name, Location location, double distance);
 
-        Builder addEdge(Location locationA, Location locationB, Duration duration);
+        Builder addEdge(String name, Location locationA, Location locationB, Duration duration);
 
         Region build();
     }

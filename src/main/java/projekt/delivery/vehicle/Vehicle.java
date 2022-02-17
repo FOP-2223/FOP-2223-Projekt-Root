@@ -18,7 +18,7 @@ public interface Vehicle {
      *
      * @return The current {@link Region.Component} that this entity is on
      */
-    Region.Component<?> getComponent();
+    VehicleManager.Occupied<?> getOccupied();
 
     /**
      * Deletes the entire move queue and moves directly to the provided {@link Region.Node}.

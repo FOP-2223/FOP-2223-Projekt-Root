@@ -4,6 +4,7 @@ import projekt.base.DistanceCalculator;
 import projekt.food.FoodType;
 
 import java.util.Collection;
+import java.util.function.Predicate;
 
 public interface VehicleManager {
 
@@ -13,7 +14,16 @@ public interface VehicleManager {
 
     Collection<Vehicle> getVehicles();
 
-    Vehicle addVehicle(double capacity, Iterable<FoodType<?, ?>> compatibleFoodTypes);
+    Vehicle addVehicle(
+        double capacity,
+        Iterable<FoodType<?, ?>> compatibleFoodTypes,
+        Predicate<? super Occupied<Region.Node>> nodePredicate
+    );
+
+    Vehicle addVehicle(
+        double capacity,
+        Iterable<FoodType<?, ?>> compatibleFoodTypes
+    );
 
     // O(1)
     <C extends Region.Component<C>> Occupied<C> getOccupied(C component);
@@ -29,6 +39,10 @@ public interface VehicleManager {
         VehicleManager getVehicleManager();
 
         Collection<Vehicle> getVehicles();
+
+        static <RC extends Region.Component<RC>> Predicate<? super Occupied<RC>> named(String name) {
+            return c -> c.getComponent().getName().equals(name);
+        }
     }
 
     interface Factory {

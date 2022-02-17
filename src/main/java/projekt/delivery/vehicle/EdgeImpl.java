@@ -11,17 +11,20 @@ class EdgeImpl implements Region.Edge {
         Comparator.comparing(Region.Edge::getNodeA).thenComparing(Region.Edge::getNodeB);
 
     private final Region region;
+    private final String name;
     private final Location locationA;
     private final Location locationB;
     private final Duration duration;
 
     EdgeImpl(
         Region region,
+        String name,
         Location locationA,
         Location locationB,
         Duration duration
     ) {
         this.region = region;
+        this.name = name;
         this.locationA = locationA;
         this.locationB = locationB;
         this.duration = duration;
@@ -30,6 +33,11 @@ class EdgeImpl implements Region.Edge {
     @Override
     public Region getRegion() {
         return region;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override

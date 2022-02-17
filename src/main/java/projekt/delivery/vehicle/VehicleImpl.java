@@ -13,31 +13,32 @@ class VehicleImpl implements Vehicle {
     private final int id;
     private final double capacity;
     private final List<Food> foods = new ArrayList<>();
-    private final Collection<FoodType<?, ?>> compatibleFoodTypes;
-    private Region.Component<?> component;
-    private final Region region;
+    private final Iterable<FoodType<?, ?>> compatibleFoodTypes;
+    private VehicleManager.Occupied<?> occupied;
+    private final VehicleManager vehicleManager;
 
     public VehicleImpl(
         int id,
         double capacity,
-        Collection<FoodType<?, ?>> compatibleFoodTypes,
-        Region.Component<?> component
+        Iterable<FoodType<?, ?>> compatibleFoodTypes,
+        VehicleManager.Occupied<?> occupied,
+        VehicleManager vehicleManager
     ) {
         this.id = id;
         this.capacity = capacity;
         this.compatibleFoodTypes = compatibleFoodTypes;
-        this.component = component;
-        region = component.getRegion();
+        this.occupied = occupied;
+        this.vehicleManager = vehicleManager;
     }
 
     @Override
-    public Region.Component<?> getComponent() {
-        return component;
+    public VehicleManager.Occupied<?> getOccupied() {
+        return occupied;
     }
 
     @Override
     public void moveDirect(Region.Node node) {
-        if (component instanceof Region.Node currentNode) {
+        if (occupied instanceof Region.Node currentNode) {
 
         }
     }

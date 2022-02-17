@@ -12,11 +12,12 @@ class NeighborhoodImpl extends NodeImpl implements Region.Neighborhood {
 
     NeighborhoodImpl(
         Region region,
+        String name,
         Location location,
         Set<Location> connections,
         double distance
     ) {
-        super(region, location, connections);
+        super(region, name, location, connections);
         this.distance = distance;
     }
 

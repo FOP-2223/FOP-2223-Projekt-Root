@@ -9,15 +9,18 @@ import java.util.stream.Collectors;
 class NodeImpl implements Region.Node {
 
     private final Region region;
+    private final String name;
     private final Location location;
     private final Set<Location> connections;
 
     NodeImpl(
         Region region,
+        String name,
         Location location,
         Set<Location> connections
     ) {
         this.region = region;
+        this.name = name;
         this.location = location;
         this.connections = connections;
     }
@@ -25,6 +28,11 @@ class NodeImpl implements Region.Node {
     @Override
     public Region getRegion() {
         return region;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override
