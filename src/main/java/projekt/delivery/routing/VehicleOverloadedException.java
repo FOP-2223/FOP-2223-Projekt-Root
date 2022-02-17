@@ -1,4 +1,4 @@
-package projekt.delivery.vehicle;
+package projekt.delivery.routing;
 
 public class VehicleOverloadedException extends Exception {
     VehicleOverloadedException(Vehicle vehicle, double necessaryCapacity) {

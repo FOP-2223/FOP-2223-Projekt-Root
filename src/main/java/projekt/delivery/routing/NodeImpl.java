@@ -1,8 +1,9 @@
-package projekt.delivery.vehicle;
+package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
 import projekt.base.Location;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -12,6 +13,7 @@ class NodeImpl implements Region.Node {
     private final String name;
     private final Location location;
     private final Set<Location> connections;
+    private final int hashcode;
 
     NodeImpl(
         Region region,
@@ -23,6 +25,7 @@ class NodeImpl implements Region.Node {
         this.name = name;
         this.location = location;
         this.connections = connections;
+        hashcode = Objects.hash(name, location, connections);
     }
 
     @Override
@@ -58,5 +61,36 @@ class NodeImpl implements Region.Node {
     @Override
     public int compareTo(Region.Node o) {
         return location.compareTo(o.getLocation());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        NodeImpl node = (NodeImpl) o;
+        if (hashcode != node.hashcode) {
+            return false;
+        }
+        return Objects.equals(region, node.region)
+            && Objects.equals(name, node.name)
+            && Objects.equals(location, node.location)
+            && Objects.equals(connections, node.connections);
+    }
+
+    @Override
+    public int hashCode() {
+        return hashcode;
+    }
+
+    @Override
+    public String toString() {
+        return "NodeImpl{" +
+            ", name='" + name + '\'' +
+            ", location=" + location +
+            '}';
     }
 }

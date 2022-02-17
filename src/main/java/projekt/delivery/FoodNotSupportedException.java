@@ -1,6 +1,6 @@
 package projekt.delivery;
 
-import projekt.delivery.vehicle.Vehicle;
+import projekt.delivery.routing.Vehicle;
 import projekt.food.Food;
 
 public class FoodNotSupportedException extends RuntimeException {

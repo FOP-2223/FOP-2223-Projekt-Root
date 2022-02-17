@@ -1,4 +1,4 @@
-package projekt.delivery.vehicle;
+package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
 import projekt.base.DistanceCalculator;
@@ -68,7 +68,7 @@ class VehicleManagerImpl implements VehicleManager {
     @Override
     public Vehicle addVehicle(
         double capacity,
-        Iterable<FoodType<?, ?>> compatibleFoodTypes,
+        Collection<FoodType<?, ?>> compatibleFoodTypes,
         @Nullable Predicate<? super Occupied<Region.Node>> nodePredicate
     ) {
         final Occupied<Region.Node> occupied;
@@ -83,7 +83,7 @@ class VehicleManagerImpl implements VehicleManager {
     }
 
     @Override
-    public Vehicle addVehicle(double capacity, Iterable<FoodType<?, ?>> compatibleFoodTypes) {
+    public Vehicle addVehicle(double capacity, Collection<FoodType<?, ?>> compatibleFoodTypes) {
         return addVehicle(capacity, compatibleFoodTypes, null);
     }
 

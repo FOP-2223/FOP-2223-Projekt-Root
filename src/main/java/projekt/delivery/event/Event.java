@@ -1,6 +1,6 @@
 package projekt.delivery.event;
 
-import projekt.delivery.vehicle.Vehicle;
+import projekt.delivery.routing.Vehicle;
 
 import java.time.LocalDateTime;
 

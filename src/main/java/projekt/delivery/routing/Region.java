@@ -1,4 +1,4 @@
-package projekt.delivery.vehicle;
+package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
 import projekt.base.DistanceCalculator;
@@ -7,6 +7,7 @@ import projekt.base.Location;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public interface Region {
 
@@ -30,6 +31,10 @@ public interface Region {
         Region getRegion();
 
         String getName();
+
+        static <RC extends Region.Component<RC>> Predicate<? super RC> named(String name) {
+            return c -> c.getName().equals(name);
+        }
     }
 
     interface Node extends Component<Node> {

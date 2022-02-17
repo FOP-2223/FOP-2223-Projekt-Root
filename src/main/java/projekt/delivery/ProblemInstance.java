@@ -1,7 +1,7 @@
 package projekt.delivery;
 
 import projekt.base.DistanceCalculator;
-import projekt.delivery.vehicle.Vehicle;
+import projekt.delivery.routing.Vehicle;
 
 import java.util.List;
 

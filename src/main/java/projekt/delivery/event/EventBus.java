@@ -32,7 +32,7 @@ public class EventBus {
     @SuppressWarnings("unchecked")
     public <E extends Event> void post(Class<? super E> type, E event) {
         final @Nullable List<EventListenerRegistration<? super E>> actualListeners =
-            (List<EventListenerRegistration<? super E>>) listeners.get(type);
+            (List<EventListenerRegistration<? super E>>) (Object) listeners.get(type);
         if (actualListeners != null) {
             for (EventListenerRegistration<? super E> e : actualListeners) {
                 e.getListener().handle(event);

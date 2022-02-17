@@ -1,4 +1,4 @@
-package projekt.delivery.vehicle;
+package projekt.delivery.routing;
 
 import projekt.food.Food;
 import projekt.food.FoodType;
@@ -13,14 +13,14 @@ class VehicleImpl implements Vehicle {
     private final int id;
     private final double capacity;
     private final List<Food> foods = new ArrayList<>();
-    private final Iterable<FoodType<?, ?>> compatibleFoodTypes;
+    private final Collection<FoodType<?, ?>> compatibleFoodTypes;
     private VehicleManager.Occupied<?> occupied;
     private final VehicleManager vehicleManager;
 
     public VehicleImpl(
         int id,
         double capacity,
-        Iterable<FoodType<?, ?>> compatibleFoodTypes,
+        Collection<FoodType<?, ?>> compatibleFoodTypes,
         VehicleManager.Occupied<?> occupied,
         VehicleManager vehicleManager
     ) {

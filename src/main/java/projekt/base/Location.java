@@ -68,7 +68,7 @@ public final class Location implements Comparable<Location> {
 
     @Override
     public String toString() {
-        return String.format("%d|%d", x, y);
+        return String.format("(%d, %d)", x, y);
     }
 
     @Override

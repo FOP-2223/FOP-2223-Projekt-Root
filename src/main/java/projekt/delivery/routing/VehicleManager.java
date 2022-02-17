@@ -1,4 +1,4 @@
-package projekt.delivery.vehicle;
+package projekt.delivery.routing;
 
 import projekt.base.DistanceCalculator;
 import projekt.food.FoodType;
@@ -16,13 +16,13 @@ public interface VehicleManager {
 
     Vehicle addVehicle(
         double capacity,
-        Iterable<FoodType<?, ?>> compatibleFoodTypes,
+        Collection<FoodType<?, ?>> compatibleFoodTypes,
         Predicate<? super Occupied<Region.Node>> nodePredicate
     );
 
     Vehicle addVehicle(
         double capacity,
-        Iterable<FoodType<?, ?>> compatibleFoodTypes
+        Collection<FoodType<?, ?>> compatibleFoodTypes
     );
 
     // O(1)

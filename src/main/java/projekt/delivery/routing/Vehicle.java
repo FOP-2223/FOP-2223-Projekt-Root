@@ -1,4 +1,4 @@
-package projekt.delivery.vehicle;
+package projekt.delivery.routing;
 
 import projekt.delivery.FoodNotSupportedException;
 import projekt.food.Food;

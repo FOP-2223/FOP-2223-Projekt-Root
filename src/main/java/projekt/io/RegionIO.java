@@ -1,7 +1,7 @@
 package projekt.io;
 
 import projekt.base.Location;
-import projekt.delivery.vehicle.Region;
+import projekt.delivery.routing.Region;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

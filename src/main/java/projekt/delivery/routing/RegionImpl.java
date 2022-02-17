@@ -1,4 +1,4 @@
-package projekt.delivery.vehicle;
+package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
 import projekt.base.Location;
@@ -17,9 +17,6 @@ class RegionImpl implements Region {
     private final List<EdgeImpl> allEdges = new ArrayList<>();
     private final Collection<Node> unmodifiableNodes = Collections.unmodifiableCollection(nodes.values());
     private final Collection<Edge> unmodifiableEdges = Collections.unmodifiableCollection(allEdges);
-
-    public RegionImpl() {
-    }
 
     @Override
     public @Nullable Node getNode(Location location) {
