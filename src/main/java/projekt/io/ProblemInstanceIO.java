@@ -11,6 +11,7 @@ import projekt.delivery.vehicle.Vehicle;
 
 import java.io.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,7 +21,7 @@ import java.util.stream.Stream;
  * ! {Euclidean | Manhattan | Chessboard}Distance2D
  * V <vehicle ID>: <vehicle capacity>
  * ...
- * D <x>, <y>, <demand>, <start time>, <end time>
+ * O <x>, <y>, <demand>, <start time>, <end time>
  * ...
  *
  * First line is the dynamic type's simple class name.
@@ -48,7 +49,7 @@ public class ProblemInstanceIO {
             bufferedReader
                 .lines()
                 .forEach(s -> {
-                    if (s.charAt(0) == 'O') {
+                    if (s.startsWith("O ")) {
                         String[] lineData = s.substring(2).split(", ", 6);
 
                         orderList.add(new ConfirmedOrder(
@@ -75,12 +76,12 @@ public class ProblemInstanceIO {
 
     public void writeProblemInstances(Writer writer, ProblemInstance problemInstance) {
         try (BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
-            bufferedWriter.write(String.format("! %s\n", problemInstance.getDistance2D()));
+            bufferedWriter.write("! %s\n".formatted(problemInstance.getDistance2D().getClass().getSimpleName()));
 
             problemInstance
                 .getVehicles()
                 .stream()
-                .map(vehicle -> String.format("V %d: %f\n", vehicle.getId(), vehicle.getCapacity()))
+                .map(vehicle -> "V %d: %f\n".formatted(vehicle.getId(), vehicle.getCapacity()))
                 .forEach(vehicleData -> {
                     try {
                         bufferedWriter.write(vehicleData);
@@ -92,7 +93,7 @@ public class ProblemInstanceIO {
             problemInstance
                 .getOrders()
                 .stream()
-                .map(order -> String.format("O %s\n", order.toString()))
+                .map(ProblemInstanceIO::serializeOrder)
                 .forEach(orderData -> {
                     try {
                         bufferedWriter.write(orderData);
@@ -126,5 +127,23 @@ public class ProblemInstanceIO {
                     .map(s -> (Extra<? super Food.Config>) Extras.ALL.get(s))
                     .collect(Collectors.toList())
             );
+    }
+
+    private static String serializeOrder(ConfirmedOrder order) {
+        return "%d, %d, %d, %s, %s, %s".formatted(
+            order.getX(),
+            order.getY(),
+            order.getOrderID(),
+            order.getTimeInterval().getStart().format(DateTimeFormatter.ISO_LOCAL_DATE),
+            order.getTimeInterval().getEnd().format(DateTimeFormatter.ISO_LOCAL_DATE),
+            order.getFoodList()
+                .stream()
+                .map(food -> "%s %s %s".formatted(
+                    food.getFoodVariant().getFoodType().getName(),
+                    food.getFoodVariant().getName(),
+                    food.getExtras().stream().map(Extra::getName).collect(Collectors.joining("|"))
+                ))
+                .collect(Collectors.joining(", "))
+        );
     }
 }
