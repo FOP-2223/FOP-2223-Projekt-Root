@@ -3,18 +3,14 @@ package projekt.io;
 import projekt.base.*;
 import projekt.delivery.ConfirmedOrder;
 import projekt.delivery.ProblemInstance;
-import projekt.delivery.vehicle.Region;
-import projekt.delivery.vehicle.VehicleManager;
-import projekt.delivery.vehicle.VehicleOverloadedException;
+import projekt.delivery.routing.Vehicle;
 import projekt.food.*;
-import projekt.delivery.vehicle.Vehicle;
 
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /*
  * Format:

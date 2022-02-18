@@ -2,7 +2,6 @@ package projekt.io;
 
 import projekt.base.Location;
 import projekt.food.Food;
-import projekt.delivery.vehicle.Vehicle;
 
 import java.io.*;
 import java.util.ArrayList;
