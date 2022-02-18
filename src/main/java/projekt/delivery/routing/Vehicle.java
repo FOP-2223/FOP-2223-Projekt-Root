@@ -6,6 +6,8 @@ import projekt.food.FoodType;
 
 import java.util.Collection;
 import java.util.Deque;
+import java.util.List;
+import java.util.function.Consumer;
 
 public interface Vehicle extends Comparable<Vehicle> {
 
@@ -30,7 +32,7 @@ public interface Vehicle extends Comparable<Vehicle> {
      */
     void moveQueued(Region.Node node);
 
-    Deque<Region.Node> getMoveQueue();
+    Deque<Path> getMoveQueue();
 
     int getId();
 
@@ -54,5 +56,13 @@ public interface Vehicle extends Comparable<Vehicle> {
     // TODO: allow appending of own methods?
     default double getCurrentWeight() {
         return getFood().stream().mapToDouble(Food::getWeight).sum();
+    }
+
+    // TODO: Gui exercise to draw paths?
+    interface Path {
+
+        Deque<Region.Node> getNodes();
+
+        Consumer<? super Vehicle> getArrivalAction();
     }
 }

@@ -37,10 +37,15 @@ class VehicleImpl implements Vehicle {
         return occupied;
     }
 
+    void setOccupied(VehicleManager.Occupied<?> occupied) {
+        this.occupied = occupied;
+    }
+
     @Override
     public void moveDirect(Region.Node node) {
+        // A -> B -> C
         if (occupied instanceof Region.Node currentNode) {
-
+            // vehicleManager.moveVehicle(Vehicle, nodeA, nodeB)
         }
     }
 
@@ -50,7 +55,7 @@ class VehicleImpl implements Vehicle {
     }
 
     @Override
-    public Deque<Region.Node> getMoveQueue() {
+    public Deque<Path> getMoveQueue() {
         return null;
     }
 

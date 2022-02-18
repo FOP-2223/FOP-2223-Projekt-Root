@@ -1,8 +1,10 @@
 package projekt.delivery.routing;
 
 import projekt.base.DistanceCalculator;
+import projekt.delivery.event.EventBus;
 import projekt.food.FoodType;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.function.Predicate;
 
@@ -31,6 +33,12 @@ public interface VehicleManager {
     Collection<Occupied<Region.Node>> getOccupiedNodes();
 
     Collection<Occupied<Region.Edge>> getOccupiedEdges();
+
+    EventBus getEventBus();
+
+    LocalDateTime getCurrentTime();
+
+    void update();
 
     interface Occupied<C extends Region.Component<C>> {
 

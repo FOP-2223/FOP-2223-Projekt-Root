@@ -2,8 +2,10 @@ package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
 import projekt.base.DistanceCalculator;
+import projekt.delivery.event.EventBus;
 import projekt.food.FoodType;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +25,9 @@ class VehicleManagerImpl implements VehicleManager {
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
     private final Map<Region.Node, Occupied<Region.Node>> occupiedNodes;
     private final Map<Region.Edge, Occupied<Region.Edge>> occupiedEdges;
+    private final EventBus eventBus = new EventBus();
+
+    private LocalDateTime currentTime = LocalDateTime.now(); // TODO: Initialize properly
 
     VehicleManagerImpl(
         Region region,
@@ -37,10 +42,19 @@ class VehicleManagerImpl implements VehicleManager {
         defaultNode = findNode(defaultNodePredicate);
     }
 
+    @SuppressWarnings("unchecked")
     private <C extends Region.Component<C>> Map<C, Occupied<C>> toOccupied(Collection<C> original) {
         return original.stream()
-            .map(c -> new OccupiedImpl<>(c, this))
-            .collect(Collectors.toUnmodifiableMap(OccupiedImpl::getComponent, Function.identity()));
+            .map(c -> {
+                if (c instanceof Region.Node) {
+                    return (Occupied<C>) new OccupiedNodeImpl((Region.Node) c, this);
+                } else if (c instanceof Region.Edge) {
+                    return (Occupied<C>) new OccupiedEdgeImpl((Region.Edge) c, this);
+                } else {
+                    throw new AssertionError("Component must be either node or edge");
+                }
+            })
+            .collect(Collectors.toUnmodifiableMap(Occupied::getComponent, Function.identity()));
     }
 
     private Occupied<Region.Node> findNode(Predicate<? super Occupied<Region.Node>> nodePredicate) {
@@ -77,7 +91,7 @@ class VehicleManagerImpl implements VehicleManager {
         } else {
             occupied = findNode(nodePredicate);
         }
-        VehicleImpl vehicle = new VehicleImpl(vehicles.size(), capacity, compatibleFoodTypes, occupied, this);
+        final VehicleImpl vehicle = new VehicleImpl(vehicles.size(), capacity, compatibleFoodTypes, occupied, this);
         vehicles.add(vehicle);
         return vehicle;
     }
@@ -114,5 +128,19 @@ class VehicleManagerImpl implements VehicleManager {
     @Override
     public Collection<Occupied<Region.Edge>> getOccupiedEdges() {
         return occupiedEdges.values();
+    }
+
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    @Override
+    public LocalDateTime getCurrentTime() {
+        return currentTime;
+    }
+
+    @Override
+    public void update() {
     }
 }
