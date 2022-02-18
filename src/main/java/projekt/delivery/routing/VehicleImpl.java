@@ -1,5 +1,6 @@
 package projekt.delivery.routing;
 
+import org.jetbrains.annotations.NotNull;
 import projekt.food.Food;
 import projekt.food.FoodType;
 
@@ -86,5 +87,10 @@ class VehicleImpl implements Vehicle {
         }
 
         foods.add(food);
+    }
+
+    @Override
+    public int compareTo(@NotNull Vehicle o) {
+        return Integer.compare(getId(), o.getId());
     }
 }

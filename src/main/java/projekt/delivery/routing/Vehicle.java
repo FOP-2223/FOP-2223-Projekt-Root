@@ -7,7 +7,7 @@ import projekt.food.FoodType;
 import java.util.Collection;
 import java.util.Deque;
 
-public interface Vehicle {
+public interface Vehicle extends Comparable<Vehicle> {
 
     /**
      * The current {@link Region.Component} that this entity is on.
