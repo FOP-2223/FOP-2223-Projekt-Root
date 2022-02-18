@@ -75,8 +75,7 @@ class NodeImpl implements Region.Node {
         if (hashcode != node.hashcode) {
             return false;
         }
-        return Objects.equals(region, node.region)
-            && Objects.equals(name, node.name)
+        return Objects.equals(name, node.name)
             && Objects.equals(location, node.location)
             && Objects.equals(connections, node.connections);
     }

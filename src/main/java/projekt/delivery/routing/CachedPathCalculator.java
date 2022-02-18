@@ -1,5 +1,7 @@
 package projekt.delivery.routing;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,29 +24,47 @@ public class CachedPathCalculator implements PathCalculator {
 
     @Override
     public List<Region.Node> getPath(Region.Node start, Region.Node end) {
-        return null;
+        final StartEndTuple tuple = new StartEndTuple(start, end);
+        @Nullable List<Region.Node> path = cache.get(tuple);
+        if (path != null) {
+            return path;
+        }
+        path = delegate.getPath(start, end);
+        cache.put(tuple, path);
+        // TODO: Limit to size
+        return path;
     }
 
     private static class StartEndTuple {
         final Region.Node start;
         final Region.Node end;
+        final int hashcode;
 
         private StartEndTuple(Region.Node start, Region.Node end) {
             this.start = start;
             this.end = end;
+            hashcode = Objects.hash(start, end);
         }
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             StartEndTuple that = (StartEndTuple) o;
-            return Objects.equals(start, that.start) && Objects.equals(end, that.end);
+            if (hashcode != that.hashcode) {
+                return false;
+            }
+            return Objects.equals(start, that.start)
+                && Objects.equals(end, that.end);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(start, end);
+            return hashcode;
         }
     }
 }
