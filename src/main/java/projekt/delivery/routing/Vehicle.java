@@ -32,8 +32,6 @@ public interface Vehicle extends Comparable<Vehicle> {
      */
     void moveQueued(Region.Node node);
 
-    Deque<Path> getMoveQueue();
-
     int getId();
 
     /**

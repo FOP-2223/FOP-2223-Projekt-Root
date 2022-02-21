@@ -10,9 +10,13 @@ abstract class AbstractOccupied<C extends Region.Component<C>> implements Vehicl
 
     protected final C component;
     protected final VehicleManager vehicleManager;
-    protected final Map<Vehicle, VehicleStats> vehicles = new HashMap<>();
+    protected final Map<VehicleImpl, VehicleStats> vehicles = new HashMap<>();
     private final Collection<Vehicle> unmodifiableVehicles =
         Collections.unmodifiableCollection(vehicles.keySet());
+    /**
+     * Whether this node was modified in this tick.
+     */
+    boolean dirty;
 
     AbstractOccupied(C component, VehicleManager vehicleManager) {
         this.component = component;
@@ -34,7 +38,9 @@ abstract class AbstractOccupied<C extends Region.Component<C>> implements Vehicl
         return unmodifiableVehicles;
     }
 
-    abstract void addVehicle(VehicleImpl vehicle, Runnable callback);
+    abstract void tick();
+
+    abstract void addVehicle(VehicleImpl vehicle);
 
     void removeVehicle(Vehicle vehicle) {
 
@@ -46,5 +52,12 @@ abstract class AbstractOccupied<C extends Region.Component<C>> implements Vehicl
         public VehicleStats(LocalDateTime arrived) {
             this.arrived = arrived;
         }
+    }
+
+    interface VehicleMutator {
+        /**
+         * @return True if
+         */
+        boolean removeFromLast();
     }
 }

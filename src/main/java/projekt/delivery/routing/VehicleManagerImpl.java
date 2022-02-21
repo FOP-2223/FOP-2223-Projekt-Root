@@ -9,8 +9,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -18,13 +21,14 @@ import java.util.stream.Collectors;
 class VehicleManagerImpl implements VehicleManager {
 
     private final Region region;
+    final Map<Region.Node, OccupiedNodeImpl> occupiedNodes;
+    final Map<Region.Edge, OccupiedEdgeImpl> occupiedEdges;
     private final DistanceCalculator distanceCalculator;
     private final Predicate<? super Occupied<Region.Node>> defaultNodePredicate;
-    private final Occupied<Region.Node> defaultNode;
+    private final OccupiedNodeImpl defaultNode;
     private final List<VehicleImpl> vehicles = new ArrayList<>();
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
-    private final Map<Region.Node, Occupied<Region.Node>> occupiedNodes;
-    private final Map<Region.Edge, Occupied<Region.Edge>> occupiedEdges;
+    private final SortedSet<AbstractOccupied<?>> sortedOccupied;
     private final EventBus eventBus = new EventBus();
 
     private LocalDateTime currentTime = LocalDateTime.now(); // TODO: Initialize properly
@@ -37,19 +41,20 @@ class VehicleManagerImpl implements VehicleManager {
         this.region = region;
         this.distanceCalculator = distanceCalculator;
         this.defaultNodePredicate = defaultNodePredicate;
+        defaultNode = findNode(defaultNodePredicate);
         occupiedNodes = toOccupied(region.getNodes());
         occupiedEdges = toOccupied(region.getEdges());
-        defaultNode = findNode(defaultNodePredicate);
+        sortedOccupied = getAllOccupied();
     }
 
     @SuppressWarnings("unchecked")
-    private <C extends Region.Component<C>> Map<C, Occupied<C>> toOccupied(Collection<C> original) {
+    private <C extends Region.Component<C>, O extends AbstractOccupied<C>> Map<C, O> toOccupied(Collection<C> original) {
         return original.stream()
             .map(c -> {
                 if (c instanceof Region.Node) {
-                    return (Occupied<C>) new OccupiedNodeImpl((Region.Node) c, this);
+                    return (O) new OccupiedNodeImpl((Region.Node) c, this);
                 } else if (c instanceof Region.Edge) {
-                    return (Occupied<C>) new OccupiedEdgeImpl((Region.Edge) c, this);
+                    return (O) new OccupiedEdgeImpl((Region.Edge) c, this);
                 } else {
                     throw new AssertionError("Component must be either node or edge");
                 }
@@ -57,11 +62,38 @@ class VehicleManagerImpl implements VehicleManager {
             .collect(Collectors.toUnmodifiableMap(Occupied::getComponent, Function.identity()));
     }
 
-    private Occupied<Region.Node> findNode(Predicate<? super Occupied<Region.Node>> nodePredicate) {
+    private SortedSet<AbstractOccupied<?>> getAllOccupied() {
+        final SortedSet<AbstractOccupied<?>> result = new TreeSet<>(Comparator.comparing(Occupied::getComponent));
+        result.addAll(occupiedNodes.values());
+        result.addAll(occupiedEdges.values());
+        return Collections.unmodifiableSortedSet(result);
+    }
+
+    private OccupiedNodeImpl findNode(Predicate<? super Occupied<Region.Node>> nodePredicate) {
         return occupiedNodes.values().stream()
             .filter(nodePredicate)
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("Could not find node with given predicate"));
+    }
+
+    private void tick() {
+        tickOccupied(occupiedEdges, false);
+        tickOccupied(occupiedNodes, false);
+    }
+
+    private <C extends Region.Component<C>, O extends AbstractOccupied<C>> void tickOccupied(Map<C, O> occupied,
+                                                                                             boolean onlyIfDirty) {
+        boolean ticked = false;
+        for (Map.Entry<C, O> entry : occupied.entrySet()) {
+            if (!onlyIfDirty || entry.getValue().dirty) {
+                entry.getValue().dirty = false;
+                entry.getValue().tick();
+                ticked = true;
+            }
+        }
+        if (ticked) {
+            tickOccupied(occupied, true);
+        }
     }
 
     @Override
@@ -85,7 +117,7 @@ class VehicleManagerImpl implements VehicleManager {
         Collection<FoodType<?, ?>> compatibleFoodTypes,
         @Nullable Predicate<? super Occupied<Region.Node>> nodePredicate
     ) {
-        final Occupied<Region.Node> occupied;
+        final OccupiedNodeImpl occupied;
         if (nodePredicate == null) {
             occupied = defaultNode;
         } else {
@@ -103,15 +135,15 @@ class VehicleManagerImpl implements VehicleManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C extends Region.Component<C>> Occupied<C> getOccupied(C component) {
+    public <C extends Region.Component<C>> AbstractOccupied<C> getOccupied(C component) {
         if (component instanceof Region.Node) {
-            final @Nullable Occupied<C> result = (Occupied<C>) occupiedNodes.get(component);
+            final @Nullable AbstractOccupied<C> result = (AbstractOccupied<C>) occupiedNodes.get(component);
             if (result == null) {
                 throw new IllegalArgumentException("Could not find occupied node for " + component.getName());
             }
             return result;
         } else if (component instanceof Region.Edge) {
-            final @Nullable Occupied<C> result = (Occupied<C>) occupiedEdges.get(component);
+            final @Nullable AbstractOccupied<C> result = (AbstractOccupied<C>) occupiedEdges.get(component);
             if (result == null) {
                 throw new IllegalArgumentException("Could not find occupied edge for " + component.getName());
             }
@@ -122,12 +154,12 @@ class VehicleManagerImpl implements VehicleManager {
 
     @Override
     public Collection<Occupied<Region.Node>> getOccupiedNodes() {
-        return occupiedNodes.values();
+        return Collections.unmodifiableCollection(occupiedNodes.values());
     }
 
     @Override
     public Collection<Occupied<Region.Edge>> getOccupiedEdges() {
-        return occupiedEdges.values();
+        return Collections.unmodifiableCollection(occupiedEdges.values());
     }
 
     @Override

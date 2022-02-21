@@ -3,6 +3,8 @@ package projekt.delivery.routing;
 import projekt.delivery.event.ArrivedAtNodeEvent;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 class OccupiedNodeImpl extends AbstractOccupied<Region.Node> {
     OccupiedNodeImpl(Region.Node component, VehicleManager vehicleManager) {
@@ -10,12 +12,24 @@ class OccupiedNodeImpl extends AbstractOccupied<Region.Node> {
     }
 
     @Override
-    void addVehicle(VehicleImpl vehicle, Runnable callback) {
-        final Region.Component<?> previous = vehicle.getOccupied().getComponent();
-        if (previous instanceof Region.Node) {
-            throw new AssertionError("Cannot move directly from node to node");
+    void tick() {
+        // it is important to create a copy here. The move method in vehicle will probably modify this map
+        // TODO: Only move things that can be moved
+        for (Map.Entry<VehicleImpl, VehicleStats> entry : List.copyOf(vehicles.entrySet())) {
+            entry.getKey().move();
         }
-        final Region.Edge previousEdge = (Region.Edge) previous;
+    }
+
+    @Override
+    void addVehicle(VehicleImpl vehicle) {
+        final VehicleManager.Occupied<?> previous = vehicle.getOccupied();
+        if (previous instanceof OccupiedNodeImpl) {
+            throw new AssertionError("Vehicle " + vehicle.getId() + " cannot move directly from node to node");
+        }
+        final OccupiedEdgeImpl previousEdge = (OccupiedEdgeImpl) previous;
+        if (previousEdge.vehicles.remove(vehicle) == null) {
+            throw new AssertionError("Vehicle " + vehicle.getId() + " was not found in previous edge");
+        }
         final LocalDateTime currentTime = vehicleManager.getCurrentTime();
         vehicles.put(vehicle, new VehicleStats(currentTime));
         vehicle.setOccupied(this);
@@ -23,9 +37,9 @@ class OccupiedNodeImpl extends AbstractOccupied<Region.Node> {
                 currentTime,
                 vehicle,
                 component,
-                previousEdge
+                previousEdge.getComponent()
             )
         );
-        callback.run();
+        dirty = true;
     }
 }

@@ -22,6 +22,10 @@ public interface Region {
     // O(1)
     @Nullable Edge getEdge(Location locationA, Location locationB);
 
+    default @Nullable Edge getEdge(Node nodeA, Node nodeB) {
+        return getEdge(nodeA.getLocation(), nodeB.getLocation());
+    }
+
     Collection<Node> getNodes();
 
     Collection<Edge> getEdges();

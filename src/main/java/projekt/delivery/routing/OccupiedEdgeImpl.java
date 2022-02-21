@@ -3,6 +3,8 @@ package projekt.delivery.routing;
 import projekt.delivery.event.ArrivedAtEdgeEvent;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
     OccupiedEdgeImpl(Region.Edge component, VehicleManager vehicleManager) {
@@ -10,12 +12,27 @@ class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
     }
 
     @Override
-    void addVehicle(VehicleImpl vehicle, Runnable callback) {
-        final Region.Component<?> previous = vehicle.getOccupied().getComponent();
-        if (previous instanceof Region.Edge) {
-            throw new AssertionError("Cannot move directly from edge to edge");
+    void tick() {
+        final LocalDateTime currentTime = vehicleManager.getCurrentTime();
+        // it is important to create a copy here. The move method in vehicle will probably modify this map
+        // TODO: Only move things that can be moved
+        for (Map.Entry<VehicleImpl, VehicleStats> entry : List.copyOf(vehicles.entrySet())) {
+            if (entry.getValue().arrived.plus(component.getDuration()).isAfter(currentTime)) {
+                entry.getKey().move();
+            }
         }
-        final Region.Node previousEdge = (Region.Node) previous;
+    }
+
+    @Override
+    void addVehicle(VehicleImpl vehicle) {
+        final VehicleManager.Occupied<?> previous = vehicle.getOccupied();
+        if (previous instanceof OccupiedEdgeImpl) {
+            throw new AssertionError("Vehicle " + vehicle.getId() + " cannot move directly from edge to edge");
+        }
+        final OccupiedNodeImpl previousNode = (OccupiedNodeImpl) previous;
+        if (previousNode.vehicles.remove(vehicle) == null) {
+            throw new AssertionError("Vehicle " + vehicle.getId() + " was not found in previous node");
+        }
         final LocalDateTime currentTime = vehicleManager.getCurrentTime();
         vehicles.put(vehicle, new VehicleStats(currentTime));
         vehicle.setOccupied(this);
@@ -23,9 +40,9 @@ class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
                 currentTime,
                 vehicle,
                 component,
-                previousEdge
+                previousNode.getComponent()
             )
         );
-        // TODO: Run callback when component startTime + component.duration > currentTIme
+        dirty = true;
     }
 }
