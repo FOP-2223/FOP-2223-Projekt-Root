@@ -66,11 +66,11 @@ class RegionBuilderImpl implements Region.Builder {
     @Override
     public Region build() {
         RegionImpl region = new RegionImpl();
-        nodes.forEach((l, n) -> region.addNode(n.build(region)));
+        nodes.forEach((l, n) -> region.putNode(n.build(region)));
         edges.forEach(e -> {
             nodes.get(e.locationA).connections.add(e.locationB);
             nodes.get(e.locationB).connections.add(e.locationA);
-            region.addEdge(e.build(region));
+            region.putEdge(e.build(region));
         });
         return region;
     }

@@ -4,6 +4,7 @@ import projekt.base.Location;
 
 import java.time.Duration;
 import java.util.Comparator;
+import java.util.Objects;
 
 class EdgeImpl implements Region.Edge {
 
@@ -28,6 +29,14 @@ class EdgeImpl implements Region.Edge {
         this.locationA = locationA;
         this.locationB = locationB;
         this.duration = duration;
+    }
+
+    public Location getLocationA() {
+        return locationA;
+    }
+
+    public Location getLocationB() {
+        return locationB;
     }
 
     @Override
@@ -58,5 +67,21 @@ class EdgeImpl implements Region.Edge {
     @Override
     public int compareTo(Region.Edge o) {
         return COMPARATOR.compare(this, o);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EdgeImpl edge = (EdgeImpl) o;
+        return Objects.equals(name, edge.name)
+            && Objects.equals(locationA, edge.locationA)
+            && Objects.equals(locationB, edge.locationB)
+            && Objects.equals(duration, edge.duration);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, locationA, locationB, duration);
     }
 }

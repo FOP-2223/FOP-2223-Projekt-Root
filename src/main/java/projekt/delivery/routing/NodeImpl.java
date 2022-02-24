@@ -12,8 +12,7 @@ class NodeImpl implements Region.Node {
     private final Region region;
     private final String name;
     private final Location location;
-    private final Set<Location> connections;
-    private final int hashcode;
+    protected final Set<Location> connections;
 
     NodeImpl(
         Region region,
@@ -25,7 +24,6 @@ class NodeImpl implements Region.Node {
         this.name = name;
         this.location = location;
         this.connections = connections;
-        hashcode = Objects.hash(name, location, connections);
     }
 
     @Override
@@ -72,7 +70,7 @@ class NodeImpl implements Region.Node {
             return false;
         }
         NodeImpl node = (NodeImpl) o;
-        if (hashcode != node.hashcode) {
+        if (hashCode() != node.hashCode()) {
             return false;
         }
         return Objects.equals(name, node.name)
@@ -82,14 +80,15 @@ class NodeImpl implements Region.Node {
 
     @Override
     public int hashCode() {
-        return hashcode;
+        return Objects.hash(name, location, connections);
     }
 
     @Override
     public String toString() {
-        return "NodeImpl{" +
-            ", name='" + name + '\'' +
-            ", location=" + location +
-            '}';
+        return "NodeImpl("
+            + ", name='" + getName()
+            + ", location=" + getLocation()
+            + ", connections=" + connections
+            + ')';
     }
 }

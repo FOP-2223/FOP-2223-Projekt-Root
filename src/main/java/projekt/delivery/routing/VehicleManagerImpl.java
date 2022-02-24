@@ -76,26 +76,6 @@ class VehicleManagerImpl implements VehicleManager {
             .orElseThrow(() -> new IllegalArgumentException("Could not find node with given predicate"));
     }
 
-    private void tick() {
-        tickOccupied(occupiedEdges, false);
-        tickOccupied(occupiedNodes, false);
-    }
-
-    private <C extends Region.Component<C>, O extends AbstractOccupied<C>> void tickOccupied(Map<C, O> occupied,
-                                                                                             boolean onlyIfDirty) {
-        boolean ticked = false;
-        for (Map.Entry<C, O> entry : occupied.entrySet()) {
-            if (!onlyIfDirty || entry.getValue().dirty) {
-                entry.getValue().dirty = false;
-                entry.getValue().tick();
-                ticked = true;
-            }
-        }
-        if (ticked) {
-            tickOccupied(occupied, true);
-        }
-    }
-
     @Override
     public Region getRegion() {
         return region;
@@ -174,5 +154,23 @@ class VehicleManagerImpl implements VehicleManager {
 
     @Override
     public void update() {
+        tickOccupied(occupiedEdges, false);
+        tickOccupied(occupiedNodes, false);
+        eventBus.sendPostQueue();
+    }
+
+    private <C extends Region.Component<C>, O extends AbstractOccupied<C>> void tickOccupied(Map<C, O> occupied,
+                                                                                             boolean onlyIfDirty) {
+        boolean ticked = false;
+        for (Map.Entry<C, O> entry : occupied.entrySet()) {
+            if (!onlyIfDirty || entry.getValue().dirty) {
+                entry.getValue().dirty = false;
+                entry.getValue().tick();
+                ticked = true;
+            }
+        }
+        if (ticked) {
+            tickOccupied(occupied, true);
+        }
     }
 }

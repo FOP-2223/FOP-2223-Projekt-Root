@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 class RegionImpl implements Region {
 
@@ -23,7 +24,10 @@ class RegionImpl implements Region {
         return nodes.get(location);
     }
 
-    void addNode(NodeImpl node) {
+    void putNode(NodeImpl node) {
+        if (this != node.getRegion()) {
+            throw new IllegalArgumentException("node has incorrect region");
+        }
         nodes.put(node.getLocation(), node);
     }
 
@@ -36,7 +40,13 @@ class RegionImpl implements Region {
         }
     }
 
-    void addEdge(EdgeImpl edge) {
+    void putEdge(EdgeImpl edge) {
+        // TODO: Write tests for exceptions
+        if (this != edge.getRegion()) {
+            throw new IllegalArgumentException("edge has incorrect region");
+        }
+        Objects.requireNonNull(edge.getNodeA(), "node " + edge.getLocationA() + " not present in region");
+        Objects.requireNonNull(edge.getNodeB(), "node" + edge.getLocationB() + " not present in region");
         edges.computeIfAbsent(
             edge.getNodeA().getLocation(),
             k -> new HashMap<>()
@@ -52,5 +62,18 @@ class RegionImpl implements Region {
     @Override
     public Collection<Edge> getEdges() {
         return unmodifiableEdges;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RegionImpl region = (RegionImpl) o;
+        return Objects.equals(nodes, region.nodes) && Objects.equals(edges, region.edges);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nodes, edges);
     }
 }

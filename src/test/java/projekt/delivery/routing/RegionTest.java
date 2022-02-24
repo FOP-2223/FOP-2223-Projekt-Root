@@ -14,6 +14,168 @@ import static org.junit.jupiter.api.Assertions.*;
 class RegionTest {
 
     @Test
+    void testLocationCompare() {
+        assertEquals(new Location(0, 0), new Location(0, 0));
+        assertEquals(new Location(1, 5), new Location(1, 5));
+        assertEquals(new Location(-1000, -300), new Location(-1000, -300));
+        assertNotEquals(new Location(-1001, -300), new Location(-1000, -300));
+        assertNotEquals(new Location(0, -300), new Location(0, 400));
+        assertNotEquals(new Location(2, -300), new Location(0, 400));
+        assertEquals(0, new Location(0, 0).compareTo(new Location(0, 0)));
+        assertEquals(0, new Location(2, 2).compareTo(new Location(2, 2)));
+        assertEquals(0, new Location(-100, 2).compareTo(new Location(-100, 2)));
+        assertEquals(-1, new Location(0, 0).compareTo(new Location(0, 1)));
+        assertEquals(-1, new Location(0, 0).compareTo(new Location(1, 0)));
+        assertEquals(-1, new Location(0, 0).compareTo(new Location(1, 1)));
+        assertEquals(-1, new Location(-5, 0).compareTo(new Location(-4, 200)));
+        assertEquals(-1, new Location(-30, 300).compareTo(new Location(10, -30)));
+        assertEquals(1, new Location(0, 1).compareTo(new Location(0, 0)));
+        assertEquals(1, new Location(1, 0).compareTo(new Location(0, 0)));
+        assertEquals(1, new Location(1, 1).compareTo(new Location(0, 0)));
+        assertEquals(1, new Location(-4, 200).compareTo(new Location(-5, 0)));
+        assertEquals(1, new Location(10, -30).compareTo(new Location(-30, 300)));
+    }
+
+    @Test
+    void testNodeCompare() {
+        final RegionImpl r1 = new RegionImpl();
+        r1.putNode(new NodeImpl(r1, "n1", new Location(100, 100), Set.of(new Location(125, 125))));
+        r1.putNode(new NodeImpl(r1, "n2", new Location(125, 125), Set.of(new Location(100, 100))));
+        r1.putEdge(new EdgeImpl(r1, "ea", new Location(100, 100), new Location(125, 125), Duration.ZERO));
+        final RegionImpl r2 = new RegionImpl();
+        r2.putNode(new NodeImpl(r2, "n3", new Location(50, 50), Set.of(new Location(75, 75))));
+        r2.putNode(new NodeImpl(r2, "n4", new Location(75, 75), Set.of(new Location(50, 50))));
+        r2.putEdge(new EdgeImpl(r2, "eb", new Location(50, 50), new Location(75, 75), Duration.ZERO));
+        assertNotEquals(r1, r2);
+        assertEquals(
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of()),
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of())
+        );
+        assertEquals(
+            new NodeImpl(r1, "", new Location(1, 1), Set.of()),
+            new NodeImpl(r1, "", new Location(1, 1), Set.of())
+        );
+        // region should not be used in Node#equals(Object) to prevent circular dependency in Region#equals(Object)
+        assertEquals(
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of()),
+            new NodeImpl(r2, "aaa", new Location(1, 1), Set.of())
+        );
+        assertEquals(
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of(new Location(15, 25), new Location(0, 0))),
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of(new Location(15, 25), new Location(0, 0)))
+        );
+        assertNotEquals(
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of()),
+            new NodeImpl(r1, "aab", new Location(1, 1), Set.of())
+        );
+        assertNotEquals(
+            new NodeImpl(r1, "", new Location(1, 1), Set.of()),
+            new NodeImpl(r1, "aab", new Location(1, 1), Set.of())
+        );
+        assertNotEquals(
+            new NodeImpl(r1, "abcdefg", new Location(1, 1), Set.of()),
+            new NodeImpl(r1, "bcd", new Location(1, 1), Set.of())
+        );
+        assertNotEquals(
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of()),
+            new NodeImpl(r1, "aaa", new Location(1, 2), Set.of())
+        );
+        assertNotEquals(
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of()),
+            new NodeImpl(r1, "aab", new Location(1, 1), Set.of(new Location(0, 1)))
+        );
+        assertNotEquals(
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of()),
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of(new Location(0, 1)))
+        );
+        assertNotEquals(
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of(new Location(1, 0))),
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of(new Location(0, 1)))
+        );
+        // only compare location
+        assertEquals(0,
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of()).compareTo(
+                new NodeImpl(r1, "aaa", new Location(1, 1), Set.of())));
+        assertEquals(0,
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of()).compareTo(
+                new NodeImpl(r1, "aab", new Location(1, 1), Set.of())));
+        assertEquals(0,
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of(new Location(0, 0))).compareTo(
+                new NodeImpl(r1, "aab", new Location(1, 1), Set.of())));
+        assertEquals(-1,
+            new NodeImpl(r1, "aaa", new Location(0, 1), Set.of()).compareTo(
+                new NodeImpl(r1, "aaa", new Location(1, 1), Set.of())));
+        assertEquals(-1,
+            new NodeImpl(r1, "aaa", new Location(1, 0), Set.of()).compareTo(
+                new NodeImpl(r1, "aaa", new Location(1, 1), Set.of())));
+        assertEquals(-1,
+            new NodeImpl(r1, "aaa", new Location(-10, 20), Set.of()).compareTo(
+                new NodeImpl(r1, "aaa", new Location(-5, -10), Set.of())));
+        assertEquals(1,
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of()).compareTo(
+                new NodeImpl(r1, "aaa", new Location(0, 1), Set.of())));
+        assertEquals(1,
+            new NodeImpl(r1, "aaa", new Location(1, 1), Set.of()).compareTo(
+                new NodeImpl(r1, "aaa", new Location(1, 0), Set.of())));
+        assertEquals(1,
+            new NodeImpl(r1, "aaa", new Location(-5, -10), Set.of()).compareTo(
+                new NodeImpl(r1, "aaa", new Location(-10, 20), Set.of())));
+    }
+
+    @Test
+    void testEdgeCompare() {
+        final RegionImpl r1 = new RegionImpl();
+        r1.putNode(new NodeImpl(r1, "n1", new Location(100, 100), Set.of()));
+        final RegionImpl r2 = new RegionImpl();
+        r2.putNode(new NodeImpl(r2, "n2", new Location(50, 50), Set.of()));
+        assertNotEquals(r1, r2);
+        assertEquals(
+            new EdgeImpl(r1, "eee", new Location(2, 2), new Location(3, 3), Duration.ofMinutes(3)),
+            new EdgeImpl(r1, "eee", new Location(2, 2), new Location(3, 3), Duration.ofMinutes(3))
+        );
+        assertEquals(
+            new EdgeImpl(r1, "", new Location(2, 2), new Location(3, 3), Duration.ofMinutes(3)),
+            new EdgeImpl(r1, "", new Location(2, 2), new Location(3, 3), Duration.ofMinutes(3))
+        );
+        // region should not be used in Edge#equals(Object) to prevent circular dependency in Region#equals(Object)
+        assertEquals(
+            new EdgeImpl(r1, "eee", new Location(2, 2), new Location(3, 3), Duration.ofMinutes(3)),
+            new EdgeImpl(r2, "eee", new Location(2, 2), new Location(3, 3), Duration.ofMinutes(3))
+        );
+        // edges are undirected
+        assertEquals(
+            new EdgeImpl(r1, "eee", new Location(-34, 42), new Location(23, 4), Duration.ofMinutes(3)),
+            new EdgeImpl(r1, "eee", new Location(23, 4), new Location(-34, 42), Duration.ofMinutes(3))
+        );
+        assertNotEquals(
+            new EdgeImpl(r1, "eee", new Location(-34, 42), new Location(23, 4), Duration.ofMinutes(3)),
+            new EdgeImpl(r1, "eee", new Location(-34, 42), new Location(23, 4), Duration.ofMinutes(4))
+        );
+        assertNotEquals(
+            new EdgeImpl(r1, "eee", new Location(-34, 42), new Location(23, 4), Duration.ofMinutes(3)),
+            new EdgeImpl(r1, "eea", new Location(-34, 42), new Location(23, 4), Duration.ofMinutes(3))
+        );
+        assertNotEquals(
+            new EdgeImpl(r1, "eee", new Location(-34, 42), new Location(23, 4), Duration.ofMinutes(3)),
+            new EdgeImpl(r1, "eea", new Location(-34, 42), new Location(23, 4), Duration.ofMinutes(3))
+        );
+        assertNotEquals(
+            new EdgeImpl(r1, "", new Location(-34, 42), new Location(23, 4), Duration.ofMinutes(3)),
+            new EdgeImpl(r1, "eea", new Location(-34, 42), new Location(23, 4), Duration.ofMinutes(3))
+        );
+        assertNotEquals(
+            new EdgeImpl(r1, "hello", new Location(-34, 42), new Location(23, 4), Duration.ofMinutes(3)),
+            new EdgeImpl(r1, "bye", new Location(-34, 42), new Location(23, 4), Duration.ofMinutes(3))
+        );
+        assertNotEquals(
+            new EdgeImpl(r1, "eee", new Location(-34, 42), new Location(23, 4), Duration.ofMinutes(3)),
+            new EdgeImpl(r1, "eea", new Location(23, 4), new Location(-34, 42), Duration.ofMinutes(2))
+        );
+
+        // TODO: Comparator tests. Make sure both directions are tested
+    }
+
+    @Test
     void testRegionSimple() {
         final RegionImpl region = new RegionImpl();
         final NodeImpl nodeA = new NodeImpl(
@@ -64,12 +226,12 @@ class RegionTest {
             new Location(7, 8),
             Duration.ofMinutes(4)
         );
-        region.addNode(nodeA);
-        region.addNode(nodeB);
-        region.addNode(nodeC);
-        region.addEdge(edge1);
-        region.addEdge(edge2);
-        region.addEdge(edge3);
+        region.putNode(nodeA);
+        region.putNode(nodeB);
+        region.putNode(nodeC);
+        region.putEdge(edge1);
+        region.putEdge(edge2);
+        region.putEdge(edge3);
         assertEquals("nodeA", nodeA.getName());
         assertEquals("nodeB", nodeB.getName());
         assertEquals("nodeC", nodeC.getName());
@@ -109,7 +271,7 @@ class RegionTest {
     }
 
     @Test
-    void testRegionBuilderNodeExceptions() {
+    void testRegionBuilderNodeThrows() {
         final Region.Builder builder = Region.builder();
         builder.addNode("a", new Location(2, 3));
         assertEquals("Duplicate name 'a'",
@@ -127,7 +289,7 @@ class RegionTest {
     }
 
     @Test
-    void testRegionBuilderEdgeExceptions() {
+    void testRegionBuilderEdgeThrows() {
         final Region.Builder builder = Region.builder();
         builder.addEdge("a", new Location(2, 3), new Location(4, 5), Duration.ZERO);
         assertEquals("Duplicate name 'a'",
@@ -142,6 +304,27 @@ class RegionTest {
             assertThrows(IllegalArgumentException.class,
                 () -> builder.addEdge("b", new Location(4, 5), new Location(2, 3), Duration.ZERO)).getMessage()
         );
+    }
+
+    /**
+     * Tests that multiple calls to builder.build() work correctly.
+     */
+    @Test
+    void testRegionBuilderMultiple() {
+        final Region.Builder builder = Region.builder()
+            .addNode("a", new Location(1, 1))
+            .addNeighborhood("b", new Location(2, 2), 0.5)
+            .addEdge("e1", new Location(1, 1), new Location(2, 2), Duration.ZERO);
+        Region r1 = assertDoesNotThrow(builder::build);
+        Region r2 = assertDoesNotThrow(builder::build);
+        assertArrayEquals(r1.getNodes().toArray(), r2.getNodes().toArray());
+        assertArrayEquals(r1.getEdges().toArray(), r2.getEdges().toArray());
+        assertEquals(r1, r2);
+    }
+
+    @Test
+    void testRegionBuilderMissingNodeThrows() {
+        final Region.Builder builder = Region.builder();
     }
 
     @Test
