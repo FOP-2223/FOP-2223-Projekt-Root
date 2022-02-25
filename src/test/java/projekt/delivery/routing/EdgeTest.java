@@ -166,21 +166,36 @@ class EdgeTest {
     @Test
     void testEdgeThrows() {
         final RegionImpl r1 = new RegionImpl();
-        assertThrowsExactly(
-            IllegalArgumentException.class,
-            () -> new EdgeImpl(r1, "", new Location(1, 1), new Location(0, 0), Duration.ZERO)
+        assertEquals(
+            "locationA (1, 1) must be <= locationB (0, 0)",
+            assertThrows(
+                IllegalArgumentException.class,
+                () -> new EdgeImpl(r1, "", new Location(1, 1), new Location(0, 0), Duration.ZERO)
+            ).getMessage()
         );
-        assertThrowsExactly(
-            IllegalArgumentException.class,
-            () -> new EdgeImpl(r1, "", new Location(1, 0), new Location(0, 1), Duration.ZERO)
+        assertEquals(
+            "locationA (1, 0) must be <= locationB (0, 1)",
+            assertThrows(
+                IllegalArgumentException.class,
+                () -> new EdgeImpl(r1, "", new Location(1, 0), new Location(0, 1), Duration.ZERO)
+            ).getMessage()
         );
         assertDoesNotThrow(() -> new EdgeImpl(r1, "", new Location(0, 0), new Location(1, 1), Duration.ZERO));
         EdgeImpl edge = new EdgeImpl(r1, "", new Location(0, 0), new Location(1, 1), Duration.ZERO);
-        assertThrowsExactly(IllegalStateException.class, edge::getNodeA);
-        assertThrowsExactly(IllegalStateException.class, edge::getNodeB);
+        assertEquals(
+            "node (0, 0) does not exist",
+            assertThrows(IllegalStateException.class, edge::getNodeA).getMessage()
+        );
+        assertEquals(
+            "node (1, 1) does not exist",
+            assertThrows(IllegalStateException.class, edge::getNodeB).getMessage()
+        );
         r1.putNode(new NodeImpl(r1, "", new Location(0, 0), Set.of()));
         assertDoesNotThrow(edge::getNodeA);
-        assertThrowsExactly(IllegalStateException.class, edge::getNodeB);
+        assertEquals(
+            "node (1, 1) does not exist",
+            assertThrows(IllegalStateException.class, edge::getNodeB).getMessage()
+        );
         r1.putNode(new NodeImpl(r1, "", new Location(1, 1), Set.of()));
         assertDoesNotThrow(edge::getNodeA);
         assertDoesNotThrow(edge::getNodeB);
