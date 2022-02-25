@@ -129,13 +129,81 @@ class EdgeTest {
         final RegionImpl r2 = new RegionImpl();
         r2.putNode(new NodeImpl(r2, "b", new Location(1, 1), Set.of()));
         assertNotEquals(r1, r2);
+        assertEquals(
+            new EdgeImpl(r1, "e", new Location(0, 1), new Location(1, 0), Duration.ZERO).hashCode(),
+            new EdgeImpl(r1, "e", new Location(0, 1), new Location(1, 0), Duration.ZERO).hashCode()
+        );
+        assertEquals(
+            new EdgeImpl(r1, "e", new Location(0, 1), new Location(1, 0), Duration.ZERO).hashCode(),
+            new EdgeImpl(r2, "e", new Location(0, 1), new Location(1, 0), Duration.ZERO).hashCode()
+        );
+        assertNotEquals(
+            new EdgeImpl(r1, "e", new Location(0, 1), new Location(1, 0), Duration.ZERO).hashCode(),
+            new EdgeImpl(r1, "e", new Location(0, 1), new Location(1, 0), Duration.ofSeconds(1)).hashCode()
+        );
+        assertNotEquals(
+            new EdgeImpl(r1, "e", new Location(0, 1), new Location(1, 0), Duration.ZERO).hashCode(),
+            new EdgeImpl(r1, "e", new Location(0, 1), new Location(1, 1), Duration.ZERO).hashCode()
+        );
+        assertNotEquals(
+            new EdgeImpl(r1, "e", new Location(0, 1), new Location(1, 0), Duration.ZERO).hashCode(),
+            new EdgeImpl(r1, "e", new Location(0, 1), new Location(2, 0), Duration.ZERO).hashCode()
+        );
+        assertNotEquals(
+            new EdgeImpl(r1, "e", new Location(0, 1), new Location(1, 0), Duration.ZERO).hashCode(),
+            new EdgeImpl(r1, "e", new Location(0, 2), new Location(1, 0), Duration.ZERO).hashCode()
+        );
+        assertNotEquals(
+            new EdgeImpl(r1, "e", new Location(0, 1), new Location(1, 0), Duration.ZERO).hashCode(),
+            new EdgeImpl(r1, "e", new Location(1, 1), new Location(1, 2), Duration.ZERO).hashCode()
+        );
+        assertNotEquals(
+            new EdgeImpl(r1, "e", new Location(0, 1), new Location(1, 0), Duration.ZERO).hashCode(),
+            new EdgeImpl(r1, "ee", new Location(0, 1), new Location(1, 0), Duration.ZERO).hashCode()
+        );
     }
 
     @Test
     void testEdgeThrows() {
+        final RegionImpl r1 = new RegionImpl();
+        assertThrowsExactly(
+            IllegalArgumentException.class,
+            () -> new EdgeImpl(r1, "", new Location(1, 1), new Location(0, 0), Duration.ZERO)
+        );
+        assertThrowsExactly(
+            IllegalArgumentException.class,
+            () -> new EdgeImpl(r1, "", new Location(1, 0), new Location(0, 1), Duration.ZERO)
+        );
+        assertDoesNotThrow(() -> new EdgeImpl(r1, "", new Location(0, 0), new Location(1, 1), Duration.ZERO));
+        EdgeImpl edge = new EdgeImpl(r1, "", new Location(0, 0), new Location(1, 1), Duration.ZERO);
+        assertThrowsExactly(IllegalStateException.class, edge::getNodeA);
+        assertThrowsExactly(IllegalStateException.class, edge::getNodeB);
+        r1.putNode(new NodeImpl(r1, "", new Location(0, 0), Set.of()));
+        assertDoesNotThrow(edge::getNodeA);
+        assertThrowsExactly(IllegalStateException.class, edge::getNodeB);
+        r1.putNode(new NodeImpl(r1, "", new Location(1, 1), Set.of()));
+        assertDoesNotThrow(edge::getNodeA);
+        assertDoesNotThrow(edge::getNodeB);
     }
 
     @Test
     void testEdgeToString() {
+        final RegionImpl r1 = new RegionImpl();
+        assertEquals(
+            String.format("EdgeImpl(name='e', locationA=(0, 0), locationB=(1, 1), duration=%s)", Duration.ZERO),
+            new EdgeImpl(r1, "e", new Location(0, 0), new Location(1, 1), Duration.ZERO).toString()
+        );
+        assertEquals(
+            String.format("EdgeImpl(name='e', locationA=(1, 0), locationB=(1, 1), duration=%s)", Duration.ofSeconds(42)),
+            new EdgeImpl(r1, "e", new Location(1, 0), new Location(1, 1), Duration.ofSeconds(42)).toString()
+        );
+        assertNotEquals(
+            String.format("EdgeImpl(name='e', locationA=(1, 0), locationB=(1, 1), duration=%s)", Duration.ofSeconds(1337)),
+            new EdgeImpl(r1, "ee", new Location(1, 0), new Location(1, 1), Duration.ofSeconds(1337)).toString()
+        );
+        assertEquals(
+            String.format("EdgeImpl(name='', locationA=(0, 0), locationB=(10, 0), duration=%s)", Duration.ZERO),
+            new EdgeImpl(r1, "", new Location(0, 0), new Location(10, 0), Duration.ZERO).toString()
+        );
     }
 }
