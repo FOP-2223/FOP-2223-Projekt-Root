@@ -23,7 +23,8 @@ public final class Location implements Comparable<Location> {
     public Location(int x, int y) {
         this.x = x;
         this.y = y;
-        hashcode = 509 * x + 31 * y;
+        // Equivalent: hashcode = (x << 16) | ((y << 16) >>> 16);
+        hashcode = (x << 16) | (0xFFFF & y);
     }
 
     /**

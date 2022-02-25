@@ -1,7 +1,11 @@
 package projekt.delivery.routing;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import projekt.base.Location;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,6 +39,21 @@ class LocationTest {
         assertEquals(new Location(-10, 20).hashCode(), new Location(-10, 20).hashCode());
         assertNotEquals(new Location(-9, 20).hashCode(), new Location(-10, 20).hashCode());
         assertNotEquals(new Location(0, 20).hashCode(), new Location(0, 17).hashCode());
+
+        final int exp = 10;
+        final int bound = 1 << exp;
+        final Map<Integer, Location> map = new HashMap<>(1 << ((exp + 1) * 2), 1);
+        for (int x = -bound; x < bound; x++) {
+            for (int y = -bound; y < bound; y++) {
+                final Location location = new Location(x, y);
+                final int hash = location.hashCode();
+                final @Nullable Location firstPreimage = map.put(hash, location);
+                if (firstPreimage != null) {
+                    fail(String.format("Hash collision for %d! First preimage: (%d, %d); Second preimage: (%d, %d)",
+                        hash, firstPreimage.getX(), firstPreimage.getY(), location.getX(), location.getY()));
+                }
+            }
+        }
     }
 
     @Test
