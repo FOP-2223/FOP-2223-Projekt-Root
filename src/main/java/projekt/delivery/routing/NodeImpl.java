@@ -85,8 +85,7 @@ class NodeImpl implements Region.Node {
 
     @Override
     public String toString() {
-        return "NodeImpl("
-            + ", name='" + getName()
+        return "NodeImpl(name='" + getName() + "'"
             + ", location=" + getLocation()
             + ", connections=" + connections
             + ')';

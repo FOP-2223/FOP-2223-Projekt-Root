@@ -1,5 +1,6 @@
 package projekt.delivery.routing;
 
+import org.jetbrains.annotations.Nullable;
 import projekt.base.Location;
 
 import java.time.Duration;
@@ -26,6 +27,10 @@ class EdgeImpl implements Region.Edge {
     ) {
         this.region = region;
         this.name = name;
+        // locations must be in ascending order
+        if (locationA.compareTo(locationB) > 0) {
+            throw new IllegalArgumentException(String.format("locationA %s must be <= locationB %s", locationA, locationB));
+        }
         this.locationA = locationA;
         this.locationB = locationB;
         this.duration = duration;
@@ -49,14 +54,22 @@ class EdgeImpl implements Region.Edge {
         return name;
     }
 
+    private Region.Node getNode(Location location) {
+        final @Nullable Region.Node node = getRegion().getNode(location);
+        if (node == null) {
+            throw new IllegalStateException(String.format("node %s does not exist", location));
+        }
+        return node;
+    }
+
     @Override
     public Region.Node getNodeA() {
-        return getRegion().getNode(locationA);
+        return getNode(locationA);
     }
 
     @Override
     public Region.Node getNodeB() {
-        return getRegion().getNode(locationB);
+        return getNode(locationB);
     }
 
     @Override
@@ -83,5 +96,15 @@ class EdgeImpl implements Region.Edge {
     @Override
     public int hashCode() {
         return Objects.hash(name, locationA, locationB, duration);
+    }
+
+    @Override
+    public String toString() {
+        return "EdgeImpl(" +
+            "name='" + name + '\'' +
+            ", locationA=" + locationA +
+            ", locationB=" + locationB +
+            ", duration=" + duration +
+            ')';
     }
 }
