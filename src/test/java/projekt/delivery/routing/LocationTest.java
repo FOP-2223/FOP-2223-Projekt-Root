@@ -36,4 +36,48 @@ class LocationTest {
         assertNotEquals(new Location(-9, 20).hashCode(), new Location(-10, 20).hashCode());
         assertNotEquals(new Location(0, 20).hashCode(), new Location(0, 17).hashCode());
     }
+
+    @Test
+    void testLocationToString() {
+        assertEquals(
+            "(0, 0)",
+            new Location(0, 0).toString()
+        );
+        assertEquals(
+            "(127, -618)",
+            new Location(127, -618).toString()
+        );
+        assertEquals(
+            "(-7, -71)",
+            new Location(-7, -71).toString()
+        );
+        assertEquals(
+            "(-212, 0)",
+            new Location(-212, 0).toString()
+        );
+        assertEquals(
+            "(0, 95)",
+            new Location(0, 95).toString()
+        );
+        assertEquals(
+            "(-47, 8953)",
+            new Location(-47, 8953).toString()
+        );
+        assertEquals(
+            "(" + Integer.MIN_VALUE + ", " + Integer.MIN_VALUE + ")",
+            new Location(Integer.MIN_VALUE, Integer.MIN_VALUE).toString()
+        );
+        assertEquals(
+            "(" + Integer.MIN_VALUE + ", " + Integer.MAX_VALUE + ")",
+            new Location(Integer.MIN_VALUE, Integer.MAX_VALUE).toString()
+        );
+        assertEquals(
+            "(" + Integer.MAX_VALUE + ", " + Integer.MIN_VALUE + ")",
+            new Location(Integer.MAX_VALUE, Integer.MIN_VALUE).toString()
+        );
+        assertEquals(
+            "(" + Integer.MAX_VALUE + ", " + Integer.MAX_VALUE + ")",
+            new Location(Integer.MAX_VALUE, Integer.MAX_VALUE).toString()
+        );
+    }
 }
