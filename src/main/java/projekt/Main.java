@@ -40,5 +40,9 @@ public class Main {
         Pizzeria pizzeria = Pizzeria.LOS_FOPBOTS_HERMANOS.create(deliveryService);
 
         // the lasagna is complete
+
+        // new MainWindow(region, vehicleManager, deliverService, pizzeria) -> starts GUI thread
+
+        // deliverService.simulate() -> block thread
     }
 }
