@@ -49,6 +49,7 @@ class VehicleManagerImpl implements VehicleManager {
 
     @SuppressWarnings("unchecked")
     private <C extends Region.Component<C>, O extends AbstractOccupied<C>> Map<C, O> toOccupied(Collection<C> original) {
+        // TODO: Split into two methods
         return original.stream()
             .map(c -> {
                 if (c instanceof Region.Node) {

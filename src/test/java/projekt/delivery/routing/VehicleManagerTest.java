@@ -3,6 +3,8 @@ package projekt.delivery.routing;
 import org.junit.jupiter.api.Test;
 import projekt.base.Location;
 
+import java.time.Duration;
+
 class VehicleManagerTest {
 
     private Region createRegion1() {
@@ -11,13 +13,14 @@ class VehicleManagerTest {
             .addNode("nodeB", new Location(-2, 2))
             .addNeighborhood("nodeC", new Location(2, 2), 0.5)
             .addNode("nodeD", new Location(2, -2))
-//            .addEdge("edge1", new Location(-2, -2), )
+            .addEdge("edge1", new Location(-2, -2), new Location(-2, 2), Duration.ofMinutes(1))
+            .addEdge("edge2", new Location(-2, 2), new Location(-2, 2), Duration.ofMinutes(1))
+            .addEdge("edge3", new Location(-2, -2), new Location(-2, 2), Duration.ofMinutes(1))
+            .addEdge("edge4", new Location(-2, -2), new Location(-2, 2), Duration.ofMinutes(1))
             .build();
     }
 
     @Test
     void testVehicleManagerBasic() {
-
-//        final VehicleManagerImpl vehicleManager = new VehicleManagerImpl()
     }
 }
