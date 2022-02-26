@@ -14,5 +14,5 @@ public interface DeliveryService {
         DeliveryService create(VehicleManager vehicleManager, Rater rater);
     }
 
-    Factory SIMPLE = (vehicleManager, rater) -> new SimpleDeliveryService(vehicleManager, rater);
+    Factory SIMPLE = SimpleDeliveryService::new;
 }
