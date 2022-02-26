@@ -1,7 +1,8 @@
 package projekt.delivery;
 
-import projekt.base.DistanceCalculator;
 import projekt.base.Location;
+import projekt.delivery.routing.VehicleManager;
+import projekt.rating.Rater;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -10,10 +11,12 @@ import java.util.List;
 
 public class SimpleDeliveryService implements DeliveryService {
 
-    private final DistanceCalculator distanceCalculator;
+    private final VehicleManager vehicleManager;
+    private final Rater rater;
 
-    public SimpleDeliveryService(DistanceCalculator distanceCalculator) {
-        this.distanceCalculator = distanceCalculator;
+    public SimpleDeliveryService(VehicleManager vehicleManager, Rater rater) {
+        this.vehicleManager = vehicleManager;
+        this.rater = rater;
     }
 
     @Override
@@ -23,7 +26,8 @@ public class SimpleDeliveryService implements DeliveryService {
         LocalDateTime timeAtLastStop = LocalDateTime.now();
 
         for (ConfirmedOrder order : sortedOrders) {
-            Duration deliveryDuration = Duration.ofMinutes((long) distanceCalculator.calculateDistance(currentLocation, order.getLocation()));
+            Duration deliveryDuration = Duration.ofMinutes(
+                (long) vehicleManager.getDistanceCalculator().calculateDistance(currentLocation, order.getLocation()));
 
             timeAtLastStop = timeAtLastStop.plus(deliveryDuration);
             order.setActualDeliveryTime(timeAtLastStop);
@@ -40,9 +44,11 @@ public class SimpleDeliveryService implements DeliveryService {
             ConfirmedOrder nearestOrder = null;
 
             for (ConfirmedOrder order : confirmedOrders) {
-                if (nearestOrder == null || distanceCalculator.calculateDistance(lastOrder.getLocation(), order.getLocation()) < lastDistance) {
+                if (nearestOrder == null || vehicleManager.getDistanceCalculator()
+                    .calculateDistance(lastOrder.getLocation(), order.getLocation()) < lastDistance) {
                     nearestOrder = order;
-                    lastDistance = distanceCalculator.calculateDistance(lastOrder.getLocation(), order.getLocation());
+                    lastDistance = vehicleManager.getDistanceCalculator()
+                        .calculateDistance(lastOrder.getLocation(), order.getLocation());
                 }
             }
 

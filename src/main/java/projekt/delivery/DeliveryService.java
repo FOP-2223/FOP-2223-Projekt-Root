@@ -1,6 +1,7 @@
 package projekt.delivery;
 
-import projekt.base.DistanceCalculator;
+import projekt.delivery.routing.VehicleManager;
+import projekt.rating.Rater;
 
 import java.util.List;
 
@@ -10,8 +11,8 @@ public interface DeliveryService {
 
     interface Factory {
 
-        DeliveryService create(DistanceCalculator distanceCalculator);
+        DeliveryService create(VehicleManager vehicleManager, Rater rater);
     }
 
-    Factory SIMPLE = SimpleDeliveryService::new;
+    Factory SIMPLE = (vehicleManager, rater) -> new SimpleDeliveryService(vehicleManager, rater);
 }

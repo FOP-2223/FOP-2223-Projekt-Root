@@ -13,13 +13,11 @@ public class PizzeriaImpl implements Pizzeria {
     private final String name;
     private final List<? extends Food.Variant<?, ?>> menu;
     private final DeliveryService deliveryService;
-    private final Rater rater;
 
-    public PizzeriaImpl(String name, List<? extends Food.Variant<?, ?>> menu, DeliveryService deliveryService, Rater rater) {
+    public PizzeriaImpl(String name, List<? extends Food.Variant<?, ?>> menu, DeliveryService deliveryService) {
         this.name = name;
         this.menu = menu;
         this.deliveryService = deliveryService;
-        this.rater = rater;
     }
 
     @Override

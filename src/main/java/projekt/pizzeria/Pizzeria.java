@@ -26,26 +26,25 @@ public interface Pizzeria {
 
     interface Factory {
 
-        Pizzeria create(DeliveryService deliveryService, Rater rater);
+        Pizzeria create(DeliveryService deliveryService);
     }
 
-    Pizzeria.Factory LOS_FOPBOTS_HERMANOS = (deliveryService, rater) -> null;
+    Pizzeria.Factory LOS_FOPBOTS_HERMANOS = (deliveryService) -> null;
 
-    Pizzeria.Factory JAVA_HUT = (deliveryService, rater) -> new PizzeriaImpl("FopHut",
+    Pizzeria.Factory JAVA_HUT = (deliveryService) -> new PizzeriaImpl("FopHut",
         List.of(
             Pizza.MARGHERITA
         ),
-        deliveryService,
-        rater
+        deliveryService
     );
 
-    Pizzeria.Factory PASTAFAR = (deliveryService, rater) -> null;
+    Pizzeria.Factory PASTAFAR = (deliveryService) -> null;
 
-    Pizzeria.Factory PALPAPIZZA = (deliveryService, rater) -> null;
+    Pizzeria.Factory PALPAPIZZA = (deliveryService) -> null;
 
-    Pizzeria.Factory ISENJAR = (deliveryService, rater) -> null;
+    Pizzeria.Factory ISENJAR = (deliveryService) -> null;
 
-    Pizzeria.Factory MIDDLE_FOP = (deliveryService, rater) -> null;
+    Pizzeria.Factory MIDDLE_FOP = (deliveryService) -> null;
 
-    Pizzeria.Factory MOUNT_DOOM_PIZZA = (deliveryService, rater) -> null;
+    Pizzeria.Factory MOUNT_DOOM_PIZZA = (deliveryService) -> null;
 }

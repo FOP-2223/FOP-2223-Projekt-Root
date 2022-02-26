@@ -1,6 +1,7 @@
 package projekt.delivery.routing;
 
 import projekt.base.DistanceCalculator;
+import projekt.base.Location;
 import projekt.delivery.event.EventBus;
 import projekt.food.FoodType;
 
@@ -39,6 +40,8 @@ public interface VehicleManager {
     LocalDateTime getCurrentTime();
 
     void update();
+
+    Factory SIMPLE = (r, d) -> new VehicleManagerImpl(r, d, n -> n.getComponent().getLocation().equals(new Location(0, 0)));
 
     interface Occupied<C extends Region.Component<C>> {
 
