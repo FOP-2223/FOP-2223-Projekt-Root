@@ -9,11 +9,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -28,7 +27,7 @@ class VehicleManagerImpl implements VehicleManager {
     private final OccupiedNodeImpl defaultNode;
     private final List<VehicleImpl> vehicles = new ArrayList<>();
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
-    private final SortedSet<AbstractOccupied<?>> sortedOccupied;
+    private final Set<AbstractOccupied<?>> allOccupied;
     private final EventBus eventBus = new EventBus();
 
     private LocalDateTime currentTime = LocalDateTime.now(); // TODO: Initialize properly
@@ -41,33 +40,29 @@ class VehicleManagerImpl implements VehicleManager {
         this.region = region;
         this.distanceCalculator = distanceCalculator;
         this.defaultNodePredicate = defaultNodePredicate;
+        occupiedNodes = toOccupiedNodes(region.getNodes());
+        occupiedEdges = toOccupiedEdges(region.getEdges());
+        allOccupied = getAllOccupied();
         defaultNode = findNode(defaultNodePredicate);
-        occupiedNodes = toOccupied(region.getNodes());
-        occupiedEdges = toOccupied(region.getEdges());
-        sortedOccupied = getAllOccupied();
     }
 
-    @SuppressWarnings("unchecked")
-    private <C extends Region.Component<C>, O extends AbstractOccupied<C>> Map<C, O> toOccupied(Collection<C> original) {
-        // TODO: Split into two methods
-        return original.stream()
-            .map(c -> {
-                if (c instanceof Region.Node) {
-                    return (O) new OccupiedNodeImpl((Region.Node) c, this);
-                } else if (c instanceof Region.Edge) {
-                    return (O) new OccupiedEdgeImpl((Region.Edge) c, this);
-                } else {
-                    throw new AssertionError("Component must be either node or edge");
-                }
-            })
+    private Map<Region.Node, OccupiedNodeImpl> toOccupiedNodes(Collection<Region.Node> nodes) {
+        return nodes.stream()
+            .map(node -> new OccupiedNodeImpl(node, this))
             .collect(Collectors.toUnmodifiableMap(Occupied::getComponent, Function.identity()));
     }
 
-    private SortedSet<AbstractOccupied<?>> getAllOccupied() {
-        final SortedSet<AbstractOccupied<?>> result = new TreeSet<>(Comparator.comparing(Occupied::getComponent));
+    private Map<Region.Edge, OccupiedEdgeImpl> toOccupiedEdges(Collection<Region.Edge> edges) {
+        return edges.stream()
+            .map(edge -> new OccupiedEdgeImpl(edge, this))
+            .collect(Collectors.toUnmodifiableMap(Occupied::getComponent, Function.identity()));
+    }
+
+    private Set<AbstractOccupied<?>> getAllOccupied() {
+        final Set<AbstractOccupied<?>> result = new HashSet<>();
         result.addAll(occupiedNodes.values());
         result.addAll(occupiedEdges.values());
-        return Collections.unmodifiableSortedSet(result);
+        return Collections.unmodifiableSet(result);
     }
 
     private OccupiedNodeImpl findNode(Predicate<? super Occupied<Region.Node>> nodePredicate) {
