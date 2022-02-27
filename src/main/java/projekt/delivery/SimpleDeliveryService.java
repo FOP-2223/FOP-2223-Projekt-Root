@@ -35,6 +35,16 @@ public class SimpleDeliveryService implements DeliveryService {
         }
     }
 
+    @Override
+    public void runSimulation() {
+
+    }
+
+    @Override
+    public void endSimulation() {
+
+    }
+
     private List<ConfirmedOrder> sortOrders(List<ConfirmedOrder> confirmedOrders) {
         List<ConfirmedOrder> result = new ArrayList<>();
         ConfirmedOrder lastOrder = new ConfirmedOrder(0, 0, -1, null, null);

@@ -29,20 +29,20 @@ public class Main {
 
         // layer 2
 
-        VehicleManager vehicleManager = VehicleManager.SIMPLE.create(region, new EuclideanDistanceCalculator());
+        // VehicleManager vehicleManager = VehicleManager.SIMPLE.create(region, new EuclideanDistanceCalculator());
 
         // layer 3
 
-        DeliveryService deliveryService = DeliveryService.SIMPLE.create(vehicleManager, new LinearRater());
+        // DeliveryService deliveryService = DeliveryService.SIMPLE.create(vehicleManager, new LinearRater());
 
         // layer 4
 
-        Pizzeria pizzeria = Pizzeria.LOS_FOPBOTS_HERMANOS.create(deliveryService);
+        // Pizzeria pizzeria = Pizzeria.LOS_FOPBOTS_HERMANOS.create(deliveryService);
 
         // the lasagna is complete
 
         // new MainWindow(region, vehicleManager, deliverService, pizzeria) -> starts GUI thread
 
-        // deliverService.simulate() -> block thread
+        // deliveryService.runSimulation(); // -> blocks the thread until the simulation is finished.
     }
 }
