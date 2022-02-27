@@ -21,5 +21,7 @@ public class DetailsPanel extends JPanel {
         detailsArea = new JTextArea(5, 20);
         scrollPane = new JScrollPane(detailsArea);
         add(scrollPane, BorderLayout.CENTER);
+        // TODO: Basically everything lol
+        // TODO: Replace with JTable, Add Data
     }
 }

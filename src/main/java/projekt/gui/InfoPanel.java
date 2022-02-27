@@ -20,4 +20,12 @@ public class InfoPanel extends JPanel {
         add(detailsPanel, BorderLayout.NORTH);
         add(ordersPanel, BorderLayout.SOUTH);
     }
+
+    public DetailsPanel getDetailsPanel() {
+        return detailsPanel;
+    }
+
+    public OrdersPanel getOrdersPanel() {
+        return ordersPanel;
+    }
 }

@@ -4,8 +4,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
@@ -14,9 +17,68 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
+import projekt.delivery.DeliveryService;
+import projekt.delivery.routing.Region;
+import projekt.delivery.routing.VehicleManager;
+import projekt.pizzeria.Pizzeria;
+
 public class MapPanel extends JPanel {
-    public MapPanel() {
+    private Region region;
+    private VehicleManager vehicleManager;
+    private DeliveryService deliveryService;
+    private Pizzeria pizzeria;
+
+    private Point anchorPoint;
+    private Point centerLocation = new Point(0, 0);
+    private double scale = 1d;
+    private double scaleModifierFactor = 0.1;
+
+    public MapPanel(Region region, VehicleManager vehicleManager, DeliveryService deliveryService, Pizzeria pizzeria) {
+        this.region = region;
+        this.vehicleManager = vehicleManager;
+        this.deliveryService = deliveryService;
+        this.pizzeria = pizzeria;
+        initComponents();
+    }
+
+    private void initComponents() {
         setBorder(new TitledBorder("Map"));
+        this.addMouseMotionListener(new MouseAdapter() {
+
+            @Override
+            public void mouseDragged(MouseEvent event) {
+                int anchorX = anchorPoint.x;
+                int anchorY = anchorPoint.y;
+
+                Point parentOnScreen = getParent().getLocationOnScreen();
+                Point mouseOnScreen = event.getLocationOnScreen();
+                Point position = new Point(mouseOnScreen.x - parentOnScreen.x - anchorX,
+                        mouseOnScreen.y - parentOnScreen.y - anchorY);
+                // setLocation(position);
+                // TODO: Fix Mouse Movent always calculating from center
+                setCenterLocation(position);
+                // setCenterLocation(new Point((int) (centerLocation.getX() + position.getX()),
+                // (int) (centerLocation.getY() + centerLocation.getY())));
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent event) {
+                Point p = event.getPoint();
+
+                // save current cursor position, used by mouseDragged()
+                anchorPoint = p;
+
+                // TODO: Check if mouse makes contact with Node and display info Menu
+            }
+        });
+        this.addMouseWheelListener(event -> {
+            int notches = event.getWheelRotation();
+            if (notches < 0) {
+                increaseScale();
+            } else {
+                decreaseScale();
+            }
+        });
     }
 
     /**
@@ -30,6 +92,7 @@ public class MapPanel extends JPanel {
      * @return The Shape of the outline
      */
     public Shape fitTextInBounds(Graphics2D g2d, Rectangle bounds, float borderThickness, String text, Font f) {
+        setBackground(Color.BLACK);
         // Store current g2d Configuration
         Font oldFont = g2d.getFont();
 
@@ -46,6 +109,7 @@ public class MapPanel extends JPanel {
         double factor = Math.min(factorX, factorY);
 
         // Scale
+        // TODO: Calculate scale accordingly when resizing window
         AffineTransform scaleTf = new AffineTransform();
         scaleTf.scale(factor, factor);
 
@@ -72,9 +136,12 @@ public class MapPanel extends JPanel {
                 getHeight() - insets.top - insets.bottom);
 
         var oldTranslation = g2d.getTransform();
-        g2d.translate(innerBounds.getCenterX(), innerBounds.getCenterY());
+        g2d.scale(scale, scale);
+        g2d.translate((innerBounds.getCenterX() + centerLocation.getX()) / scale,
+                (innerBounds.getCenterY() + centerLocation.getY()) / scale);
 
-        paintMap(g2d, new Rectangle2D.Double(-innerBounds.getWidth() / 2,
+        paintMap(g2d, new Rectangle2D.Double(
+                -innerBounds.getWidth() / 2,
                 -innerBounds.getHeight() / 2,
                 innerBounds.getWidth(),
                 innerBounds.getHeight()));
@@ -92,16 +159,55 @@ public class MapPanel extends JPanel {
      */
     private void paintMap(Graphics2D g2d, Rectangle2D MapBounds) {
         // Background
-        g2d.setColor(Color.BLACK);
-        g2d.fill(MapBounds);
+        // g2d.setColor(Color.BLACK);
+        // g2d.fill(MapBounds);
 
+        // Mark Center
         g2d.setColor(Color.GREEN);
         g2d.fill(new Ellipse2D.Double(0, 0, 10, 10));
-        // g2d.drawString("Center", 0, 0);
-        var fontBounds = new Rectangle(-100, -75, 200, 50);
-        // g2d.draw(fontBounds);
+        var centerLabelBounds = new Rectangle(-100, -75, 200, 50);
         var centerString = fitTextInBounds(g2d,
-                fontBounds, 0, "Center", g2d.getFont());
+                centerLabelBounds, 0, "Center", g2d.getFont());
         g2d.fill(centerString);
+
+        // TODO: Draw Actual Map
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
+        repaint();
+    }
+
+    public void increaseScale() {
+        this.scale *= 1d + scaleModifierFactor;
+        repaint();
+    }
+
+    public void decreaseScale() {
+        this.scale *= 1d - scaleModifierFactor;
+        repaint();
+    }
+
+    public void resetScale() {
+        this.scale = 1d;
+        repaint();
+    }
+
+    public Point getCenterLocation() {
+        return centerLocation;
+    }
+
+    public void setCenterLocation(Point centerLocation) {
+        this.centerLocation = centerLocation;
+        repaint();
+    }
+
+    public void resetCenterLocation() {
+        this.centerLocation = new Point();
+        repaint();
     }
 }

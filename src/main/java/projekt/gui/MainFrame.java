@@ -18,10 +18,10 @@ public class MainFrame extends JFrame {
     private DeliveryService deliveryService;
     private Pizzeria pizzeria;
 
-    private javax.swing.JPanel controlsPanel;
-    private javax.swing.JPanel infoPanel;
-    private javax.swing.JPanel mapPanel;
-    private javax.swing.JMenuBar menuBar;
+    private ControlsPanel controlsPanel;
+    private InfoPanel infoPanel;
+    private MapPanel mapPanel;
+    private MenuBar menuBar;
 
     public MainFrame(Region region, VehicleManager vehicleManager, DeliveryService deliverService, Pizzeria pizzeria) {
         this.region = region;
@@ -37,9 +37,9 @@ public class MainFrame extends JFrame {
      */
     private void initComponents() {
         infoPanel = new InfoPanel();
-        mapPanel = new MapPanel();
+        mapPanel = new MapPanel(region, vehicleManager, deliveryService, pizzeria);
         controlsPanel = new ControlsPanel();
-        menuBar = new MenuBar();
+        menuBar = new MenuBar(this);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(500, 500));
@@ -56,5 +56,17 @@ public class MainFrame extends JFrame {
         add(infoPanel, BorderLayout.EAST);
         add(controlsPanel, BorderLayout.SOUTH);
         pack();
+    }
+
+    public MapPanel getMapPanel() {
+        return mapPanel;
+    }
+
+    public InfoPanel getInfoPanel() {
+        return infoPanel;
+    }
+
+    public ControlsPanel getControlsPanel() {
+        return controlsPanel;
     }
 }
