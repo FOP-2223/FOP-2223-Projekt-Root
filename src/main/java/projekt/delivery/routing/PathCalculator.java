@@ -1,6 +1,6 @@
 package projekt.delivery.routing;
 
-import java.util.List;
+import java.util.Deque;
 
 public interface PathCalculator {
 
@@ -11,5 +11,5 @@ public interface PathCalculator {
      * @param end   The end {@link Region.Node}
      * @return A list of nodes (including start and end) that represent a path from start to end
      */
-    List<Region.Node> getPath(Region.Node start, Region.Node end);
+    Deque<Region.Node> getPath(Region.Node start, Region.Node end);
 }

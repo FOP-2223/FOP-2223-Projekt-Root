@@ -2,6 +2,7 @@ package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Objects;
 public class CachedPathCalculator implements PathCalculator {
 
     private final PathCalculator delegate;
-    private final Map<StartEndTuple, List<Region.Node>> cache = new HashMap<>();
+    private final Map<StartEndTuple, Deque<Region.Node>> cache = new HashMap<>();
     private final int size;
 
     public CachedPathCalculator(PathCalculator delegate, int size) {
@@ -23,9 +24,9 @@ public class CachedPathCalculator implements PathCalculator {
     }
 
     @Override
-    public List<Region.Node> getPath(Region.Node start, Region.Node end) {
+    public Deque<Region.Node> getPath(Region.Node start, Region.Node end) {
         final StartEndTuple tuple = new StartEndTuple(start, end);
-        @Nullable List<Region.Node> path = cache.get(tuple);
+        @Nullable Deque<Region.Node> path = cache.get(tuple);
         if (path != null) {
             return path;
         }
