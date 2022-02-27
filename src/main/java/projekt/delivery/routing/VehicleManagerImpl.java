@@ -41,25 +41,21 @@ class VehicleManagerImpl implements VehicleManager {
         this.region = region;
         this.distanceCalculator = distanceCalculator;
         this.defaultNodePredicate = defaultNodePredicate;
-        defaultNode = findNode(defaultNodePredicate);
-        occupiedNodes = toOccupied(region.getNodes());
-        occupiedEdges = toOccupied(region.getEdges());
+        occupiedNodes = toOccupiedNodes(region.getNodes());
+        occupiedEdges = toOccupiedEdges(region.getEdges());
         sortedOccupied = getAllOccupied();
+        defaultNode = findNode(defaultNodePredicate);
     }
 
-    @SuppressWarnings("unchecked")
-    private <C extends Region.Component<C>, O extends AbstractOccupied<C>> Map<C, O> toOccupied(Collection<C> original) {
-        // TODO: Split into two methods
-        return original.stream()
-            .map(c -> {
-                if (c instanceof Region.Node) {
-                    return (O) new OccupiedNodeImpl((Region.Node) c, this);
-                } else if (c instanceof Region.Edge) {
-                    return (O) new OccupiedEdgeImpl((Region.Edge) c, this);
-                } else {
-                    throw new AssertionError("Component must be either node or edge");
-                }
-            })
+    private Map<Region.Node, OccupiedNodeImpl> toOccupiedNodes(Collection<Region.Node> nodes) {
+        return nodes.stream()
+            .map(node -> new OccupiedNodeImpl(node, this))
+            .collect(Collectors.toUnmodifiableMap(Occupied::getComponent, Function.identity()));
+    }
+
+    private Map<Region.Edge, OccupiedEdgeImpl> toOccupiedEdges(Collection<Region.Edge> edges) {
+        return edges.stream()
+            .map(edge -> new OccupiedEdgeImpl(edge, this))
             .collect(Collectors.toUnmodifiableMap(Occupied::getComponent, Function.identity()));
     }
 
