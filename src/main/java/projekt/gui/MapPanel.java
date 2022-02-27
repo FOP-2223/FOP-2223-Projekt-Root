@@ -12,11 +12,13 @@ import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
+import projekt.base.Location;
 import projekt.delivery.DeliveryService;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
@@ -33,6 +35,8 @@ public class MapPanel extends JPanel {
     private double scale = 1d;
     private double scaleModifierFactor = 0.1;
 
+    private static final double NODE_DIAMETER = 10;
+
     public MapPanel(Region region, VehicleManager vehicleManager, DeliveryService deliveryService, Pizzeria pizzeria) {
         this.region = region;
         this.vehicleManager = vehicleManager;
@@ -42,6 +46,7 @@ public class MapPanel extends JPanel {
     }
 
     private void initComponents() {
+        setBackground(Color.BLACK);
         setBorder(new TitledBorder("Map"));
         this.addMouseMotionListener(new MouseAdapter() {
 
@@ -85,14 +90,12 @@ public class MapPanel extends JPanel {
      * Create A shape with the desired Text and the desired width
      *
      * @param g2d             the specified Graphics context to draw the font with
-     * @param width           the desired text width
      * @param borderThickness the border thickness to account for
      * @param text            the string to display
      * @param f               the font used for drawing the string
      * @return The Shape of the outline
      */
     public Shape fitTextInBounds(Graphics2D g2d, Rectangle bounds, float borderThickness, String text, Font f) {
-        setBackground(Color.BLACK);
         // Store current g2d Configuration
         Font oldFont = g2d.getFont();
 
@@ -162,13 +165,33 @@ public class MapPanel extends JPanel {
         // g2d.setColor(Color.BLACK);
         // g2d.fill(MapBounds);
 
+        region
+            .getNodes()
+            .stream()
+            .map(Region.Node::getLocation)
+            .forEach(location -> g2d.fill(new Ellipse2D.Double(location.getX(), location.getY(), NODE_DIAMETER, NODE_DIAMETER)));
+        region
+            .getEdges()
+            .stream()
+            .map(edge -> new Location[] {edge.getNodeA().getLocation(), edge.getNodeB().getLocation()})
+            .forEach(locations -> {
+                Line2D.Double line = new Line2D.Double(
+                    locations[0].getX() + NODE_DIAMETER / 2,
+                    locations[0].getY() + NODE_DIAMETER / 2,
+                    locations[1].getX() + NODE_DIAMETER / 2,
+                    locations[1].getY() + NODE_DIAMETER / 2
+                );
+                g2d.draw(line);
+            });
+
         // Mark Center
         g2d.setColor(Color.GREEN);
-        g2d.fill(new Ellipse2D.Double(0, 0, 10, 10));
-        var centerLabelBounds = new Rectangle(-100, -75, 200, 50);
-        var centerString = fitTextInBounds(g2d,
-                centerLabelBounds, 0, "Center", g2d.getFont());
-        g2d.fill(centerString);
+        g2d.fill(new Ellipse2D.Double(0, 0, NODE_DIAMETER, NODE_DIAMETER));
+        g2d.drawString("Center", 0, 0);
+//        var centerLabelBounds = new Rectangle(-100, -75, 200, 50);
+//        var centerString = fitTextInBounds(g2d,
+//                centerLabelBounds, 0, "Center", g2d.getFont());
+//        g2d.fill(centerString);
 
         // TODO: Draw Actual Map
     }
