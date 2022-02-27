@@ -63,8 +63,9 @@ public class DijkstraPathCalculator implements PathCalculator {
         }
 
         // Initialize SSSP
-        Queue<DijkstraNode> queue = new PriorityQueue<>();
-        Map<Region.Node, DijkstraNode> references = new HashMap<>();
+        int size = start.getRegion().getNodes().size();
+        Queue<DijkstraNode> queue = new PriorityQueue<>(size);
+        Map<Region.Node, DijkstraNode> references = new HashMap<>(size);
         initSSSP(queue, references, start);
 
         // Relax edges
