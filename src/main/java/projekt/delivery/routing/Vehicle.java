@@ -6,7 +6,6 @@ import projekt.food.FoodType;
 
 import java.util.Collection;
 import java.util.Deque;
-import java.util.List;
 import java.util.function.Consumer;
 
 public interface Vehicle extends Comparable<Vehicle> {
@@ -32,6 +31,12 @@ public interface Vehicle extends Comparable<Vehicle> {
      */
     void moveQueued(Region.Node node);
 
+    /**
+     * Adds the provided {@link Region.Node} to the move queue.
+     * As soon as the vehicle arrives at the specified node, {@code arrivalAction} is run.
+     */
+    void moveQueued(Region.Node node, Consumer<? super Vehicle> arrivalAction);
+
     int getId();
 
     /**
@@ -49,7 +54,9 @@ public interface Vehicle extends Comparable<Vehicle> {
     /**
      * @throws FoodNotSupportedException if the vehicle does not support the provided food
      */
-    void addFood(Food food) throws VehicleOverloadedException;
+    void addFood(Food food);
+
+    void unloadFood(Food food);
 
     // TODO: allow appending of own methods?
     default double getCurrentWeight() {

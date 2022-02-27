@@ -1,7 +1,7 @@
 package projekt.delivery;
 
 import projekt.delivery.routing.VehicleManager;
-import projekt.rating.Rater;
+import projekt.delivery.rating.Rater;
 
 import java.util.List;
 

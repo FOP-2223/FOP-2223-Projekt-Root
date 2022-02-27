@@ -33,7 +33,7 @@ class OccupiedNodeImpl extends AbstractOccupied<Region.Node> {
         final LocalDateTime currentTime = vehicleManager.getCurrentTime();
         vehicles.put(vehicle, new VehicleStats(currentTime));
         vehicle.setOccupied(this);
-        vehicleManager.getEventBus().queuePost(ArrivedAtNodeEvent.class, ArrivedAtNodeEvent.of(
+        vehicleManager.getEventBus().queuePost(ArrivedAtNodeEvent.of(
                 currentTime,
                 vehicle,
                 component,

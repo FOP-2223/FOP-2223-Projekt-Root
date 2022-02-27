@@ -1,4 +1,4 @@
-package projekt.rating;
+package projekt.delivery.rating;
 
 import projekt.delivery.ConfirmedOrder;
 

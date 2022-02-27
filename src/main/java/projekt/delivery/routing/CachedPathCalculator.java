@@ -2,20 +2,25 @@ package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Deque;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class CachedPathCalculator implements PathCalculator {
 
     private final PathCalculator delegate;
-    private final Map<StartEndTuple, List<Region.Node>> cache = new HashMap<>();
+    private final Map<StartEndTuple, Deque<Region.Node>> cache = new HashMap<>();
     private final int size;
+    private final Set<StartEndTuple> accessOrder;
 
     public CachedPathCalculator(PathCalculator delegate, int size) {
         this.delegate = delegate;
         this.size = size;
+        this.accessOrder = new LinkedHashSet<>(size);
     }
 
     public CachedPathCalculator(PathCalculator delegate) {
@@ -23,15 +28,23 @@ public class CachedPathCalculator implements PathCalculator {
     }
 
     @Override
-    public List<Region.Node> getPath(Region.Node start, Region.Node end) {
+    public Deque<Region.Node> getPath(Region.Node start, Region.Node end) {
         final StartEndTuple tuple = new StartEndTuple(start, end);
-        @Nullable List<Region.Node> path = cache.get(tuple);
+        @Nullable Deque<Region.Node> path = cache.get(tuple);
         if (path != null) {
             return path;
         }
         path = delegate.getPath(start, end);
+
+        // Limit cache size
+        if (accessOrder.size() >= size) {
+            Iterator<StartEndTuple> iterator = accessOrder.iterator();
+            cache.remove(iterator.next());
+            iterator.remove();
+        }
+
+        accessOrder.add(tuple);
         cache.put(tuple, path);
-        // TODO: Limit to size
         return path;
     }
 
