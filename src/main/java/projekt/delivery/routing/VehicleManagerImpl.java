@@ -9,11 +9,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -28,7 +27,7 @@ class VehicleManagerImpl implements VehicleManager {
     private final OccupiedNodeImpl defaultNode;
     private final List<VehicleImpl> vehicles = new ArrayList<>();
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
-    private final SortedSet<AbstractOccupied<?>> sortedOccupied;
+    private final Set<AbstractOccupied<?>> allOccupied;
     private final EventBus eventBus = new EventBus();
 
     private LocalDateTime currentTime = LocalDateTime.now(); // TODO: Initialize properly
@@ -43,7 +42,7 @@ class VehicleManagerImpl implements VehicleManager {
         this.defaultNodePredicate = defaultNodePredicate;
         occupiedNodes = toOccupiedNodes(region.getNodes());
         occupiedEdges = toOccupiedEdges(region.getEdges());
-        sortedOccupied = getAllOccupied();
+        allOccupied = getAllOccupied();
         defaultNode = findNode(defaultNodePredicate);
     }
 
@@ -59,11 +58,11 @@ class VehicleManagerImpl implements VehicleManager {
             .collect(Collectors.toUnmodifiableMap(Occupied::getComponent, Function.identity()));
     }
 
-    private SortedSet<AbstractOccupied<?>> getAllOccupied() {
-        final SortedSet<AbstractOccupied<?>> result = new TreeSet<>(Comparator.comparing(Occupied::getComponent));
+    private Set<AbstractOccupied<?>> getAllOccupied() {
+        final Set<AbstractOccupied<?>> result = new HashSet<>();
         result.addAll(occupiedNodes.values());
         result.addAll(occupiedEdges.values());
-        return Collections.unmodifiableSortedSet(result);
+        return Collections.unmodifiableSet(result);
     }
 
     private OccupiedNodeImpl findNode(Predicate<? super Occupied<Region.Node>> nodePredicate) {
