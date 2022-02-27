@@ -15,6 +15,8 @@ public interface VehicleManager {
 
     DistanceCalculator getDistanceCalculator();
 
+    PathCalculator getPathCalculator();
+
     Collection<Vehicle> getVehicles();
 
     Vehicle addVehicle(
@@ -39,9 +41,10 @@ public interface VehicleManager {
 
     LocalDateTime getCurrentTime();
 
-    void update();
+    void tick();
 
-    Factory SIMPLE = (r, d) -> new VehicleManagerImpl(r, d, n -> n.getComponent().getLocation().equals(new Location(0, 0)));
+    Factory SIMPLE = (r, d, pathCalculator) -> new VehicleManagerImpl(r, d, pathCalculator, n ->
+        n.getComponent().getLocation().equals(new Location(0, 0)));
 
     interface Occupied<C extends Region.Component<C>> {
 
@@ -57,6 +60,6 @@ public interface VehicleManager {
     }
 
     interface Factory {
-        VehicleManager create(Region region, DistanceCalculator distanceCalculator);
+        VehicleManager create(Region region, DistanceCalculator distanceCalculator, PathCalculator pathCalculator);
     }
 }

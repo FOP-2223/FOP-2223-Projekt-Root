@@ -24,6 +24,7 @@ class VehicleManagerImpl implements VehicleManager {
     final Map<Region.Node, OccupiedNodeImpl> occupiedNodes;
     final Map<Region.Edge, OccupiedEdgeImpl> occupiedEdges;
     private final DistanceCalculator distanceCalculator;
+    private final PathCalculator pathCalculator;
     private final Predicate<? super Occupied<Region.Node>> defaultNodePredicate;
     private final OccupiedNodeImpl defaultNode;
     private final List<VehicleImpl> vehicles = new ArrayList<>();
@@ -36,10 +37,12 @@ class VehicleManagerImpl implements VehicleManager {
     VehicleManagerImpl(
         Region region,
         DistanceCalculator distanceCalculator,
+        PathCalculator pathCalculator,
         Predicate<? super Occupied<Region.Node>> defaultNodePredicate
     ) {
         this.region = region;
         this.distanceCalculator = distanceCalculator;
+        this.pathCalculator = pathCalculator;
         this.defaultNodePredicate = defaultNodePredicate;
         occupiedNodes = toOccupiedNodes(region.getNodes());
         occupiedEdges = toOccupiedEdges(region.getEdges());
@@ -150,7 +153,8 @@ class VehicleManagerImpl implements VehicleManager {
     }
 
     @Override
-    public void update() {
+    public void tick() {
+        currentTime = currentTime.plusMinutes(1);
         tickOccupied(occupiedEdges, false);
         tickOccupied(occupiedNodes, false);
         final List<Event> events = eventBus.popEvents(currentTime);
@@ -169,5 +173,10 @@ class VehicleManagerImpl implements VehicleManager {
         if (ticked) {
             tickOccupied(occupied, true);
         }
+    }
+
+    @Override
+    public PathCalculator getPathCalculator() {
+        return pathCalculator;
     }
 }

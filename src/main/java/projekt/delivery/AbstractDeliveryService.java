@@ -8,8 +8,8 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractDeliveryService implements DeliveryService {
-    private final VehicleManager vehicleManager;
-    private final Rater rater;
+    protected final VehicleManager vehicleManager;
+    protected final Rater rater;
     private final Simulation simulation;
     private final SimulationConfig simulationConfig;
     private volatile boolean terminationRequested = false;
@@ -33,6 +33,13 @@ public abstract class AbstractDeliveryService implements DeliveryService {
     @Override
     public final void runSimulation() {
         while (!terminationRequested) {
+            if (simulationConfig.isPaused()) {
+                try {
+                    simulationConfig.getLock().wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             long tickStartTime = System.currentTimeMillis();
 
             runTick();

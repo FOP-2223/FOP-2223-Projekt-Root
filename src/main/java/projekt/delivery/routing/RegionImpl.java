@@ -66,7 +66,9 @@ class RegionImpl implements Region {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
+        if (this == o) {
+            return true;
+        }
         if (o == null || getClass() != o.getClass()) return false;
         RegionImpl region = (RegionImpl) o;
         return Objects.equals(nodes, region.nodes) && Objects.equals(edges, region.edges);

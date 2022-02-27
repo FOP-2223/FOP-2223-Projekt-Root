@@ -96,7 +96,7 @@ public class DijkstraPathCalculator implements PathCalculator {
             path.addFirst(node.previous.node);
             node = references.get(node.previous.node);
         }
-        path.addFirst(start);
+        // path.addFirst(start);
 
         return path;
     }
