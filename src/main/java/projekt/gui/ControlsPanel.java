@@ -1,21 +1,30 @@
 package projekt.gui;
 
-import java.awt.GridLayout;
+import projekt.delivery.SimulationConfig;
 
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
+import javax.swing.JSlider;
 import javax.swing.border.TitledBorder;
 
 public class ControlsPanel extends JPanel {
 
-    private javax.swing.JButton playPauseButton;
-    private javax.swing.JButton singleStepButton;
-    private javax.swing.JButton stopButton;
-    private javax.swing.JSlider tickSpeedSlider;
-    private javax.swing.JLabel tickSpeedSliderLabel;
+    private JButton playPauseButton;
+    private JButton singleStepButton;
+    private JButton stopButton;
+    private JSlider tickIntervalSlider;
+    private JLabel tickIntervalSliderLabel;
+    private SimulationConfig simulationConfig;
+    private boolean paused = false;
 
-    public ControlsPanel() {
+    public ControlsPanel(SimulationConfig simulationConfig) {
+        this.simulationConfig = simulationConfig;
         initComponents();
     }
 
@@ -24,29 +33,45 @@ public class ControlsPanel extends JPanel {
         setBorder(new TitledBorder("Controls"));
         // setBorder(new CompoundBorder(new TitledBorder("Controls"), new
         // EmptyBorder(12, 0, 0, 0))); // More space up top
-        playPauseButton = new javax.swing.JButton();
-        stopButton = new javax.swing.JButton();
-        singleStepButton = new javax.swing.JButton();
-        tickSpeedSlider = new javax.swing.JSlider();
-        tickSpeedSliderLabel = new javax.swing.JLabel();
+        playPauseButton = new JButton();
+        stopButton = new JButton();
+        singleStepButton = new JButton();
+        tickIntervalSlider = new JSlider();
+        tickIntervalSliderLabel = new JLabel();
 
-        playPauseButton.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
-        playPauseButton.setText("Play/Pause");
+        playPauseButton.setFont(new Font("Dialog", 0, 16)); // NOI18N
+        playPauseButton.setText("Play / Pause");
+        playPauseButton.addActionListener(actionEvent -> simulationConfig.setPaused(paused = !paused));
 
-        stopButton.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
+        stopButton.setFont(new Font("Dialog", 0, 16)); // NOI18N
         stopButton.setText("Stop");
 
-        singleStepButton.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
-        singleStepButton.setText("single Step");
+        singleStepButton.setFont(new Font("Dialog", 0, 16)); // NOI18N
+        singleStepButton.setText("Single step");
+        singleStepButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
+            }
+        });
 
         // tickSpeedSlider.setToolTipText("");
+        tickIntervalSlider.setValue(5);
+        tickIntervalSlider.setMinimum(2);
+        tickIntervalSlider.setMaximum(10);
+        tickIntervalSlider.setMajorTickSpacing(1);
+        tickIntervalSlider.setSnapToTicks(true);
+        tickIntervalSlider.addChangeListener(changeEvent -> {
+            simulationConfig.setMillisecondsPerTick(-50 * tickIntervalSlider.getValue() + 600);
+            tickIntervalSliderLabel.setText("Tick interval: %d ms".formatted(-50 * tickIntervalSlider.getValue() + 600));
+        });
 
-        tickSpeedSliderLabel.setText("Tick Speed");
+        tickIntervalSliderLabel.setText("Tick interval: %d ms".formatted(-50 * tickIntervalSlider.getValue() + 600));
 
         add(playPauseButton);
         add(stopButton);
         add(singleStepButton);
-        add(tickSpeedSlider);
-        add(tickSpeedSliderLabel);
+        add(tickIntervalSlider);
+        add(tickIntervalSliderLabel);
     }
 }

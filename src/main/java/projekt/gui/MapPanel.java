@@ -1,14 +1,6 @@
 package projekt.gui;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
@@ -19,8 +11,6 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
-
-import org.checkerframework.checker.units.qual.s;
 
 import projekt.base.Location;
 import projekt.delivery.DeliveryService;

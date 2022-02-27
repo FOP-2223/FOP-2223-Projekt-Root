@@ -21,6 +21,8 @@ public interface DeliveryService {
      */
     void endSimulation();
 
+    SimulationConfig getSimulationConfig();
+
     interface Factory {
 
         DeliveryService create(VehicleManager vehicleManager, Rater rater, Simulation simulation, SimulationConfig simulationConfig);

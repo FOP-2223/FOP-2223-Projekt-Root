@@ -81,4 +81,9 @@ public abstract class AbstractDeliveryService implements DeliveryService {
     public void endSimulation() {
         terminationRequested = true;
     }
+
+    @Override
+    public SimulationConfig getSimulationConfig() {
+        return simulationConfig;
+    }
 }

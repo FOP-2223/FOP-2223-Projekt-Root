@@ -38,7 +38,7 @@ public class MainFrame extends JFrame {
     private void initComponents() {
         infoPanel = new InfoPanel();
         mapPanel = new MapPanel(region, vehicleManager, deliveryService, pizzeria);
-        controlsPanel = new ControlsPanel();
+        controlsPanel = new ControlsPanel(deliveryService.getSimulationConfig());
         menuBar = new MenuBar(this);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
