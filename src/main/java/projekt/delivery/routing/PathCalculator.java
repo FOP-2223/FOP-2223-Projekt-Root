@@ -4,6 +4,7 @@ import java.util.Deque;
 
 public interface PathCalculator {
 
+    // TODO: Throw exception if region mismatch
     /**
      * Calculates the shortest path from {@code start} to {@code end}.
      *

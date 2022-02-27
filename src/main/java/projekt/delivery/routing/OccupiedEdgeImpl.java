@@ -36,7 +36,7 @@ class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
         final LocalDateTime currentTime = vehicleManager.getCurrentTime();
         vehicles.put(vehicle, new VehicleStats(currentTime));
         vehicle.setOccupied(this);
-        vehicleManager.getEventBus().queuePost(ArrivedAtEdgeEvent.class, ArrivedAtEdgeEvent.of(
+        vehicleManager.getEventBus().queuePost(ArrivedAtEdgeEvent.of(
                 currentTime,
                 vehicle,
                 component,

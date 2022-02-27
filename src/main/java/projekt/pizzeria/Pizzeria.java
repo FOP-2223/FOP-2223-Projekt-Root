@@ -4,7 +4,6 @@ import projekt.delivery.ConfirmedOrder;
 import projekt.delivery.DeliveryService;
 import projekt.food.Food;
 import projekt.food.Pizza;
-import projekt.rating.Rater;
 
 import java.time.Instant;
 import java.util.List;

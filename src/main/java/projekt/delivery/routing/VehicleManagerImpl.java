@@ -2,6 +2,7 @@ package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
 import projekt.base.DistanceCalculator;
+import projekt.delivery.event.Event;
 import projekt.delivery.event.EventBus;
 import projekt.food.FoodType;
 
@@ -152,7 +153,7 @@ class VehicleManagerImpl implements VehicleManager {
     public void update() {
         tickOccupied(occupiedEdges, false);
         tickOccupied(occupiedNodes, false);
-        eventBus.sendPostQueue();
+        final List<Event> events = eventBus.popEvents(currentTime);
     }
 
     private <C extends Region.Component<C>, O extends AbstractOccupied<C>> void tickOccupied(Map<C, O> occupied,

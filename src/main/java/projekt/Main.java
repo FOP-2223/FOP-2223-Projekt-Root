@@ -1,12 +1,7 @@
 package projekt;
 
-import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
-import projekt.delivery.DeliveryService;
 import projekt.delivery.routing.Region;
-import projekt.delivery.routing.VehicleManager;
-import projekt.pizzeria.Pizzeria;
-import projekt.rating.LinearRater;
 
 import java.time.Duration;
 
