@@ -12,16 +12,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
+import com.google.common.io.Resources;
 import projekt.base.Location;
 import projekt.delivery.DeliveryService;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
 import projekt.pizzeria.Pizzeria;
 
+import static java.awt.Toolkit.getDefaultToolkit;
+
 public class MapPanel extends JPanel {
+
+    private static final Image IMAGE_CAR = getDefaultToolkit().getImage(Resources.getResource("car.png"));
+
     private final Region region;
     private final VehicleManager vehicleManager;
     private final DeliveryService deliveryService;
@@ -168,6 +174,23 @@ public class MapPanel extends JPanel {
 
     public void fillAt(Graphics2D g2d, double x, double y, Shape s) {
         g2d.fill(centerShapeAtPos(x, y, s));
+    }
+
+    public void paintImage(Graphics2D g2d, double x, double y, Image image) {
+        var old = g2d.getTransform();
+        var translation = new AffineTransform(old);
+        translation.translate(x - 0.5, y - 0.5);
+        g2d.setTransform(translation);
+        g2d.drawImage(image, 0, 0, 1, 1, null);
+        g2d.setTransform(old);
+    }
+
+    public void paintImage(Graphics2D g2d, Location l, Image image) {
+        paintImage(g2d, l.getX(), l.getY(), image);
+    }
+
+    public void paintImage(Graphics2D g2d, Location l1, Location l2, Image image) {
+        paintImage(g2d, (l1.getX() + l2.getX()) / 2d, (l1.getY() + l2.getY()) / 2d, image);
     }
 
     /**
@@ -322,8 +345,7 @@ public class MapPanel extends JPanel {
         // g2d.fill(MapBounds);
         drawGrid(g2d, 40, 40, scale > 30d);
         g2d.setStroke(new BasicStroke(0.3f));
-
-        var actualNodeDiameter = Math.min(NODE_DIAMETER / (scale / 100), 2 * NODE_DIAMETER);
+        var actualNodeDiameter = NODE_DIAMETER;
         region
                 .getNodes()
                 .stream()
@@ -346,14 +368,25 @@ public class MapPanel extends JPanel {
                             locations[1].getY());
                     g2d.draw(line);
                 });
+        vehicleManager
+            .getVehicles()
+            .stream()
+            .forEach(vehicle -> {
+                var component = vehicle.getOccupied().getComponent();
+                if (component instanceof Region.Node node) {
+                    paintImage(g2d, node.getLocation(), IMAGE_CAR);
+                } else if (component instanceof Region.Edge edge) {
+                    paintImage(g2d, edge.getNodeA().getLocation(), edge.getNodeB().getLocation(), IMAGE_CAR);
+                }
+            });
 
-        // Mark Center
-        g2d.setColor(Color.GREEN);
-        fillAt(g2d, 0, 0, new Ellipse2D.Double(0, 0, actualNodeDiameter, actualNodeDiameter));
-        // g2d.drawString("Center", 0, 0);
-        var centerLabel = getLabel(g2d, 0, 0, Math.max(10,100 / scale), 1, "Center");
-        g2d.setStroke(new BasicStroke(0.5f));
-        g2d.fill(centerLabel);
+//        // Mark Center
+//        g2d.setColor(Color.GREEN);
+//        fillAt(g2d, 0, 0, new Ellipse2D.Double(0, 0, actualNodeDiameter, actualNodeDiameter));
+//        // g2d.drawString("Center", 0, 0);
+//        var centerLabel = getLabel(g2d, 0, 0, Math.max(10,100 / scale), 1, "Center");
+//        g2d.setStroke(new BasicStroke(0.5f));
+//        g2d.fill(centerLabel);
 
         // TODO: Draw Actual Map
     }
