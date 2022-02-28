@@ -1,7 +1,7 @@
 package projekt.delivery.routing;
 
+import org.jetbrains.annotations.Nullable;
 import projekt.base.DistanceCalculator;
-import projekt.base.Location;
 import projekt.delivery.ConfirmedOrder;
 import projekt.delivery.event.EventBus;
 import projekt.food.FoodType;
@@ -12,6 +12,10 @@ import java.util.function.Predicate;
 
 public interface VehicleManager {
 
+    static Builder builder() {
+        return new VehicleManagerBuilderImpl();
+    }
+
     Region getRegion();
 
     DistanceCalculator getDistanceCalculator();
@@ -20,16 +24,7 @@ public interface VehicleManager {
 
     Collection<Vehicle> getVehicles();
 
-    Vehicle addVehicle(
-        double capacity,
-        Collection<FoodType<?, ?>> compatibleFoodTypes,
-        Predicate<? super Occupied<Region.Node>> nodePredicate
-    );
-
-    Vehicle addVehicle(
-        double capacity,
-        Collection<FoodType<?, ?>> compatibleFoodTypes
-    );
+    Warehouse getWarehouse();
 
     // O(1)
     <C extends Region.Component<C>> Occupied<C> getOccupied(C component);
@@ -43,9 +38,6 @@ public interface VehicleManager {
     LocalDateTime getCurrentTime();
 
     void tick();
-
-    Factory SIMPLE = (r, d, pathCalculator) -> new VehicleManagerImpl(r, d, pathCalculator, n ->
-        n.getComponent().getLocation().equals(new Location(0, 0)));
 
     interface Occupied<C extends Region.Component<C>> {
 
@@ -64,7 +56,28 @@ public interface VehicleManager {
         void loadOrder(Vehicle vehicle, ConfirmedOrder order);
     }
 
-    interface Factory {
-        VehicleManager create(Region region, DistanceCalculator distanceCalculator, PathCalculator pathCalculator);
+    interface Builder {
+        Builder time(LocalDateTime time);
+
+        Builder region(Region region);
+
+        Builder distanceCalculator(DistanceCalculator distanceCalculator);
+
+        Builder pathCalculator(PathCalculator pathCalculator);
+
+        Builder warehouse(Region.Node warehouse);
+
+        Builder addVehicle(
+            double capacity,
+            Collection<FoodType<?, ?>> compatibleFoodTypes,
+            @Nullable Predicate<? super Occupied<Region.Node>> nodePredicate
+        );
+
+        Builder addVehicle(
+            double capacity,
+            Collection<FoodType<?, ?>> compatibleFoodTypes
+        );
+
+        VehicleManager build();
     }
 }

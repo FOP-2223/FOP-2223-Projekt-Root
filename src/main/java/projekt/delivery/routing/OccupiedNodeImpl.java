@@ -22,6 +22,9 @@ class OccupiedNodeImpl extends AbstractOccupied<Region.Node> {
 
     @Override
     void addVehicle(VehicleImpl vehicle) {
+        if (vehicles.containsKey(vehicle)) {
+            return;
+        }
         final VehicleManager.Occupied<?> previous = vehicle.getOccupied();
         if (previous instanceof OccupiedNodeImpl) {
             throw new AssertionError("Vehicle " + vehicle.getId() + " cannot move directly from node to node");
@@ -40,6 +43,5 @@ class OccupiedNodeImpl extends AbstractOccupied<Region.Node> {
                 previousEdge.getComponent()
             )
         );
-        dirty = true;
     }
 }

@@ -2,6 +2,7 @@ package projekt;
 
 import projekt.base.Location;
 import projekt.delivery.routing.Region;
+import projekt.delivery.routing.VehicleManager;
 
 import java.time.Duration;
 
@@ -22,9 +23,14 @@ public class Main {
             .addEdge("edge4", new Location(-2, -2), new Location(-2, 2), Duration.ofMinutes(1))
             .build();
 
+
+
         // layer 2
 
-        // VehicleManager vehicleManager = VehicleManager.SIMPLE.create(region, new EuclideanDistanceCalculator());
+        VehicleManager vehicleManager = VehicleManager.SIMPLE.create(region, new EuclideanDistanceCalculator());
+
+        Region.Edge e = region.getEdge(new Location(2, 2), new Location(1, 3));
+        VehicleManager.Occupied<Region.Edge> o = vehicleManager.getOccupied(e);
 
         // layer 3
 

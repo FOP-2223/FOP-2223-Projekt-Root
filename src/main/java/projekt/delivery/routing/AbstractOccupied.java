@@ -1,5 +1,7 @@
 package projekt.delivery.routing;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,10 +15,6 @@ abstract class AbstractOccupied<C extends Region.Component<C>> implements Vehicl
     protected final Map<VehicleImpl, VehicleStats> vehicles = new HashMap<>();
     private final Collection<Vehicle> unmodifiableVehicles =
         Collections.unmodifiableCollection(vehicles.keySet());
-    /**
-     * Whether this node was modified in this tick.
-     */
-    boolean dirty;
 
     AbstractOccupied(C component, VehicleManager vehicleManager) {
         this.component = component;
@@ -42,15 +40,11 @@ abstract class AbstractOccupied<C extends Region.Component<C>> implements Vehicl
 
     abstract void addVehicle(VehicleImpl vehicle);
 
-    void removeVehicle(Vehicle vehicle) {
-
-    }
-
     protected static class VehicleStats {
         final LocalDateTime arrived;
-        final VehicleManager.Occupied<?> previous;
+        final @Nullable VehicleManager.Occupied<?> previous;
 
-        public VehicleStats(LocalDateTime arrived, VehicleManager.Occupied<?> previous) {
+        public VehicleStats(LocalDateTime arrived, @Nullable VehicleManager.Occupied<?> previous) {
             this.arrived = arrived;
             this.previous = previous;
         }

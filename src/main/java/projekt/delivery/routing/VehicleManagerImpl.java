@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 import projekt.base.DistanceCalculator;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.EventBus;
+import projekt.delivery.event.SpawnEvent;
 import projekt.food.FoodType;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class VehicleManagerImpl implements VehicleManager {
 
@@ -25,8 +27,7 @@ class VehicleManagerImpl implements VehicleManager {
     final Map<Region.Edge, OccupiedEdgeImpl> occupiedEdges;
     private final DistanceCalculator distanceCalculator;
     private final PathCalculator pathCalculator;
-    private final Predicate<? super Occupied<Region.Node>> defaultNodePredicate;
-    private final OccupiedNodeImpl defaultNode;
+    private final OccupiedWarehouseImpl warehouse;
     private final List<VehicleImpl> vehicles = new ArrayList<>();
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
     private final Set<AbstractOccupied<?>> allOccupied;
@@ -38,21 +39,22 @@ class VehicleManagerImpl implements VehicleManager {
         Region region,
         DistanceCalculator distanceCalculator,
         PathCalculator pathCalculator,
-        Predicate<? super Occupied<Region.Node>> defaultNodePredicate
+        Region.Node warehouse
     ) {
         this.region = region;
         this.distanceCalculator = distanceCalculator;
         this.pathCalculator = pathCalculator;
-        this.defaultNodePredicate = defaultNodePredicate;
+        this.warehouse = new OccupiedWarehouseImpl(warehouse, this);
         occupiedNodes = toOccupiedNodes(region.getNodes());
         occupiedEdges = toOccupiedEdges(region.getEdges());
         allOccupied = getAllOccupied();
-        defaultNode = findNode(defaultNodePredicate);
     }
 
     private Map<Region.Node, OccupiedNodeImpl> toOccupiedNodes(Collection<Region.Node> nodes) {
         return nodes.stream()
-            .map(node -> new OccupiedNodeImpl(node, this))
+            .map(node -> node.equals(warehouse.getComponent())
+                ? warehouse
+                : new OccupiedNodeImpl(node, this))
             .collect(Collectors.toUnmodifiableMap(Occupied::getComponent, Function.identity()));
     }
 
@@ -92,25 +94,27 @@ class VehicleManagerImpl implements VehicleManager {
     }
 
     @Override
-    public Vehicle addVehicle(
+    public OccupiedWarehouseImpl getWarehouse() {
+        return warehouse;
+    }
+
+    Vehicle addVehicle(
         double capacity,
         Collection<FoodType<?, ?>> compatibleFoodTypes,
         @Nullable Predicate<? super Occupied<Region.Node>> nodePredicate
     ) {
         final OccupiedNodeImpl occupied;
         if (nodePredicate == null) {
-            occupied = defaultNode;
+            occupied = warehouse;
         } else {
             occupied = findNode(nodePredicate);
         }
         final VehicleImpl vehicle = new VehicleImpl(vehicles.size(), capacity, compatibleFoodTypes, occupied, this);
         vehicles.add(vehicle);
+        occupied.vehicles.put(vehicle, new AbstractOccupied.VehicleStats(currentTime, null));
+        vehicle.setOccupied(occupied);
+        getEventBus().queuePost(SpawnEvent.of(currentTime, vehicle, occupied.getComponent()));
         return vehicle;
-    }
-
-    @Override
-    public Vehicle addVehicle(double capacity, Collection<FoodType<?, ?>> compatibleFoodTypes) {
-        return addVehicle(capacity, compatibleFoodTypes, null);
     }
 
     @Override
@@ -155,24 +159,15 @@ class VehicleManagerImpl implements VehicleManager {
     @Override
     public void tick() {
         currentTime = currentTime.plusMinutes(1);
-        tickOccupied(occupiedEdges, false);
-        tickOccupied(occupiedNodes, false);
+        // It is important that nodes are ticked before edges
+        // This only works because edge ticking is idempotent
+        // Otherwise, there may be two state changes in a single tick.
+        // For example, a node tick may move a vehicle onto an edge.
+        // Ticking this edge afterwards does not move the vehicle further along the edge
+        // compared to a vehicle already on the edge.
+        occupiedNodes.values().forEach(AbstractOccupied::tick);
+        occupiedEdges.values().forEach(AbstractOccupied::tick);
         final List<Event> events = eventBus.popEvents(currentTime);
-    }
-
-    private <C extends Region.Component<C>, O extends AbstractOccupied<C>> void tickOccupied(Map<C, O> occupied,
-                                                                                             boolean onlyIfDirty) {
-        boolean ticked = false;
-        for (Map.Entry<C, O> entry : occupied.entrySet()) {
-            if (!onlyIfDirty || entry.getValue().dirty) {
-                entry.getValue().dirty = false;
-                entry.getValue().tick();
-                ticked = true;
-            }
-        }
-        if (ticked) {
-            tickOccupied(occupied, true);
-        }
     }
 
     @Override

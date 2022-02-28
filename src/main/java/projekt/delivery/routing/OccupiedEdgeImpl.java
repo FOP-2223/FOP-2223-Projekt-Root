@@ -15,7 +15,6 @@ class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
     void tick() {
         final LocalDateTime currentTime = vehicleManager.getCurrentTime();
         // it is important to create a copy here. The move method in vehicle will probably modify this map
-        // TODO: Only move things that can be moved
         for (Map.Entry<VehicleImpl, VehicleStats> entry : List.copyOf(vehicles.entrySet())) {
             if (entry.getValue().arrived.plus(component.getDuration()).isAfter(currentTime)) {
                 entry.getKey().move();
@@ -25,6 +24,9 @@ class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
 
     @Override
     void addVehicle(VehicleImpl vehicle) {
+        if (vehicles.containsKey(vehicle)) {
+            return;
+        }
         final VehicleManager.Occupied<?> previous = vehicle.getOccupied();
         if (previous instanceof OccupiedEdgeImpl) {
             throw new AssertionError("Vehicle " + vehicle.getId() + " cannot move directly from edge to edge");
@@ -43,6 +45,5 @@ class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
                 previousNode.getComponent()
             )
         );
-        dirty = true;
     }
 }
