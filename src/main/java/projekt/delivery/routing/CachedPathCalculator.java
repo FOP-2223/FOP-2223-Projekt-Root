@@ -43,6 +43,8 @@ public class CachedPathCalculator implements PathCalculator {
             iterator.remove();
         }
 
+        // Update access order if the element already exists
+        accessOrder.remove(tuple);
         accessOrder.add(tuple);
         cache.put(tuple, path);
         return path;
