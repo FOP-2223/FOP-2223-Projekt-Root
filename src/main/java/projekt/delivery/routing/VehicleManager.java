@@ -2,6 +2,7 @@ package projekt.delivery.routing;
 
 import projekt.base.DistanceCalculator;
 import projekt.base.Location;
+import projekt.delivery.ConfirmedOrder;
 import projekt.delivery.event.EventBus;
 import projekt.food.FoodType;
 
@@ -57,6 +58,10 @@ public interface VehicleManager {
         static <RC extends Region.Component<RC>> Predicate<? super Occupied<RC>> named(String name) {
             return c -> c.getComponent().getName().equals(name);
         }
+    }
+
+    interface Warehouse extends Occupied<Region.Node> {
+        void loadOrder(Vehicle vehicle, ConfirmedOrder order);
     }
 
     interface Factory {
