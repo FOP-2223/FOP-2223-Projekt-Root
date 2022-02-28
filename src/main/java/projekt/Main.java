@@ -5,11 +5,11 @@ import projekt.base.Location;
 import projekt.delivery.DeliveryService;
 import projekt.delivery.Simulation;
 import projekt.delivery.SimulationConfig;
+import projekt.delivery.rating.LinearRater;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
 import projekt.gui.MainFrame;
 import projekt.pizzeria.Pizzeria;
-import projekt.rating.LinearRater;
 
 import java.time.Duration;
 
@@ -38,7 +38,7 @@ public class Main {
 
         // // layer 2
 
-         VehicleManager vehicleManager = VehicleManager.SIMPLE.create(region, new EuclideanDistanceCalculator());
+         VehicleManager vehicleManager = VehicleManager.SIMPLE.create(region, new EuclideanDistanceCalculator(), null);
 
         // // layer 3
 
