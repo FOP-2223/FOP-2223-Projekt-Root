@@ -1,10 +1,13 @@
 package projekt;
 
+import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
+import projekt.delivery.routing.DijkstraPathCalculator;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Main {
 
@@ -27,7 +30,13 @@ public class Main {
 
         // layer 2
 
-        VehicleManager vehicleManager = VehicleManager.SIMPLE.create(region, new EuclideanDistanceCalculator());
+        VehicleManager vehicleManager = VehicleManager.builder()
+            .time(LocalDateTime.now())
+            .region(region)
+            .distanceCalculator(new EuclideanDistanceCalculator())
+            .pathCalculator(new DijkstraPathCalculator())
+            .warehouse(region.getNode(new Location(-2, -2)))
+            .build();
 
         Region.Edge e = region.getEdge(new Location(2, 2), new Location(1, 3));
         VehicleManager.Occupied<Region.Edge> o = vehicleManager.getOccupied(e);

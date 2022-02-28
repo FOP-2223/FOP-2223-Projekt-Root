@@ -7,6 +7,7 @@ import projekt.food.FoodType;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 class VehicleManagerBuilderImpl implements VehicleManager.Builder {
@@ -68,7 +69,15 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
 
     @Override
     public VehicleManager build() {
-        VehicleManagerImpl vehicleManager = new VehicleManagerImpl(region, distanceCalculator, pathCalculator, warehouse);
+        Objects.requireNonNull(time, "time");
+        Objects.requireNonNull(region, "region");
+        Objects.requireNonNull(distanceCalculator, "distanceCalculator");
+        Objects.requireNonNull(pathCalculator, "pathCalculator");
+        Objects.requireNonNull(warehouse, "warehouse");
+        if (!warehouse.getRegion().equals(region)) {
+            throw new IllegalArgumentException(String.format("Warehouse %s is not in region %s", warehouse, region));
+        }
+        VehicleManagerImpl vehicleManager = new VehicleManagerImpl(time, region, distanceCalculator, pathCalculator, warehouse);
         for (VehicleBuilder vehicleBuilder : vehicles) {
             vehicleManager.addVehicle(vehicleBuilder.capacity, vehicleBuilder.compatibleFoodTypes, vehicleBuilder.nodePredicate);
         }

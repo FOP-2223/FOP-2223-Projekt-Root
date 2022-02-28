@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 class VehicleManagerImpl implements VehicleManager {
 
+    private LocalDateTime currentTime;
     private final Region region;
     final Map<Region.Node, OccupiedNodeImpl> occupiedNodes;
     final Map<Region.Edge, OccupiedEdgeImpl> occupiedEdges;
@@ -33,14 +34,14 @@ class VehicleManagerImpl implements VehicleManager {
     private final Set<AbstractOccupied<?>> allOccupied;
     private final EventBus eventBus = new EventBus();
 
-    private LocalDateTime currentTime = LocalDateTime.now(); // TODO: Initialize properly
-
     VehicleManagerImpl(
+        LocalDateTime currentTime,
         Region region,
         DistanceCalculator distanceCalculator,
         PathCalculator pathCalculator,
         Region.Node warehouse
     ) {
+        this.currentTime = currentTime;
         this.region = region;
         this.distanceCalculator = distanceCalculator;
         this.pathCalculator = pathCalculator;
