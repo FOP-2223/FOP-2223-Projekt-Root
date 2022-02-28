@@ -37,7 +37,7 @@ public class MainFrame extends JFrame {
      */
     private void initComponents() {
         infoPanel = new InfoPanel();
-        mapPanel = new MapPanel(region, vehicleManager, deliveryService, pizzeria);
+        mapPanel = new MapPanel(region, vehicleManager, deliveryService, pizzeria, this);
         controlsPanel = new ControlsPanel(deliveryService.getSimulationConfig());
         menuBar = new MenuBar(this);
 

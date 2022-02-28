@@ -35,10 +35,11 @@ public abstract class AbstractDeliveryService implements DeliveryService {
         while (!terminationRequested) {
             if (simulationConfig.isPaused()) {
                 try {
-                    simulationConfig.getLock().wait();
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                continue;
             }
             long tickStartTime = System.currentTimeMillis();
 

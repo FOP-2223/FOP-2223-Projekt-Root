@@ -2,14 +2,13 @@ package projekt.gui;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
 public class OrdersPanel extends JPanel {
     private JScrollPane scrollPane;
-    private JTextArea ordersArea;
+    private DefaultListModel<String> listModel = new DefaultListModel<>();
+    private JList<String> ordersArea;
     private OrdersControlPanel ordersControlPanel;
 
     public OrdersPanel() {
@@ -17,14 +16,22 @@ public class OrdersPanel extends JPanel {
     }
 
     public void initComponents() {
-        ordersArea = new JTextArea(5, 20);
+        ordersArea = new JList<>(listModel);
         scrollPane = new JScrollPane(ordersArea);
-        ordersControlPanel = new OrdersControlPanel();
+        ordersControlPanel = new OrdersControlPanel(this);
 
         setLayout(new BorderLayout(6,6));
         setBorder(new TitledBorder("Orders"));
 
         add(scrollPane, BorderLayout.CENTER);
         add(ordersControlPanel, BorderLayout.SOUTH);
+    }
+
+    void removeSelected() {
+        listModel.remove(ordersArea.getSelectedIndex());
+    }
+
+    void addOrder(String element) {
+        listModel.addElement(element);
     }
 }

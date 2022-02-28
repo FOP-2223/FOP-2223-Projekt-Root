@@ -24,4 +24,8 @@ public class DetailsPanel extends JPanel {
         // TODO: Basically everything lol
         // TODO: Replace with JTable, Add Data
     }
+
+    public JTextArea getDetailsArea() {
+        return detailsArea;
+    }
 }

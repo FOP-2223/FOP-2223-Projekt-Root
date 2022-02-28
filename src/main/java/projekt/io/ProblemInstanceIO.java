@@ -110,19 +110,20 @@ public class ProblemInstanceIO {
          */
         String[] foodData = foodString.split(" ");
 
-        return FoodType
-            .parse(foodData[0])
-            .getFoodVariants()
-            .stream()
-            .filter(currentFoodVariant -> currentFoodVariant.getName().equals(foodData[1]))
-            .findAny()
-            .orElseThrow()
-            .create(
-                Arrays
-                    .stream(foodData[2].split("\\|"))
-                    .map(s -> (Extra<? super Food.Config>) Extras.ALL.get(s))
-                    .collect(Collectors.toList())
-            );
+//        return FoodType
+//            .parse(foodData[0])
+//            .getFoodVariants()
+//            .stream()
+//            .filter(currentFoodVariant -> currentFoodVariant.getName().equals(foodData[1]))
+//            .findAny()
+//            .orElseThrow()
+//            .create(
+//                Arrays
+//                    .stream(foodData[2].split("\\|"))
+//                    .map(s -> (Extra<? super Food.Config>) Extras.ALL.get(s))
+//                    .collect(Collectors.toList())
+//            );
+        return null;
     }
 
     private static String serializeOrder(ConfirmedOrder order) {

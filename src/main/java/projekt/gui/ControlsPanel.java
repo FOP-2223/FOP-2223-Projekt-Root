@@ -20,6 +20,7 @@ public class ControlsPanel extends JPanel {
     private JButton stopButton;
     private JSlider tickIntervalSlider;
     private JLabel tickIntervalSliderLabel;
+    private JLabel mousePositionLabel;
     private SimulationConfig simulationConfig;
     private boolean paused = false;
 
@@ -29,7 +30,7 @@ public class ControlsPanel extends JPanel {
     }
 
     private void initComponents() {
-        setLayout(new GridLayout(1, 5, 6, 6));
+        setLayout(new GridLayout(1, 6, 6, 6));
         setBorder(new TitledBorder("Controls"));
         // setBorder(new CompoundBorder(new TitledBorder("Controls"), new
         // EmptyBorder(12, 0, 0, 0))); // More space up top
@@ -38,16 +39,23 @@ public class ControlsPanel extends JPanel {
         singleStepButton = new JButton();
         tickIntervalSlider = new JSlider();
         tickIntervalSliderLabel = new JLabel();
+        mousePositionLabel = new JLabel();
 
         playPauseButton.setFont(new Font("Dialog", 0, 16)); // NOI18N
         playPauseButton.setText("Play / Pause");
-        playPauseButton.addActionListener(actionEvent -> simulationConfig.setPaused(paused = !paused));
+        playPauseButton.addActionListener(actionEvent -> {
+            simulationConfig.setPaused(paused = !paused);
+            singleStepButton.setEnabled(paused);
+            updateText();
+        });
 
         stopButton.setFont(new Font("Dialog", 0, 16)); // NOI18N
         stopButton.setText("Stop");
+        stopButton.setEnabled(false);
 
         singleStepButton.setFont(new Font("Dialog", 0, 16)); // NOI18N
         singleStepButton.setText("Single step");
+        singleStepButton.setEnabled(false);
         singleStepButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -63,15 +71,30 @@ public class ControlsPanel extends JPanel {
         tickIntervalSlider.setSnapToTicks(true);
         tickIntervalSlider.addChangeListener(changeEvent -> {
             simulationConfig.setMillisecondsPerTick(-50 * tickIntervalSlider.getValue() + 600);
-            tickIntervalSliderLabel.setText("Tick interval: %d ms".formatted(-50 * tickIntervalSlider.getValue() + 600));
+            updateText();
         });
 
-        tickIntervalSliderLabel.setText("Tick interval: %d ms".formatted(-50 * tickIntervalSlider.getValue() + 600));
+        updateText();
 
         add(playPauseButton);
         add(stopButton);
         add(singleStepButton);
         add(tickIntervalSlider);
         add(tickIntervalSliderLabel);
+        add(mousePositionLabel);
+    }
+
+    private void updateText() {
+        tickIntervalSliderLabel.setText(
+            String.format(
+                "Tick interval: %d ms %s",
+                -50 * tickIntervalSlider.getValue() + 600,
+                paused ? "(paused)" : ""
+            )
+        );
+    }
+
+    public JLabel getMousePositionLabel() {
+        return mousePositionLabel;
     }
 }

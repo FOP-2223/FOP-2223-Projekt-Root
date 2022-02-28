@@ -8,6 +8,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
@@ -19,10 +22,13 @@ import projekt.delivery.routing.VehicleManager;
 import projekt.pizzeria.Pizzeria;
 
 public class MapPanel extends JPanel {
-    private Region region;
-    private VehicleManager vehicleManager;
-    private DeliveryService deliveryService;
-    private Pizzeria pizzeria;
+    private final Region region;
+    private final VehicleManager vehicleManager;
+    private final DeliveryService deliveryService;
+    private final Pizzeria pizzeria;
+
+    private final MainFrame mainFrame;
+    private final Map<Location, String> nodes;
 
     private Point anchorPoint;
     private Point centerLocation = new Point(0, 0);
@@ -31,17 +37,31 @@ public class MapPanel extends JPanel {
 
     private static final double NODE_DIAMETER = 1;
 
-    public MapPanel(Region region, VehicleManager vehicleManager, DeliveryService deliveryService, Pizzeria pizzeria) {
+    public MapPanel(Region region,
+                    VehicleManager vehicleManager,
+                    DeliveryService deliveryService,
+                    Pizzeria pizzeria,
+                    MainFrame mainFrame) {
         this.region = region;
         this.vehicleManager = vehicleManager;
         this.deliveryService = deliveryService;
         this.pizzeria = pizzeria;
+        this.mainFrame = mainFrame;
+
+        nodes = region.getNodes().stream().collect(Collectors.toMap(Region.Node::getLocation, Region.Component::getName));
+
         initComponents();
     }
 
     private void initComponents() {
         setBackground(Color.BLACK);
         setBorder(new TitledBorder("Map"));
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+            }
+        });
         this.addMouseMotionListener(new MouseAdapter() {
 
             @Override
@@ -66,8 +86,20 @@ public class MapPanel extends JPanel {
 
                 // save current cursor position, used by mouseDragged()
                 anchorPoint = p;
+                Point mapCoordinates = new Point((int) ((anchorPoint.x - getBounds().getCenterX()) / scale),
+                    (int) ((anchorPoint.y - getBounds().getCenterY()) / scale));
+                mainFrame.getControlsPanel().getMousePositionLabel().setText(
+                    String.format("(x: %d, y: %d)", mapCoordinates.x, mapCoordinates.y));
+                mainFrame.getInfoPanel().getDetailsPanel().getDetailsArea().setText(
+                    nodes.entrySet()
+                        .stream()
+                        .filter(entry -> entry.getKey().equals(new Location(mapCoordinates.x, mapCoordinates.y)))
+                        .map(Map.Entry::getValue)
+                        .findAny()
+                        .orElse("")
+                );
 
-                // TODO: Check if mouse makes contact with Node and display info Menu
+                // TODO: Fix position at which the node is displayed in the details panel
             }
         });
         this.addMouseWheelListener(event -> {
@@ -331,22 +363,20 @@ public class MapPanel extends JPanel {
     }
 
     public void setScale(double scale) {
-        this.scale = scale;
+        this.scale = Math.max(10d, Math.min(100, scale));
         repaint();
     }
 
     public void increaseScale() {
-        this.scale *= 1d + scaleModifierFactor;
-        repaint();
+        setScale(this.scale * (1d + scaleModifierFactor));
     }
 
     public void decreaseScale() {
-        this.scale *= 1d - scaleModifierFactor;
-        repaint();
+        setScale(this.scale * (1d - scaleModifierFactor));
     }
 
     public void resetScale() {
-        this.scale = 1d;
+        this.scale = 10d;
         repaint();
     }
 
