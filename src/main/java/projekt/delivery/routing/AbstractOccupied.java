@@ -48,9 +48,11 @@ abstract class AbstractOccupied<C extends Region.Component<C>> implements Vehicl
 
     protected static class VehicleStats {
         final LocalDateTime arrived;
+        final VehicleManager.Occupied<?> previous;
 
-        public VehicleStats(LocalDateTime arrived) {
+        public VehicleStats(LocalDateTime arrived, VehicleManager.Occupied<?> previous) {
             this.arrived = arrived;
+            this.previous = previous;
         }
     }
 
