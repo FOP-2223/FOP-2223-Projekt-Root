@@ -1,5 +1,7 @@
 package projekt.delivery.routing;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -160,7 +162,7 @@ public class DijkstraPathCalculator implements PathCalculator {
         }
 
         @Override
-        public int compareTo(DijkstraPathCalculator.DijkstraNode o) {
+        public int compareTo(@NotNull DijkstraNode o) {
             // If the weight is infinite, it is always greater than any other weight or equal to it
             if (this.duration == null) {
                 // If both weights are infinite
