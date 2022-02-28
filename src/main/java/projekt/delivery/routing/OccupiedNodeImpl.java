@@ -31,7 +31,7 @@ class OccupiedNodeImpl extends AbstractOccupied<Region.Node> {
             throw new AssertionError("Vehicle " + vehicle.getId() + " was not found in previous edge");
         }
         final LocalDateTime currentTime = vehicleManager.getCurrentTime();
-        vehicles.put(vehicle, new VehicleStats(currentTime));
+        vehicles.put(vehicle, new VehicleStats(currentTime, previous));
         vehicle.setOccupied(this);
         vehicleManager.getEventBus().queuePost(ArrivedAtNodeEvent.of(
                 currentTime,
