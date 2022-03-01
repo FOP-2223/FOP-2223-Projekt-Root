@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-abstract class AbstractOccupied<C extends Region.Component<C>> implements VehicleManager.Occupied<C> {
+abstract class AbstractOccupied<C extends Region.Component<? super C>> implements VehicleManager.Occupied<C> {
 
     protected final C component;
     protected final VehicleManager vehicleManager;
@@ -48,12 +48,5 @@ abstract class AbstractOccupied<C extends Region.Component<C>> implements Vehicl
             this.arrived = arrived;
             this.previous = previous;
         }
-    }
-
-    interface VehicleMutator {
-        /**
-         * @return True if
-         */
-        boolean removeFromLast();
     }
 }

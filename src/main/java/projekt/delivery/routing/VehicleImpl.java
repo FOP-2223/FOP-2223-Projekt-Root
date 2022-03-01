@@ -92,7 +92,7 @@ class VehicleImpl implements Vehicle {
         } else {
             Region.Node next = path.getNodes().peek();
             if (occupied instanceof OccupiedNodeImpl) {
-                vehicleManager.getOccupied(region.getEdge(((OccupiedNodeImpl) occupied).getComponent(), next)).addVehicle(this);
+                vehicleManager.getOccupied(region.getEdge(((OccupiedNodeImpl<?>) occupied).getComponent(), next)).addVehicle(this);
             } else if (occupied instanceof OccupiedEdgeImpl) {
                 vehicleManager.getOccupied(next).addVehicle(this);
                 path.getNodes().pop();

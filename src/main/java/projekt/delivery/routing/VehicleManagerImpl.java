@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -24,7 +25,7 @@ class VehicleManagerImpl implements VehicleManager {
 
     private LocalDateTime currentTime;
     private final Region region;
-    final Map<Region.Node, OccupiedNodeImpl> occupiedNodes;
+    final Map<Region.Node, OccupiedNodeImpl<Region.Node>> occupiedNodes;
     final Map<Region.Edge, OccupiedEdgeImpl> occupiedEdges;
     private final DistanceCalculator distanceCalculator;
     private final PathCalculator pathCalculator;
@@ -51,11 +52,11 @@ class VehicleManagerImpl implements VehicleManager {
         allOccupied = getAllOccupied();
     }
 
-    private Map<Region.Node, OccupiedNodeImpl> toOccupiedNodes(Collection<Region.Node> nodes) {
+    private Map<Region.Node, OccupiedNodeImpl<Region.Node>> toOccupiedNodes(Collection<Region.Node> nodes) {
         return nodes.stream()
             .map(node -> node.equals(warehouse.getComponent())
                 ? warehouse
-                : new OccupiedNodeImpl(node, this))
+                : new OccupiedNodeImpl<>(node, this))
             .collect(Collectors.toUnmodifiableMap(Occupied::getComponent, Function.identity()));
     }
 
@@ -72,7 +73,7 @@ class VehicleManagerImpl implements VehicleManager {
         return Collections.unmodifiableSet(result);
     }
 
-    private OccupiedNodeImpl findNode(Predicate<? super Occupied<Region.Node>> nodePredicate) {
+    private OccupiedNodeImpl<?> findNode(Predicate<? super Occupied<? extends Region.Node>> nodePredicate) {
         return occupiedNodes.values().stream()
             .filter(nodePredicate)
             .findFirst()
@@ -102,9 +103,9 @@ class VehicleManagerImpl implements VehicleManager {
     Vehicle addVehicle(
         double capacity,
         Collection<FoodType<?, ?>> compatibleFoodTypes,
-        @Nullable Predicate<? super Occupied<Region.Node>> nodePredicate
+        @Nullable Predicate<? super Occupied<? extends Region.Node>> nodePredicate
     ) {
-        final OccupiedNodeImpl occupied;
+        final OccupiedNodeImpl<?> occupied;
         if (nodePredicate == null) {
             occupied = warehouse;
         } else {
@@ -121,6 +122,7 @@ class VehicleManagerImpl implements VehicleManager {
     @Override
     @SuppressWarnings("unchecked")
     public <C extends Region.Component<C>> AbstractOccupied<C> getOccupied(C component) {
+        Objects.requireNonNull(component, "component");
         if (component instanceof Region.Node) {
             final @Nullable AbstractOccupied<C> result = (AbstractOccupied<C>) occupiedNodes.get(component);
             if (result == null) {

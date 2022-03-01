@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-class OccupiedNodeImpl extends AbstractOccupied<Region.Node> {
-    OccupiedNodeImpl(Region.Node component, VehicleManager vehicleManager) {
+class OccupiedNodeImpl<C extends Region.Node> extends AbstractOccupied<C> {
+    OccupiedNodeImpl(C component, VehicleManager vehicleManager) {
         super(component, vehicleManager);
     }
 

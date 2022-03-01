@@ -54,7 +54,7 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     public VehicleManager.Builder addVehicle(
         double capacity,
         Collection<FoodType<?, ?>> compatibleFoodTypes,
-        @Nullable Predicate<? super VehicleManager.Occupied<Region.Node>> nodePredicate
+        @Nullable Predicate<? super VehicleManager.Occupied<? extends Region.Node>> nodePredicate
     ) {
         if (capacity <= 0) {
             throw new IllegalArgumentException("Capacity must be positive");
@@ -88,12 +88,12 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     private static class VehicleBuilder {
         private double capacity;
         private Collection<FoodType<?, ?>> compatibleFoodTypes;
-        private @Nullable Predicate<? super VehicleManager.Occupied<Region.Node>> nodePredicate;
+        private @Nullable Predicate<? super VehicleManager.Occupied<? extends Region.Node>> nodePredicate;
 
         private VehicleBuilder(
             double capacity,
             Collection<FoodType<?, ?>> compatibleFoodTypes,
-            @Nullable Predicate<? super VehicleManager.Occupied<Region.Node>> nodePredicate
+            @Nullable Predicate<? super VehicleManager.Occupied<? extends Region.Node>> nodePredicate
         ) {
             this.capacity = capacity;
             this.compatibleFoodTypes = compatibleFoodTypes;

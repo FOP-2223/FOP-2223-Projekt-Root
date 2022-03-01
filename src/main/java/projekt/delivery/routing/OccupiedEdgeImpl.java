@@ -31,7 +31,7 @@ class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
         if (previous instanceof OccupiedEdgeImpl) {
             throw new AssertionError("Vehicle " + vehicle.getId() + " cannot move directly from edge to edge");
         }
-        final OccupiedNodeImpl previousNode = (OccupiedNodeImpl) previous;
+        final OccupiedNodeImpl<?> previousNode = (OccupiedNodeImpl) previous;
         if (previousNode.vehicles.remove(vehicle) == null) {
             throw new AssertionError("Vehicle " + vehicle.getId() + " was not found in previous node");
         }

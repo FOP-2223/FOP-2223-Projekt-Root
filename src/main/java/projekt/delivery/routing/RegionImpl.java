@@ -33,11 +33,16 @@ class RegionImpl implements Region {
 
     @Override
     public @Nullable Edge getEdge(Location locationA, Location locationB) {
-        if (locationA.compareTo(locationB) < 0) {
-            return edges.get(locationA).get(locationB);
-        } else {
-            return edges.get(locationB).get(locationA);
+        if (locationA.compareTo(locationB) > 0) {
+            Location temp = locationA;
+            locationA = locationB;
+            locationB = temp;
         }
+        final @Nullable Map<Location, EdgeImpl> firstDim = edges.get(locationA);
+        if (firstDim == null) {
+            return null;
+        }
+        return firstDim.get(locationB);
     }
 
     void putEdge(EdgeImpl edge) {

@@ -39,7 +39,7 @@ public interface VehicleManager {
 
     void tick();
 
-    interface Occupied<C extends Region.Component<C>> {
+    interface Occupied<C extends Region.Component<? super C>> {
 
         C getComponent();
 
@@ -56,6 +56,10 @@ public interface VehicleManager {
         void loadOrder(Vehicle vehicle, ConfirmedOrder order);
     }
 
+    interface OccupiedNeighborhood extends Occupied<Region.Neighborhood> {
+        void deliverOrder(Vehicle vehicle, ConfirmedOrder order);
+    }
+
     interface Builder {
         Builder time(LocalDateTime time);
 
@@ -70,7 +74,7 @@ public interface VehicleManager {
         Builder addVehicle(
             double capacity,
             Collection<FoodType<?, ?>> compatibleFoodTypes,
-            @Nullable Predicate<? super Occupied<Region.Node>> nodePredicate
+            @Nullable Predicate<? super Occupied<? extends Region.Node>> nodePredicate
         );
 
         Builder addVehicle(

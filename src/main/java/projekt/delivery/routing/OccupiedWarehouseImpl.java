@@ -2,7 +2,7 @@ package projekt.delivery.routing;
 
 import projekt.delivery.ConfirmedOrder;
 
-class OccupiedWarehouseImpl extends OccupiedNodeImpl implements VehicleManager.Warehouse {
+class OccupiedWarehouseImpl extends OccupiedNodeImpl<Region.Node> implements VehicleManager.Warehouse {
 
     OccupiedWarehouseImpl(Region.Node component, VehicleManager vehicleManager) {
         super(component, vehicleManager);
