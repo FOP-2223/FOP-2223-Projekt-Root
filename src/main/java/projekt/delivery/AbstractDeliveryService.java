@@ -35,6 +35,7 @@ public abstract class AbstractDeliveryService implements DeliveryService {
         while (!terminationRequested) {
             if (simulationConfig.isPaused()) {
                 try {
+                    //noinspection BusyWait
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
