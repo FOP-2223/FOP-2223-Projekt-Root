@@ -84,8 +84,12 @@ class EdgeImpl implements Region.Edge {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         EdgeImpl edge = (EdgeImpl) o;
         return Objects.equals(name, edge.name)
             && Objects.equals(locationA, edge.locationA)

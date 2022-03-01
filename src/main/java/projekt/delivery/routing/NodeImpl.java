@@ -37,13 +37,8 @@ class NodeImpl implements Region.Node {
     }
 
     @Override
-    public Set<Region.Node> getAdjacentNodes() {
-        return connections.stream().map(region::getNode).collect(Collectors.toSet());
-    }
-
-    @Override
-    public Set<Region.Edge> getAdjacentEdges() {
-        return connections.stream().map(c -> region.getEdge(getLocation(), c)).collect(Collectors.toSet());
+    public Location getLocation() {
+        return location;
     }
 
     @Override
@@ -52,8 +47,13 @@ class NodeImpl implements Region.Node {
     }
 
     @Override
-    public Location getLocation() {
-        return location;
+    public Set<Region.Node> getAdjacentNodes() {
+        return connections.stream().map(region::getNode).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<Region.Edge> getAdjacentEdges() {
+        return connections.stream().map(c -> region.getEdge(getLocation(), c)).collect(Collectors.toSet());
     }
 
     @Override

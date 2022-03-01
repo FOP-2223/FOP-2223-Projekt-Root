@@ -43,22 +43,22 @@ public interface Region {
 
     interface Node extends Component<Node> {
 
-        Set<Node> getAdjacentNodes();
-
-        Set<Edge> getAdjacentEdges();
+        Location getLocation();
 
         @Nullable Edge getEdge(Node other);
 
-        Location getLocation();
+        Set<Node> getAdjacentNodes();
+
+        Set<Edge> getAdjacentEdges();
     }
 
     interface Edge extends Component<Edge> {
 
+        Duration getDuration();
+
         Node getNodeA();
 
         Node getNodeB();
-
-        Duration getDuration();
     }
 
     interface Neighborhood extends Node {
