@@ -27,11 +27,15 @@ class NeighborhoodImpl extends NodeImpl implements Region.Neighborhood {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
+        if (this == o) {
+            return true;
+        }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (!super.equals(o)) return false;
+        if (!super.equals(o)) {
+            return false;
+        }
         NeighborhoodImpl that = (NeighborhoodImpl) o;
         return Double.compare(that.distance, distance) == 0;
     }

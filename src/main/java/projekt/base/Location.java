@@ -68,11 +68,6 @@ public final class Location implements Comparable<Location> {
     }
 
     @Override
-    public String toString() {
-        return String.format("(%d, %d)", x, y);
-    }
-
-    @Override
     public int compareTo(Location o) {
         return COMPARATOR.compare(this, o);
     }
@@ -92,5 +87,10 @@ public final class Location implements Comparable<Location> {
         }
         Location location = (Location) o;
         return x == location.x && y == location.y;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("(%d, %d)", x, y);
     }
 }
