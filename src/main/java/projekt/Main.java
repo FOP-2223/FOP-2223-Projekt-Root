@@ -46,10 +46,6 @@ public class Main {
             .addVehicle(2, List.of())
             .build();
 
-        vehicleManager.getOccupied(region.getNode(new Location(-2, -2))).getVehicles().forEach(v -> {
-            v.moveQueued(region.getNode(new Location(2, 2)));
-        });
-
         // // layer 3
 
         DeliveryService deliveryService = DeliveryService.SIMPLE.create(vehicleManager, new LinearRater(), new Simulation() {
@@ -57,7 +53,7 @@ public class Main {
             public void onStateUpdated() {
 
             }
-        }, new SimulationConfig(50));
+        }, new SimulationConfig(1000));
 
         // // layer 4
 
@@ -72,6 +68,6 @@ public class Main {
             new MainFrame(region, vehicleManager, deliveryService, pizzeria).setVisible(true); // -> starts GUI thread
         });
 
-        // deliveryService.runSimulation(); // -> blocks the thread until the simulation is finished.
+        deliveryService.runSimulation(); // -> blocks the thread until the simulation is finished.
     }
 }

@@ -29,6 +29,7 @@ class VehicleManagerImpl implements VehicleManager {
     private final DistanceCalculator distanceCalculator;
     private final PathCalculator pathCalculator;
     private final OccupiedWarehouseImpl warehouse;
+    private final List<VehicleImpl> vehiclesToSpawn = new ArrayList<>();
     private final List<VehicleImpl> vehicles = new ArrayList<>();
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
     private final Set<AbstractOccupied<?>> allOccupied;
@@ -110,11 +111,15 @@ class VehicleManagerImpl implements VehicleManager {
         } else {
             occupied = findNode(nodePredicate);
         }
-        final VehicleImpl vehicle = new VehicleImpl(vehicles.size(), capacity, compatibleFoodTypes, occupied, this);
-        vehicles.add(vehicle);
-        occupied.vehicles.put(vehicle, new AbstractOccupied.VehicleStats(currentTime, null));
+        final VehicleImpl vehicle = new VehicleImpl(
+            vehicles.size() + vehiclesToSpawn.size(),
+            capacity,
+            compatibleFoodTypes,
+            occupied,
+            this
+        );
+        vehiclesToSpawn.add(vehicle);
         vehicle.setOccupied(occupied);
-        getEventBus().queuePost(SpawnEvent.of(currentTime, vehicle, occupied.getComponent()));
         return vehicle;
     }
 
@@ -158,8 +163,18 @@ class VehicleManagerImpl implements VehicleManager {
         return currentTime;
     }
 
+    private void spawnVehicle(VehicleImpl vehicle) {
+        OccupiedWarehouseImpl warehouse = (OccupiedWarehouseImpl) vehicle.getOccupied();
+        warehouse.vehicles.put(vehicle, new AbstractOccupied.VehicleStats(currentTime, null));
+        getEventBus().queuePost(SpawnEvent.of(currentTime, vehicle, warehouse.getComponent()));
+    }
+
     @Override
     public List<Event> tick() {
+        for (VehicleImpl vehicle : vehiclesToSpawn) {
+            spawnVehicle(vehicle);
+        }
+        vehiclesToSpawn.clear();
         currentTime = currentTime.plusMinutes(1);
         // It is important that nodes are ticked before edges
         // This only works because edge ticking is idempotent

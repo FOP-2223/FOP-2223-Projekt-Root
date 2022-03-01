@@ -45,6 +45,7 @@ public class EventBus {
                 .sorted(Comparator.comparing(Event::getVehicle))
                 .toList();
             log.put(time, events);
+            System.out.printf("Tick: %s - %s\n", time, events);
             queuedEvents.clear();
             return events;
         } finally {
