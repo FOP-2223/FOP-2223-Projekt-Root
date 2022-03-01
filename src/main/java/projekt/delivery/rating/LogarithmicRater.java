@@ -1,6 +1,6 @@
 package projekt.delivery.rating;
 
-import projekt.delivery.ConfirmedOrder;
+import projekt.delivery.routing.ConfirmedOrder;
 
 import java.time.Duration;
 import java.util.List;

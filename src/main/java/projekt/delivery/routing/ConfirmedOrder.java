@@ -1,4 +1,4 @@
-package projekt.delivery;
+package projekt.delivery.routing;
 
 import projekt.base.Location;
 import projekt.base.TimeInterval;

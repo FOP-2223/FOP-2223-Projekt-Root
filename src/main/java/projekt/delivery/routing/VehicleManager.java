@@ -2,7 +2,6 @@ package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
 import projekt.base.DistanceCalculator;
-import projekt.delivery.ConfirmedOrder;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.EventBus;
 import projekt.food.FoodType;

@@ -1,6 +1,6 @@
 package projekt.delivery.event;
 
-import projekt.delivery.ConfirmedOrder;
+import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 

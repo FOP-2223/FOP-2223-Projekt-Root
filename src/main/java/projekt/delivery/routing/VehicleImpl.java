@@ -1,8 +1,6 @@
 package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
-import projekt.delivery.ConfirmedOrder;
-import projekt.delivery.FoodNotSupportedException;
 import projekt.food.Food;
 import projekt.food.FoodType;
 

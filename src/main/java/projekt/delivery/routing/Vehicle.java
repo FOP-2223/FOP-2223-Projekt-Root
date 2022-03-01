@@ -1,7 +1,5 @@
 package projekt.delivery.routing;
 
-import projekt.delivery.ConfirmedOrder;
-import projekt.delivery.FoodNotSupportedException;
 import projekt.food.FoodType;
 
 import java.util.Collection;

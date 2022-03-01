@@ -1,6 +1,6 @@
 package projekt.pizzeria;
 
-import projekt.delivery.ConfirmedOrder;
+import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.DeliveryService;
 import projekt.food.Food;
 import projekt.food.Pizza;

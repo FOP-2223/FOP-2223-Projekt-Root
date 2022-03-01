@@ -1,6 +1,5 @@
 package projekt.delivery.routing;
 
-import projekt.delivery.ConfirmedOrder;
 import projekt.delivery.event.ArrivedAtWarehouseEvent;
 import projekt.delivery.event.LoadOrderEvent;
 
