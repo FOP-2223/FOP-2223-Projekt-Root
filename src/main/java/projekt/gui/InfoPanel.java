@@ -1,9 +1,8 @@
 package projekt.gui;
 
+import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-
-import javax.swing.JPanel;
 
 public class InfoPanel extends JPanel {
     private DetailsPanel detailsPanel;

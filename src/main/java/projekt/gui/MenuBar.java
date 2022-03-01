@@ -1,8 +1,7 @@
 package projekt.gui;
 
-import java.awt.event.ActionEvent;
-
 import javax.swing.JMenuBar;
+import java.awt.event.ActionEvent;
 
 public class MenuBar extends JMenuBar {
 

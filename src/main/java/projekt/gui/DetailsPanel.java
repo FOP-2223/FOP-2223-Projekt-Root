@@ -1,11 +1,10 @@
 package projekt.gui;
 
-import java.awt.BorderLayout;
-
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
+import java.awt.BorderLayout;
 
 public class DetailsPanel extends JPanel {
     private JScrollPane scrollPane;

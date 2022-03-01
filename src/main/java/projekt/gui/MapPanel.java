@@ -1,6 +1,24 @@
 package projekt.gui;
 
-import java.awt.*;
+import com.google.common.io.Resources;
+import projekt.base.Location;
+import projekt.delivery.DeliveryService;
+import projekt.delivery.routing.Region;
+import projekt.delivery.routing.VehicleManager;
+import projekt.pizzeria.Pizzeria;
+
+import javax.swing.JPanel;
+import javax.swing.border.TitledBorder;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
@@ -8,19 +26,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-
-import com.google.common.io.Resources;
-import projekt.base.Location;
-import projekt.delivery.DeliveryService;
-import projekt.delivery.routing.Region;
-import projekt.delivery.routing.VehicleManager;
-import projekt.pizzeria.Pizzeria;
 
 import static java.awt.Toolkit.getDefaultToolkit;
 
@@ -78,7 +85,7 @@ public class MapPanel extends JPanel {
                 Point parentOnScreen = getParent().getLocationOnScreen();
                 Point mouseOnScreen = event.getLocationOnScreen();
                 Point position = new Point(mouseOnScreen.x - parentOnScreen.x - anchorX,
-                        mouseOnScreen.y - parentOnScreen.y - anchorY);
+                    mouseOnScreen.y - parentOnScreen.y - anchorY);
                 // setLocation(position);
                 // TODO: Fix Mouse Movent always calculating from center
                 setCenterLocation(position);
@@ -153,7 +160,7 @@ public class MapPanel extends JPanel {
         return AffineTransform.getTranslateInstance(
                 x - s.getBounds2D().getCenterX(),
                 y - s.getBounds2D().getCenterY())
-                .createTransformedShape(s);
+            .createTransformedShape(s);
     }
 
     public Shape centerShapeAtPos(Point center, Shape s) {
@@ -225,7 +232,7 @@ public class MapPanel extends JPanel {
 
         // Move
         scaleTf.translate(bounds.getCenterX() / factor - fontBounds.getCenterX(),
-                bounds.getCenterY() / factor - fontBounds.getCenterY());
+            bounds.getCenterY() / factor - fontBounds.getCenterY());
         Shape outline = tl.getOutline(scaleTf);
 
         // Restore graphics configuration
@@ -295,10 +302,10 @@ public class MapPanel extends JPanel {
         // Border
         g2d.setStroke(new BasicStroke(outerTicksWidth));
         g2d.drawRect(
-                (int) (-width / 2 - outerTicksWidth / 2),
-                (int) (-height / 2 - outerTicksWidth / 2),
-                (int) (width + outerTicksWidth),
-                (int) (height + outerTicksWidth));
+            (int) (-width / 2 - outerTicksWidth / 2),
+            (int) (-height / 2 - outerTicksWidth / 2),
+            (int) (width + outerTicksWidth),
+            (int) (height + outerTicksWidth));
 
         // Restore g2d Configuration
         g2d.setColor(oldColor);
@@ -313,20 +320,20 @@ public class MapPanel extends JPanel {
 
         var insets = getInsets();
         var innerBounds = new Rectangle(getX() + insets.left,
-                getY() + insets.top,
-                getWidth() - insets.left - insets.right,
-                getHeight() - insets.top - insets.bottom);
+            getY() + insets.top,
+            getWidth() - insets.left - insets.right,
+            getHeight() - insets.top - insets.bottom);
 
         var oldTranslation = g2d.getTransform();
         g2d.scale(scale, scale);
         g2d.translate((innerBounds.getCenterX() + centerLocation.getX()) / scale,
-                (innerBounds.getCenterY() + centerLocation.getY()) / scale);
+            (innerBounds.getCenterY() + centerLocation.getY()) / scale);
 
         paintMap(g2d, new Rectangle2D.Double(
-                -innerBounds.getWidth() / 2,
-                -innerBounds.getHeight() / 2,
-                innerBounds.getWidth(),
-                innerBounds.getHeight()));
+            -innerBounds.getWidth() / 2,
+            -innerBounds.getHeight() / 2,
+            innerBounds.getWidth(),
+            innerBounds.getHeight()));
 
         g2d.setTransform(oldTranslation);
     }
@@ -347,30 +354,29 @@ public class MapPanel extends JPanel {
         g2d.setStroke(new BasicStroke(0.3f));
         var actualNodeDiameter = NODE_DIAMETER;
         region
-                .getNodes()
-                .stream()
-                .map(Region.Node::getLocation)
-                .forEach(location -> fillAt(g2d,
-                        location.getX(),
-                        location.getY(),
-                        new Ellipse2D.Double(location.getX(), location.getY(),
-                                actualNodeDiameter,
-                                actualNodeDiameter)));
+            .getNodes()
+            .stream()
+            .map(Region.Node::getLocation)
+            .forEach(location -> fillAt(g2d,
+                location.getX(),
+                location.getY(),
+                new Ellipse2D.Double(location.getX(), location.getY(),
+                    actualNodeDiameter,
+                    actualNodeDiameter)));
         region
-                .getEdges()
-                .stream()
-                .map(edge -> new Location[] { edge.getNodeA().getLocation(), edge.getNodeB().getLocation() })
-                .forEach(locations -> {
-                    Line2D.Double line = new Line2D.Double(
-                            locations[0].getX(),
-                            locations[0].getY(),
-                            locations[1].getX(),
-                            locations[1].getY());
-                    g2d.draw(line);
-                });
+            .getEdges()
+            .stream()
+            .map(edge -> new Location[]{edge.getNodeA().getLocation(), edge.getNodeB().getLocation()})
+            .forEach(locations -> {
+                Line2D.Double line = new Line2D.Double(
+                    locations[0].getX(),
+                    locations[0].getY(),
+                    locations[1].getX(),
+                    locations[1].getY());
+                g2d.draw(line);
+            });
         vehicleManager
             .getVehicles()
-            .stream()
             .forEach(vehicle -> {
                 var component = vehicle.getOccupied().getComponent();
                 if (component instanceof Region.Node node) {

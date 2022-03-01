@@ -1,15 +1,13 @@
 package projekt.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-
-import javax.swing.JFrame;
-
 import projekt.delivery.DeliveryService;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
 import projekt.pizzeria.Pizzeria;
+
+import javax.swing.JFrame;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 public class MainFrame extends JFrame {
 

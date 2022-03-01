@@ -44,6 +44,7 @@ public interface Vehicle extends Comparable<Vehicle> {
 
     /**
      * Accessor for the vehicle manager that is responsible for movements of this vehicle
+     *
      * @return the vehicle manager that is responsible for this vehicle
      */
     VehicleManager getVehicleManager();

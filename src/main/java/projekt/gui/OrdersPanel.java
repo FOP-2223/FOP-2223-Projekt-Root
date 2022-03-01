@@ -1,9 +1,11 @@
 package projekt.gui;
 
-import java.awt.BorderLayout;
-
-import javax.swing.*;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
+import java.awt.BorderLayout;
 
 public class OrdersPanel extends JPanel {
     private JScrollPane scrollPane;
@@ -20,7 +22,7 @@ public class OrdersPanel extends JPanel {
         scrollPane = new JScrollPane(ordersArea);
         ordersControlPanel = new OrdersControlPanel(this);
 
-        setLayout(new BorderLayout(6,6));
+        setLayout(new BorderLayout(6, 6));
         setBorder(new TitledBorder("Orders"));
 
         add(scrollPane, BorderLayout.CENTER);

@@ -22,7 +22,6 @@ public class DijkstraPathCalculator implements PathCalculator {
      * @param u the first node of the edge
      * @param v the second node of the edge
      * @param w the edge between the two nodes
-     *
      * @return {@code true} if the edge was relaxed, {@code false} otherwise
      */
     private boolean relax(DijkstraNode u, DijkstraNode v, Region.Edge w) {
