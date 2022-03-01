@@ -65,26 +65,27 @@ class VehicleImpl implements Vehicle {
     public void moveQueued(Region.Node node, Consumer<? super Vehicle> arrivalAction) {
         checkMoveToNode(node);
         Region.Node startNode = null;
-        Iterator<PathImpl> it = moveQueue.descendingIterator();
+        final Iterator<PathImpl> it = moveQueue.descendingIterator();
         while (it.hasNext() && startNode == null) {
             PathImpl path = it.next();
             if (!path.getNodes().isEmpty()) {
                 startNode = path.getNodes().peekLast();
             }
         }
+        // if no queued node could be found
         if (startNode == null) {
-            if (occupied.getComponent() instanceof Region.Node) {
-                startNode = (Region.Node) occupied.getComponent();
+            if (occupied instanceof OccupiedNodeImpl<?>) {
+                startNode = ((OccupiedNodeImpl<?>) occupied).getComponent();
             } else {
                 // if a vehicle is on an edge, keep the movement to the next node
                 final @Nullable VehicleManager.Occupied<?> previousOccupied = occupied.vehicles.get(this).previous;
                 if (!(previousOccupied instanceof OccupiedNodeImpl<?>)) {
                     throw new AssertionError("Previous component must be a node");
                 }
-                Region.Node previousNode = ((OccupiedNodeImpl<?>) previousOccupied).component;
-                Region.Node nodeA = ((Region.Edge) occupied.component).getNodeA();
-                Region.Node nodeB = ((Region.Edge) occupied.component).getNodeB();
-                Region.Node nextNode = previousNode.equals(nodeA) ? nodeB : nodeA;
+                final Region.Node previousNode = ((OccupiedNodeImpl<?>) previousOccupied).component;
+                final Region.Node nodeA = ((Region.Edge) occupied.component).getNodeA();
+                final Region.Node nodeB = ((Region.Edge) occupied.component).getNodeB();
+                final Region.Node nextNode = previousNode.equals(nodeA) ? nodeB : nodeA;
                 moveQueue.add(new PathImpl(new ArrayDeque<>(Collections.singleton(nextNode)), v -> {}));
             }
         }
