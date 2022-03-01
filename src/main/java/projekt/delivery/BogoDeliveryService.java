@@ -87,7 +87,6 @@ public class BogoDeliveryService extends AbstractDeliveryService {
         do {
             node = nodes.get(random.nextInt(nodes.size()));
         } while (vehicle.getOccupied().getComponent().equals(node));
-        System.out.println("Bogo moving " + vehicle.getId() + " to " + node);
         vehicle.moveDirect(node);
     }
 }

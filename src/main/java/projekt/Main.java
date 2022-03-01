@@ -29,10 +29,15 @@ public class Main {
             .addNode("nodeB", new Location(-2, 2))
             .addNeighborhood("nodeC", new Location(2, 2), 0.5)
             .addNode("nodeD", new Location(2, -2))
-            .addEdge("edge1", new Location(-2, -2), new Location(-2, 2), Duration.ofMinutes(2))
-            .addEdge("edge2", new Location(-2, 2), new Location(2, 2), Duration.ofMinutes(2))
-            .addEdge("edge3", new Location(2, 2), new Location(2, -2), Duration.ofMinutes(2))
-            .addEdge("edge4", new Location(2, -2), new Location(-2, -2), Duration.ofMinutes(2))
+            .addNode("nodeE", new Location(5, 4))
+            .addNode("nodeF", new Location(4, -3))
+            .addEdge("edge1", new Location(-2, -2), new Location(-2, 2), Duration.ofMinutes(1))
+            .addEdge("edge2", new Location(-2, 2), new Location(2, 2), Duration.ofMinutes(1))
+            .addEdge("edge3", new Location(2, 2), new Location(2, -2), Duration.ofMinutes(1))
+            .addEdge("edge4", new Location(2, -2), new Location(-2, -2), Duration.ofMinutes(1))
+            .addEdge("edge5", new Location(2, 2), new Location(5, 4), Duration.ofMinutes(2))
+            .addEdge("edge6", new Location(2, -2), new Location(4, -3), Duration.ofMinutes(1))
+            .addEdge("edge7", new Location(4, -3), new Location(5, 4), Duration.ofMinutes(3))
             .build();
 
         // // layer 2
