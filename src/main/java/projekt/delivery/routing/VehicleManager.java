@@ -31,6 +31,8 @@ public interface VehicleManager {
     // O(1)
     <C extends Region.Component<C>> Occupied<C> getOccupied(C component);
 
+    OccupiedNeighborhood getOccupiedNeighborhood(Region.Node component);
+
     Collection<Occupied<Region.Node>> getOccupiedNodes();
 
     Collection<Occupied<Region.Edge>> getOccupiedEdges();

@@ -130,17 +130,28 @@ class VehicleManagerImpl implements VehicleManager {
         if (component instanceof Region.Node) {
             final @Nullable AbstractOccupied<C> result = (AbstractOccupied<C>) occupiedNodes.get(component);
             if (result == null) {
-                throw new IllegalArgumentException("Could not find occupied node for " + component.getName());
+                throw new IllegalArgumentException("Could not find occupied node for " + component);
             }
             return result;
         } else if (component instanceof Region.Edge) {
             final @Nullable AbstractOccupied<C> result = (AbstractOccupied<C>) occupiedEdges.get(component);
             if (result == null) {
-                throw new IllegalArgumentException("Could not find occupied edge for " + component.getName());
+                throw new IllegalArgumentException("Could not find occupied edge for " + component);
             }
             return result;
         }
         throw new IllegalArgumentException("Component is not of recognized subtype: " + component.getClass().getName());
+    }
+
+    @Override
+    public OccupiedNeighborhood getOccupiedNeighborhood(Region.Node component) {
+        Objects.requireNonNull(component, "component");
+        final @Nullable OccupiedNodeImpl<?> node = occupiedNodes.get(component);
+        if (node instanceof OccupiedNeighborhood) {
+            return (OccupiedNeighborhood) node;
+        } else {
+            throw new IllegalArgumentException("Component " + component + " is not a neighborhood");
+        }
     }
 
     @Override
