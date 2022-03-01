@@ -58,6 +58,18 @@ class VehicleImpl implements Vehicle {
     public void moveDirect(Region.Node node, Consumer<? super Vehicle> arrivalAction) {
         checkMoveToNode(node);
         moveQueue.clear();
+        if (node instanceof Region.Edge) {
+            // if a vehicle is on an edge, keep the movement to the next node
+            final @Nullable VehicleManager.Occupied<?> previousOccupied = occupied.vehicles.get(this).previous;
+            if (!(previousOccupied instanceof OccupiedNodeImpl<?>)) {
+                throw new AssertionError("Previous component must be a node");
+            }
+            final Region.Node previousNode = ((OccupiedNodeImpl<?>) previousOccupied).component;
+            final Region.Node nodeA = ((Region.Edge) occupied.component).getNodeA();
+            final Region.Node nodeB = ((Region.Edge) occupied.component).getNodeB();
+            final Region.Node nextNode = previousNode.equals(nodeA) ? nodeB : nodeA;
+            moveQueue.add(new PathImpl(new ArrayDeque<>(Collections.singleton(nextNode)), v -> {}));
+        }
         moveQueued(node, arrivalAction);
     }
 
@@ -77,16 +89,7 @@ class VehicleImpl implements Vehicle {
             if (occupied instanceof OccupiedNodeImpl<?>) {
                 startNode = ((OccupiedNodeImpl<?>) occupied).getComponent();
             } else {
-                // if a vehicle is on an edge, keep the movement to the next node
-                final @Nullable VehicleManager.Occupied<?> previousOccupied = occupied.vehicles.get(this).previous;
-                if (!(previousOccupied instanceof OccupiedNodeImpl<?>)) {
-                    throw new AssertionError("Previous component must be a node");
-                }
-                final Region.Node previousNode = ((OccupiedNodeImpl<?>) previousOccupied).component;
-                final Region.Node nodeA = ((Region.Edge) occupied.component).getNodeA();
-                final Region.Node nodeB = ((Region.Edge) occupied.component).getNodeB();
-                final Region.Node nextNode = previousNode.equals(nodeA) ? nodeB : nodeA;
-                moveQueue.add(new PathImpl(new ArrayDeque<>(Collections.singleton(nextNode)), v -> {}));
+                throw new AssertionError("It is not possible to be on an edge if the move queue is naturally empty");
             }
         }
         final Deque<Region.Node> nodes = vehicleManager.getPathCalculator().getPath(startNode, node);
