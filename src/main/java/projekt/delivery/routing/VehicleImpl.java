@@ -45,9 +45,17 @@ class VehicleImpl implements Vehicle {
     @Override
     public void moveDirect(Region.Node node) {
         moveQueue.clear();
+        // if a vehicle is on an edge, keep the movement to the next node
         if (occupied.component instanceof Region.Edge) {
+            final @Nullable VehicleManager.Occupied<?> notThisOne = occupied.vehicles.get(this).previous;
+            if (!(notThisOne instanceof OccupiedNodeImpl<?>)) {
+                throw new AssertionError("Previous component must be a node");
+            }
+            Region.Node previousNode = ((OccupiedNodeImpl<?>) notThisOne).component;
             Region.Node nodeA = ((Region.Edge) occupied.component).getNodeA();
-            moveQueue.add(new PathImpl(new ArrayDeque<>(Collections.singleton(nodeA)), v -> {}));
+            Region.Node nodeB = ((Region.Edge) occupied.component).getNodeB();
+            Region.Node nextNode = previousNode.equals(nodeA) ? nodeB : nodeA;
+            moveQueue.add(new PathImpl(new ArrayDeque<>(Collections.singleton(nextNode)), v -> {}));
         }
         moveQueued(node);
     }
