@@ -5,6 +5,7 @@ import projekt.base.DistanceCalculator;
 import projekt.food.FoodType;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -17,7 +18,7 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     private DistanceCalculator distanceCalculator;
     private PathCalculator pathCalculator;
     private Region.Node warehouse;
-    private List<VehicleBuilder> vehicles;
+    private final List<VehicleBuilder> vehicles = new ArrayList<>();
 
     @Override
     public VehicleManager.Builder time(LocalDateTime time) {
