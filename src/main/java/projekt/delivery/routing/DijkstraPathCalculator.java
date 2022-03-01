@@ -1,6 +1,7 @@
 package projekt.delivery.routing;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.ArrayDeque;
@@ -90,16 +91,14 @@ public class DijkstraPathCalculator implements PathCalculator {
             }
         }
 
-        // Reconstruct path
+        // Reconstruct path, the start node is not part of the path
         Deque<Region.Node> path = new ArrayDeque<>();
         DijkstraNode node = references.get(end);
         DijkstraNode startNode = references.get(start);
         while (node != startNode) {
-            path.addFirst(node.previous.node);
+            path.addFirst(node.node);
             node = references.get(node.previous.node);
         }
-
-        // path.addFirst(start);
 
         return path;
     }
@@ -112,16 +111,16 @@ public class DijkstraPathCalculator implements PathCalculator {
         /**
          * The region node which is wrapped.
          */
-        public final Region.Node node;
+        public final @NotNull Region.Node node;
         /**
          * The duration (weight) of the shortest path from the start node to this node. If the duration is {@code null}, it means
          * that the duration is infinite.
          */
-        public Duration duration;
+        public @Nullable Duration duration;
         /**
          * The previous node in the shortest path from the start node to this node.
          */
-        public DijkstraNode previous;
+        public @Nullable DijkstraNode previous;
         /**
          * Whether this node has been visited. Since a {@link PriorityQueue} cannot update its priority after an element was
          * updated, this is used to mark whether the node has been visited.
@@ -136,7 +135,8 @@ public class DijkstraPathCalculator implements PathCalculator {
          * @param previous the previous node in the shortest path from the start node to this node
          * @param visited  whether this node has been visited
          */
-        private DijkstraNode(Region.Node node, Duration duration, DijkstraNode previous, boolean visited) {
+        private DijkstraNode(@NotNull Region.Node node, Duration duration, @Nullable DijkstraNode previous,
+                             boolean visited) {
             this.node = node;
             this.duration = duration;
             this.previous = previous;
