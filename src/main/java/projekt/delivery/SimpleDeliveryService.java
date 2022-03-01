@@ -69,4 +69,10 @@ public class SimpleDeliveryService implements DeliveryService {
 
         return result;
     }
+
+    // TODO: return something other than null
+    @Override
+    public SimulationConfig getSimulationConfig() {
+        return null;
+    }
 }
