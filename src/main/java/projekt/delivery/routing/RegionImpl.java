@@ -74,7 +74,9 @@ class RegionImpl implements Region {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         RegionImpl region = (RegionImpl) o;
         return Objects.equals(nodes, region.nodes) && Objects.equals(edges, region.edges);
     }
