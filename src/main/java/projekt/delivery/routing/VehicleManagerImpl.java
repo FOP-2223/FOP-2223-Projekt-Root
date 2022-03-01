@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 class VehicleManagerImpl implements VehicleManager {
 
@@ -160,7 +159,7 @@ class VehicleManagerImpl implements VehicleManager {
     }
 
     @Override
-    public void tick() {
+    public List<Event> tick() {
         currentTime = currentTime.plusMinutes(1);
         // It is important that nodes are ticked before edges
         // This only works because edge ticking is idempotent
@@ -170,7 +169,7 @@ class VehicleManagerImpl implements VehicleManager {
         // compared to a vehicle already on the edge.
         occupiedNodes.values().forEach(AbstractOccupied::tick);
         occupiedEdges.values().forEach(AbstractOccupied::tick);
-        final List<Event> events = eventBus.popEvents(currentTime);
+        return eventBus.popEvents(currentTime);
     }
 
     @Override

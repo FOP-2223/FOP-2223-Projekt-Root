@@ -1,6 +1,7 @@
 package projekt.delivery;
 
 import projekt.base.Location;
+import projekt.delivery.event.Event;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
@@ -26,6 +27,9 @@ public class BasicDeliveryService extends AbstractDeliveryService {
 
     @Override
     void tick(List<ConfirmedOrder> newOrders) {
+        // Move vehicles forward.
+        List<Event> events = vehicleManager.tick();
+
         // Add all newly arrived orders to the list of pending orders.
         pendingOrders.addAll(newOrders);
 
@@ -57,8 +61,5 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                     vehicle.moveQueued(pizzeriaNode);
                 }
             });
-
-        // Move vehicles forward.
-        vehicleManager.tick();
     }
 }

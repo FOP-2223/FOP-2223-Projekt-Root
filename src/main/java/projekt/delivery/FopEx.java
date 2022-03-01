@@ -5,9 +5,9 @@ import projekt.delivery.routing.VehicleManager;
 
 import java.util.List;
 
-public class FOPex extends AbstractDeliveryService {
+public class FopEx extends AbstractDeliveryService {
 
-    public FOPex(
+    public FopEx(
         VehicleManager vehicleManager,
         Rater rater,
         Simulation simulation,

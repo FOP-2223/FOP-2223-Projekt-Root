@@ -3,11 +3,13 @@ package projekt.delivery.routing;
 import org.jetbrains.annotations.Nullable;
 import projekt.base.DistanceCalculator;
 import projekt.delivery.ConfirmedOrder;
+import projekt.delivery.event.Event;
 import projekt.delivery.event.EventBus;
 import projekt.food.FoodType;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Predicate;
 
 public interface VehicleManager {
@@ -37,7 +39,7 @@ public interface VehicleManager {
 
     LocalDateTime getCurrentTime();
 
-    void tick();
+    List<Event> tick();
 
     interface Occupied<C extends Region.Component<? super C>> {
 
