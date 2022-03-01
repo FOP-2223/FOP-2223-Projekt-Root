@@ -48,12 +48,22 @@ public class Main {
 
         // // layer 3
 
-        DeliveryService deliveryService = DeliveryService.SIMPLE.create(vehicleManager, new LinearRater(), new Simulation() {
+        final var simulation = new Simulation() {
+            private MainFrame mainFrame;
+
             @Override
             public void onStateUpdated() {
-
+                SwingUtilities.invokeLater(mainFrame::repaint);
             }
-        }, new SimulationConfig(1000));
+
+            public void setMainFrame(MainFrame mainFrame) {
+                this.mainFrame = mainFrame;
+            }
+        };
+        DeliveryService deliveryService = DeliveryService.SIMPLE.create(vehicleManager,
+            new LinearRater(),
+            simulation,
+            new SimulationConfig(1000));
 
         // // layer 4
 
@@ -63,9 +73,11 @@ public class Main {
 
         // Gui Setup
         FlatDarkLaf.setup();
+        MainFrame mainFrame = new MainFrame(region, vehicleManager, deliveryService, pizzeria);
+        simulation.setMainFrame(mainFrame);
         SwingUtilities.invokeLater(() -> {
 //            new MainFrame(null, null, null, null).setVisible(true); // -> starts GUI thread
-            new MainFrame(region, vehicleManager, deliveryService, pizzeria).setVisible(true); // -> starts GUI thread
+            mainFrame.setVisible(true); // -> starts GUI thread
         });
 
         deliveryService.runSimulation(); // -> blocks the thread until the simulation is finished.
