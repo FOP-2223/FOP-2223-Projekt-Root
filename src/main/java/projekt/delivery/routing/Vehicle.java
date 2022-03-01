@@ -1,7 +1,7 @@
 package projekt.delivery.routing;
 
+import projekt.delivery.ConfirmedOrder;
 import projekt.delivery.FoodNotSupportedException;
-import projekt.food.Food;
 import projekt.food.FoodType;
 
 import java.util.Collection;
@@ -47,20 +47,20 @@ public interface Vehicle extends Comparable<Vehicle> {
     /**
      *
      */
-    Collection<Food> getFood();
+    Collection<ConfirmedOrder> getOrders();
 
     Collection<FoodType<?, ?>> getCompatibleFoodTypes();
 
     /**
-     * @throws FoodNotSupportedException if the vehicle does not support the provided food
+     * @throws FoodNotSupportedException if the vehicle does not support a food type in the provided order
      */
-    void addFood(Food food);
+    void loadOrder(ConfirmedOrder order);
 
-    void unloadFood(Food food);
+    void unloadOrder(ConfirmedOrder order);
 
     // TODO: allow appending of own methods?
     default double getCurrentWeight() {
-        return getFood().stream().mapToDouble(Food::getWeight).sum();
+        return getOrders().stream().mapToDouble(ConfirmedOrder::getTotalWeight).sum();
     }
 
     // TODO: Gui exercise to draw paths?

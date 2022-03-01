@@ -44,20 +44,20 @@ public class BasicDeliveryService extends AbstractDeliveryService {
 
         // For each vehicle waiting in the pizzeria, load as many orders as possible on the vehicle and send it out.
         vehicleManager.getWarehouse().getVehicles().stream()
-            .filter(vehicle -> vehicle.getFood().isEmpty()).forEach(vehicle -> {
+            .filter(vehicle -> vehicle.getOrders().isEmpty()).forEach(vehicle -> {
                 boolean loadedAtLeastOneOrderOnVehicle = false;
                 ListIterator<ConfirmedOrder> it = pendingOrders.listIterator();
                 while (it.hasNext()) {
-                    ConfirmedOrder order = it.next();
+                    final ConfirmedOrder order = it.next();
                     if (order.getTotalWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()
                         && order.getFoodList().stream()
                         .map(Food::getFoodVariant)
                         .map(Food.Variant::getFoodType)
                         .allMatch(vehicle.getCompatibleFoodTypes()::contains)) {
                         loadedAtLeastOneOrderOnVehicle = true;
-                        order.getFoodList().forEach(vehicle::addFood);
+                        vehicle.loadOrder(order);
                         vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v ->
-                            order.getFoodList().forEach(v::unloadFood));
+                            v.unloadOrder(order));
                         it.remove();
                     }
                 }

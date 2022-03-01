@@ -10,6 +10,10 @@ class OccupiedWarehouseImpl extends OccupiedNodeImpl<Region.Node> implements Veh
 
     @Override
     public void loadOrder(Vehicle vehicle, ConfirmedOrder order) {
-        // TODO: Julius?
+        if (vehicle.getOccupied() != this) {
+            throw new IllegalArgumentException("The specified vehicle is not located on this node!");
+        }
+
+
     }
 }

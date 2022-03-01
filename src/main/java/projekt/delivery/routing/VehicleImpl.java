@@ -1,6 +1,7 @@
 package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
+import projekt.delivery.ConfirmedOrder;
 import projekt.delivery.FoodNotSupportedException;
 import projekt.food.Food;
 import projekt.food.FoodType;
@@ -12,7 +13,7 @@ class VehicleImpl implements Vehicle {
 
     private final int id;
     private final double capacity;
-    private final List<Food> foods = new ArrayList<>();
+    private final List<ConfirmedOrder> orders = new ArrayList<>();
     private final Collection<FoodType<?, ?>> compatibleFoodTypes;
     private AbstractOccupied<?> occupied;
     private final VehicleManagerImpl vehicleManager;
@@ -44,6 +45,10 @@ class VehicleImpl implements Vehicle {
     @Override
     public void moveDirect(Region.Node node) {
         moveQueue.clear();
+        if (occupied.component instanceof Region.Edge) {
+            Region.Node nodeA = ((Region.Edge) occupied.component).getNodeA();
+            moveQueue.add(new PathImpl(new ArrayDeque<>(Collections.singleton(nodeA)), v -> {}));
+        }
         moveQueued(node);
     }
 
@@ -115,13 +120,9 @@ class VehicleImpl implements Vehicle {
         return capacity;
     }
 
-    public List<Food> getFoods() {
-        return foods;
-    }
-
     @Override
-    public Collection<Food> getFood() {
-        return foods;
+    public Collection<ConfirmedOrder> getOrders() {
+        return orders;
     }
 
     @Override
@@ -130,23 +131,25 @@ class VehicleImpl implements Vehicle {
     }
 
     @Override
-    public void addFood(Food food) {
-        double capacityNeeded = getCurrentWeight() + food.getWeight();
+    public void loadOrder(ConfirmedOrder order) {
+        double capacityNeeded = getCurrentWeight() + order.getTotalWeight();
 
         if (capacityNeeded > capacity) {
             throw new VehicleOverloadedException(this, capacityNeeded);
         }
 
-        if (!compatibleFoodTypes.contains(food.getFoodVariant().getFoodType())) {
-            throw new FoodNotSupportedException(this, food);
+        Optional<Food> incompatibleFood = order.getFoodList().stream().filter(f ->
+            !compatibleFoodTypes.contains(f.getFoodVariant().getFoodType())).findFirst();
+        if (incompatibleFood.isPresent()) {
+            throw new FoodNotSupportedException(this, incompatibleFood.get());
         }
 
-        foods.add(food);
+        orders.add(order);
     }
 
     @Override
-    public void unloadFood(Food food) {
-        foods.remove(food);
+    public void unloadOrder(ConfirmedOrder order) {
+        orders.remove(order);
     }
 
     @Override

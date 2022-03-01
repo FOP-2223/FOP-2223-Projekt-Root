@@ -16,7 +16,7 @@ class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
         final LocalDateTime currentTime = vehicleManager.getCurrentTime();
         // it is important to create a copy here. The move method in vehicle will probably modify this map
         for (Map.Entry<VehicleImpl, VehicleStats> entry : List.copyOf(vehicles.entrySet())) {
-            if (entry.getValue().arrived.plus(component.getDuration()).isAfter(currentTime)) {
+            if (!currentTime.isBefore(entry.getValue().arrived.plus(component.getDuration()))) {
                 entry.getKey().move();
             }
         }
