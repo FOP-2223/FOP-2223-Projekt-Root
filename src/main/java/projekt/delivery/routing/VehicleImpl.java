@@ -74,11 +74,7 @@ class VehicleImpl implements Vehicle {
                 throw new IllegalStateException("The vehicle is on an edge and does not have any movements queued!");
             }
         }
-        //final Deque<Region.Node> nodes = vehicleManager.getPathCalculator().getPath(startNode, node);
-
-        // TODO: Nyan
-        final Deque<Region.Node> nodes = new LinkedList<>();
-        nodes.add(node);
+        final Deque<Region.Node> nodes = vehicleManager.getPathCalculator().getPath(startNode, node);
         moveQueue.add(new PathImpl(nodes, ((Consumer<Vehicle>) v ->
             System.out.println("Vehicle " + v.getId() + " arrived at node " + node.getName())).andThen(arrivalAction)));
     }
