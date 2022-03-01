@@ -55,15 +55,10 @@ class VehicleImpl implements Vehicle {
     }
 
     @Override
-    public void moveDirect(Region.Node node) {
+    public void moveDirect(Region.Node node, Consumer<? super Vehicle> arrivalAction) {
         checkMoveToNode(node);
         moveQueue.clear();
-        moveQueued(node);
-    }
-
-    @Override
-    public void moveQueued(Region.Node node) {
-        moveQueued(node, t -> {});
+        moveQueued(node, arrivalAction);
     }
 
     @Override
