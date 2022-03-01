@@ -24,8 +24,8 @@ class ArrivedAtNeighborhoodEventImpl extends ArrivedAtNodeEventImpl implements A
     @Override
     public String toString() {
         return "ArrivedAtNeighborhoodEvent("
-            + "time= " + getTime()
-            + ", vehicle= " + getVehicle()
+            + "time=" + getTime()
+            + ", vehicle=" + getVehicle().getId()
             + ", node=" + getNode()
             + ", lastEdge=" + getLastEdge()
             + ')';

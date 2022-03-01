@@ -30,4 +30,6 @@ public interface DeliveryService {
     }
 
     Factory SIMPLE = BasicDeliveryService::new;
+
+    Factory BOGO = BogoDeliveryService::new;
 }

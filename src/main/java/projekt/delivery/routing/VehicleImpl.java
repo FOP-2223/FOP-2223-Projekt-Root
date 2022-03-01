@@ -48,8 +48,15 @@ class VehicleImpl implements Vehicle {
         this.occupied = occupied;
     }
 
+    private void checkMoveToNode(Region.Node node) {
+        if (occupied.component.equals(node)) {
+            throw new IllegalArgumentException("Vehicle " + getId() + " cannot move to own node " + node);
+        }
+    }
+
     @Override
     public void moveDirect(Region.Node node) {
+        checkMoveToNode(node);
         moveQueue.clear();
         // if a vehicle is on an edge, keep the movement to the next node
         if (occupied.component instanceof Region.Edge) {
@@ -73,6 +80,7 @@ class VehicleImpl implements Vehicle {
 
     @Override
     public void moveQueued(Region.Node node, Consumer<? super Vehicle> arrivalAction) {
+        checkMoveToNode(node);
         Region.Node startNode = null;
         Iterator<PathImpl> it = moveQueue.descendingIterator();
         while (it.hasNext() && startNode == null) {
@@ -145,7 +153,7 @@ class VehicleImpl implements Vehicle {
         return compatibleFoodTypes;
     }
 
-    void loadOrder(ConfirmedOrder order) {
+    boolean loadOrder(ConfirmedOrder order) {
         double capacityNeeded = getCurrentWeight() + order.getTotalWeight();
 
         if (capacityNeeded > capacity) {
@@ -158,11 +166,11 @@ class VehicleImpl implements Vehicle {
             throw new FoodNotSupportedException(this, incompatibleFood.get());
         }
 
-        orders.add(order);
+        return orders.add(order);
     }
 
-    void unloadOrder(ConfirmedOrder order) {
-        orders.remove(order);
+    boolean unloadOrder(ConfirmedOrder order) {
+        return orders.remove(order);
     }
 
     @Override

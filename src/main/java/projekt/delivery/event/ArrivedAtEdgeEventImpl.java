@@ -35,7 +35,7 @@ class ArrivedAtEdgeEventImpl extends EventImpl implements ArrivedAtEdgeEvent {
     public String toString() {
         return "ArrivedAtEdgeEvent("
             + "time=" + getTime()
-            + ", vehicle=" + getVehicle()
+            + ", vehicle=" + getVehicle().getId()
             + ", edge=" + getEdge()
             + ", lastNode=" + getLastNode()
             + ')';

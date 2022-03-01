@@ -22,7 +22,12 @@ public class BasicDeliveryService extends AbstractDeliveryService {
     // List of orders that have not yet been loaded onto delivery vehicles
     private final List<ConfirmedOrder> pendingOrders = new ArrayList<>();
 
-    protected BasicDeliveryService(VehicleManager vehicleManager, Rater rater, Simulation simulation, SimulationConfig simulationConfig) {
+    protected BasicDeliveryService(
+        VehicleManager vehicleManager,
+        Rater rater,
+        Simulation simulation,
+        SimulationConfig simulationConfig
+    ) {
         super(vehicleManager, rater, simulation, simulationConfig);
     }
 
@@ -30,14 +35,6 @@ public class BasicDeliveryService extends AbstractDeliveryService {
     void tick(List<ConfirmedOrder> newOrders) {
         // Move vehicles forward.
         List<Event> events = vehicleManager.tick();
-
-        events.stream().filter(s -> s instanceof SpawnEvent).forEach(e -> {
-            e.getVehicle().moveQueued(vehicleManager.getRegion().getNode(new Location(2, 2)));
-        });
-
-        events.stream().filter(s -> s instanceof ArrivedAtNeighborhoodEvent && ((ArrivedAtNeighborhoodEvent) s).getNode().getName().equals("nodeC")).forEach(e -> {
-            e.getVehicle().moveQueued(vehicleManager.getRegion().getNode(new Location(-2, -2)));
-        });
 
         // Add all newly arrived orders to the list of pending orders.
         pendingOrders.addAll(newOrders);

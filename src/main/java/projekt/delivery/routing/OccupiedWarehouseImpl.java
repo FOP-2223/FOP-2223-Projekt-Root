@@ -10,17 +10,22 @@ class OccupiedWarehouseImpl extends OccupiedNodeImpl<Region.Node> implements Veh
     }
 
     @Override
-    public void loadOrder(Vehicle vehicle, ConfirmedOrder order) {
+    public boolean loadOrder(Vehicle vehicle, ConfirmedOrder order) {
         if (vehicle.getOccupied() != this) {
             throw new IllegalArgumentException("The specified vehicle is not located on this node!");
         }
 
-        ((VehicleImpl) vehicle).loadOrder(order);
-
-        vehicleManager.getEventBus().queuePost(LoadOrderEvent.of(vehicleManager.getCurrentTime(),
-            vehicle,
-            order,
-            vehicleManager.getWarehouse()));
+        if (((VehicleImpl) vehicle).loadOrder(order)) {
+            vehicleManager.getEventBus().queuePost(LoadOrderEvent.of(
+                    vehicleManager.getCurrentTime(),
+                    vehicle,
+                    order,
+                    vehicleManager.getWarehouse()
+                )
+            );
+            return true;
+        }
+        return false;
     }
 
     @Override

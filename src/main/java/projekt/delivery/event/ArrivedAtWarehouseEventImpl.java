@@ -19,8 +19,8 @@ class ArrivedAtWarehouseEventImpl extends ArrivedAtNodeEventImpl implements Arri
     @Override
     public String toString() {
         return "ArrivedAtWarehouseEvent("
-            + "time= " + getTime()
-            + ", vehicle= " + getVehicle()
+            + "time=" + getTime()
+            + ", vehicle=" + getVehicle().getId()
             + ", node=" + getNode()
             + ", lastEdge=" + getLastEdge()
             + ')';

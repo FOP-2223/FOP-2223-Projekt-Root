@@ -29,10 +29,10 @@ class LoadOrderEventImpl extends EventImpl implements LoadOrderEvent {
     @Override
     public String toString() {
         return "LoadOrderEvent("
-            + "time= " + getTime()
-            + ", vehicle= " + getVehicle()
-            + ", order= " + getOrder()
-            + ", warehouse= " + getWarehouse()
+            + "time=" + getTime()
+            + ", vehicle=" + getVehicle()
+            + ", order=" + getOrder()
+            + ", warehouse=" + getWarehouse()
             + ')';
     }
 }

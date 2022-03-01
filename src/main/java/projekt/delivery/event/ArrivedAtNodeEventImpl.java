@@ -34,8 +34,8 @@ class ArrivedAtNodeEventImpl extends EventImpl implements ArrivedAtNodeEvent {
     @Override
     public String toString() {
         return "ArrivedAtNodeEvent("
-            + "time= " + getTime()
-            + ", vehicle= " + getVehicle()
+            + "time=" + getTime()
+            + ", vehicle=" + getVehicle().getId()
             + ", node=" + getNode()
             + ", lastEdge=" + getLastEdge()
             + ')';

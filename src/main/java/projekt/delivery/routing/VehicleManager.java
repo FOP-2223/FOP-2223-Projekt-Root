@@ -56,11 +56,11 @@ public interface VehicleManager {
     }
 
     interface Warehouse extends Occupied<Region.Node> {
-        void loadOrder(Vehicle vehicle, ConfirmedOrder order);
+        boolean loadOrder(Vehicle vehicle, ConfirmedOrder order);
     }
 
     interface OccupiedNeighborhood extends Occupied<Region.Neighborhood> {
-        void deliverOrder(Vehicle vehicle, ConfirmedOrder order);
+        boolean deliverOrder(Vehicle vehicle, ConfirmedOrder order);
     }
 
     interface Builder {

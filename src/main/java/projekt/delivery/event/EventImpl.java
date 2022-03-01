@@ -27,8 +27,8 @@ class EventImpl implements Event {
     @Override
     public String toString() {
         return "Event("
-            + "time= " + getTime()
-            + ", vehicle= " + getVehicle()
+            + "time=" + getTime()
+            + ", vehicle=" + getVehicle().getId()
             + ')';
     }
 }

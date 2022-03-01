@@ -35,8 +35,8 @@ class DeliverOrderEventImpl extends EventImpl implements DeliverOrderEvent {
     @Override
     public String toString() {
         return "DeliverOrderEvent("
-            + "time= " + getTime()
-            + ", vehicle= " + getVehicle()
+            + "time=" + getTime()
+            + ", vehicle=" + getVehicle().getId()
             + ", node=" + getNode()
             + ", order=" + getOrder()
             + ')';

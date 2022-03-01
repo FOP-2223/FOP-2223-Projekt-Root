@@ -26,8 +26,8 @@ class SpawnEventImpl extends EventImpl implements SpawnEvent {
     @Override
     public String toString() {
         return "SpawnEvent("
-            + "time= " + getTime()
-            + ", vehicle= " + getVehicle()
+            + "time=" + getTime()
+            + ", vehicle=" + getVehicle().getId()
             + ", node=" + getNode()
             + ')';
     }

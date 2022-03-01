@@ -60,7 +60,7 @@ public class Main {
                 this.mainFrame = mainFrame;
             }
         };
-        DeliveryService deliveryService = DeliveryService.SIMPLE.create(vehicleManager,
+        DeliveryService deliveryService = DeliveryService.BOGO.create(vehicleManager,
             new LinearRater(),
             simulation,
             new SimulationConfig(1000));
