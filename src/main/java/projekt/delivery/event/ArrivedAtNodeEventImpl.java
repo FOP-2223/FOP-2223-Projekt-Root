@@ -30,4 +30,14 @@ class ArrivedAtNodeEventImpl extends EventImpl implements ArrivedAtNodeEvent {
     public Region.Edge getLastEdge() {
         return lastEdge;
     }
+
+    @Override
+    public String toString() {
+        return "ArrivedAtNodeEvent("
+            + "time= " + getTime()
+            + ", vehicle= " + getVehicle()
+            + ", node=" + getNode()
+            + ", lastEdge=" + getLastEdge()
+            + ')';
+    }
 }

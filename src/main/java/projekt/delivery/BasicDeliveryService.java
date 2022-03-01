@@ -1,6 +1,7 @@
 package projekt.delivery;
 
 import projekt.base.Location;
+import projekt.delivery.event.ArrivedAtNeighborhoodEvent;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.SpawnEvent;
 import projekt.delivery.rating.Rater;
@@ -13,8 +14,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * A very simple delivery service that distributes orders to compatible vehicles in a FIFO manner.
@@ -33,8 +32,11 @@ public class BasicDeliveryService extends AbstractDeliveryService {
         List<Event> events = vehicleManager.tick();
 
         events.stream().filter(s -> s instanceof SpawnEvent).forEach(e -> {
-            System.out.println(vehicleManager.getRegion().getNodes().stream().map(Objects::toString).collect(Collectors.joining("\n")));
-            e.getVehicle().moveQueued(vehicleManager.getRegion().getNode(new Location(-2, 2)));
+            e.getVehicle().moveQueued(vehicleManager.getRegion().getNode(new Location(2, 2)));
+        });
+
+        events.stream().filter(s -> s instanceof ArrivedAtNeighborhoodEvent && ((ArrivedAtNeighborhoodEvent) s).getNode().getName().equals("nodeC")).forEach(e -> {
+            e.getVehicle().moveQueued(vehicleManager.getRegion().getNode(new Location(-2, -2)));
         });
 
         // Add all newly arrived orders to the list of pending orders.

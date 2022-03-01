@@ -24,7 +24,7 @@ class VehicleManagerImpl implements VehicleManager {
 
     private LocalDateTime currentTime;
     private final Region region;
-    final Map<Region.Node, OccupiedNodeImpl<Region.Node>> occupiedNodes;
+    final Map<Region.Node, OccupiedNodeImpl<? extends Region.Node>> occupiedNodes;
     final Map<Region.Edge, OccupiedEdgeImpl> occupiedEdges;
     private final DistanceCalculator distanceCalculator;
     private final PathCalculator pathCalculator;
@@ -52,11 +52,17 @@ class VehicleManagerImpl implements VehicleManager {
         allOccupied = getAllOccupied();
     }
 
-    private Map<Region.Node, OccupiedNodeImpl<Region.Node>> toOccupiedNodes(Collection<Region.Node> nodes) {
+    private OccupiedNodeImpl<? extends Region.Node> toOccupied(Region.Node node) {
+        return node.equals(warehouse.getComponent())
+            ? warehouse
+            : node instanceof Region.Neighborhood
+            ? new OccupiedNeighborhoodImpl((Region.Neighborhood) node, this)
+            : new OccupiedNodeImpl<>(node, this);
+    }
+
+    private Map<Region.Node, OccupiedNodeImpl<? extends Region.Node>> toOccupiedNodes(Collection<Region.Node> nodes) {
         return nodes.stream()
-            .map(node -> node.equals(warehouse.getComponent())
-                ? warehouse
-                : new OccupiedNodeImpl<>(node, this))
+            .map(this::toOccupied)
             .collect(Collectors.toUnmodifiableMap(Occupied::getComponent, Function.identity()));
     }
 
@@ -155,12 +161,12 @@ class VehicleManagerImpl implements VehicleManager {
     }
 
     @Override
-    public Collection<Occupied<Region.Node>> getOccupiedNodes() {
+    public Collection<Occupied<? extends Region.Node>> getOccupiedNodes() {
         return Collections.unmodifiableCollection(occupiedNodes.values());
     }
 
     @Override
-    public Collection<Occupied<Region.Edge>> getOccupiedEdges() {
+    public Collection<Occupied<? extends Region.Edge>> getOccupiedEdges() {
         return Collections.unmodifiableCollection(occupiedEdges.values());
     }
 
@@ -175,6 +181,7 @@ class VehicleManagerImpl implements VehicleManager {
     }
 
     private void spawnVehicle(VehicleImpl vehicle) {
+        vehicles.add(vehicle);
         OccupiedWarehouseImpl warehouse = (OccupiedWarehouseImpl) vehicle.getOccupied();
         warehouse.vehicles.put(vehicle, new AbstractOccupied.VehicleStats(currentTime, null));
         getEventBus().queuePost(SpawnEvent.of(currentTime, vehicle, warehouse.getComponent()));

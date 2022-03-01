@@ -40,6 +40,7 @@ class OccupiedNodeImpl<C extends Region.Node> extends AbstractOccupied<C> {
     }
 
     protected void emitArrivedEvent(VehicleImpl vehicle, OccupiedEdgeImpl previousEdge) {
+        System.out.println("Posting arrived");
         vehicleManager.getEventBus().queuePost(ArrivedAtNodeEvent.of(
                 vehicleManager.getCurrentTime(),
                 vehicle,

@@ -23,4 +23,12 @@ class EventImpl implements Event {
     public Vehicle getVehicle() {
         return vehicle;
     }
+
+    @Override
+    public String toString() {
+        return "Event("
+            + "time= " + getTime()
+            + ", vehicle= " + getVehicle()
+            + ')';
+    }
 }

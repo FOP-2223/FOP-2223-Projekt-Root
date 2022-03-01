@@ -27,7 +27,17 @@ class ArrivedAtEdgeEventImpl extends EventImpl implements ArrivedAtEdgeEvent {
     }
 
     @Override
-    public Region.Node getLastEdge() {
+    public Region.Node getLastNode() {
         return lastNode;
+    }
+
+    @Override
+    public String toString() {
+        return "ArrivedAtEdgeEvent("
+            + "time=" + getTime()
+            + ", vehicle=" + getVehicle()
+            + ", edge=" + getEdge()
+            + ", lastNode=" + getLastNode()
+            + ')';
     }
 }

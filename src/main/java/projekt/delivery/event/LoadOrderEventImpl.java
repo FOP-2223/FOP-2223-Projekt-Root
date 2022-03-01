@@ -25,4 +25,14 @@ class LoadOrderEventImpl extends EventImpl implements LoadOrderEvent {
     public VehicleManager.Warehouse getWarehouse() {
         return warehouse;
     }
+
+    @Override
+    public String toString() {
+        return "LoadOrderEvent("
+            + "time= " + getTime()
+            + ", vehicle= " + getVehicle()
+            + ", order= " + getOrder()
+            + ", warehouse= " + getWarehouse()
+            + ')';
+    }
 }

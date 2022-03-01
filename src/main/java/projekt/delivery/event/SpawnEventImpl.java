@@ -22,4 +22,13 @@ class SpawnEventImpl extends EventImpl implements SpawnEvent {
     public Region.Node getNode() {
         return node;
     }
+
+    @Override
+    public String toString() {
+        return "SpawnEvent("
+            + "time= " + getTime()
+            + ", vehicle= " + getVehicle()
+            + ", node=" + getNode()
+            + ')';
+    }
 }

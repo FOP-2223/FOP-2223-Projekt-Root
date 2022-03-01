@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 
 public interface DeliverOrderEvent extends Event {
 
-    Region.Neighborhood getNode();
-
     ConfirmedOrder getOrder();
+
+    Region.Neighborhood getNode();
 
     static DeliverOrderEvent of(
         LocalDateTime time,

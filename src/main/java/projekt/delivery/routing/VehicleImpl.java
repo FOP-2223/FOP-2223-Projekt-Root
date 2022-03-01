@@ -90,7 +90,7 @@ class VehicleImpl implements Vehicle {
         }
         final Deque<Region.Node> nodes = vehicleManager.getPathCalculator().getPath(startNode, node);
         moveQueue.add(new PathImpl(nodes, ((Consumer<Vehicle>) v ->
-            System.out.println("Vehicle " + v.getId() + " arrived at node " + node.getName())).andThen(arrivalAction)));
+            System.out.println("Vehicle " + v.getId() + " arrived at node " + node)).andThen(arrivalAction)));
     }
 
     void move() {
@@ -168,6 +168,16 @@ class VehicleImpl implements Vehicle {
     @Override
     public int compareTo(Vehicle o) {
         return Integer.compare(getId(), o.getId());
+    }
+
+    @Override
+    public String toString() {
+        return "VehicleImpl("
+            + "id=" + id
+            + ", capacity=" + capacity
+            + ", orders=" + orders
+            + ", component=" + occupied.component
+            + ')';
     }
 
     /**

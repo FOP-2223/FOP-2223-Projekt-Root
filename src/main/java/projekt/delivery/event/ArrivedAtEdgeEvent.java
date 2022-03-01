@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public interface ArrivedAtEdgeEvent extends Event {
     Region.Edge getEdge();
 
-    Region.Node getLastEdge();
+    Region.Node getLastNode();
 
     static ArrivedAtEdgeEvent of(
         LocalDateTime time,

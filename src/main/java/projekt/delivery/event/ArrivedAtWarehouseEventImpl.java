@@ -5,10 +5,7 @@ import projekt.delivery.routing.Vehicle;
 
 import java.time.LocalDateTime;
 
-class ArrivedAtWarehouseEventImpl extends EventImpl implements ArrivedAtWarehouseEvent {
-
-    private final Region.Node node;
-    private final Region.Edge lastEdge;
+class ArrivedAtWarehouseEventImpl extends ArrivedAtNodeEventImpl implements ArrivedAtWarehouseEvent {
 
     ArrivedAtWarehouseEventImpl(
         LocalDateTime time,
@@ -16,18 +13,16 @@ class ArrivedAtWarehouseEventImpl extends EventImpl implements ArrivedAtWarehous
         Region.Node node,
         Region.Edge lastEdge
     ) {
-        super(time, vehicle);
-        this.node = node;
-        this.lastEdge = lastEdge;
+        super(time, vehicle, node, lastEdge);
     }
 
     @Override
-    public Region.Node getNode() {
-        return node;
-    }
-
-    @Override
-    public Region.Edge getLastEdge() {
-        return lastEdge;
+    public String toString() {
+        return "ArrivedAtWarehouseEvent("
+            + "time= " + getTime()
+            + ", vehicle= " + getVehicle()
+            + ", node=" + getNode()
+            + ", lastEdge=" + getLastEdge()
+            + ')';
     }
 }

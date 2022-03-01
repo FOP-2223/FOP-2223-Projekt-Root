@@ -31,4 +31,14 @@ class DeliverOrderEventImpl extends EventImpl implements DeliverOrderEvent {
     public ConfirmedOrder getOrder() {
         return order;
     }
+
+    @Override
+    public String toString() {
+        return "DeliverOrderEvent("
+            + "time= " + getTime()
+            + ", vehicle= " + getVehicle()
+            + ", node=" + getNode()
+            + ", order=" + getOrder()
+            + ')';
+    }
 }

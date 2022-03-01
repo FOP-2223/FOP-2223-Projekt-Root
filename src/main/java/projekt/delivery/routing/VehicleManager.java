@@ -32,9 +32,9 @@ public interface VehicleManager {
 
     OccupiedNeighborhood getOccupiedNeighborhood(Region.Node component);
 
-    Collection<Occupied<Region.Node>> getOccupiedNodes();
+    Collection<Occupied<? extends Region.Node>> getOccupiedNodes();
 
-    Collection<Occupied<Region.Edge>> getOccupiedEdges();
+    Collection<Occupied<? extends Region.Edge>> getOccupiedEdges();
 
     EventBus getEventBus();
 
