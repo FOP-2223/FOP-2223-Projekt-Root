@@ -55,9 +55,9 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                         .map(Food.Variant::getFoodType)
                         .allMatch(vehicle.getCompatibleFoodTypes()::contains)) {
                         loadedAtLeastOneOrderOnVehicle = true;
-                        vehicle.loadOrder(order);
+                        vehicleManager.getWarehouse().loadOrder(vehicle, order);
                         vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v ->
-                            v.unloadOrder(order));
+                            vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied()).deliverOrder(v, order));
                         it.remove();
                     }
                 }

@@ -45,6 +45,12 @@ public interface Vehicle extends Comparable<Vehicle> {
     double getCapacity();
 
     /**
+     * Accessor for the vehicle manager that is responsible for movements of this vehicle
+     * @return the vehicle manager that is responsible for this vehicle
+     */
+    VehicleManager getVehicleManager();
+
+    /**
      *
      */
     Collection<ConfirmedOrder> getOrders();
@@ -54,9 +60,6 @@ public interface Vehicle extends Comparable<Vehicle> {
     /**
      * @throws FoodNotSupportedException if the vehicle does not support a food type in the provided order
      */
-    void loadOrder(ConfirmedOrder order);
-
-    void unloadOrder(ConfirmedOrder order);
 
     // TODO: allow appending of own methods?
     default double getCurrentWeight() {

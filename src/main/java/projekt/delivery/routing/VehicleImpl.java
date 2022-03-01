@@ -121,6 +121,11 @@ class VehicleImpl implements Vehicle {
     }
 
     @Override
+    public VehicleManager getVehicleManager() {
+        return vehicleManager;
+    }
+
+    @Override
     public Collection<ConfirmedOrder> getOrders() {
         return orders;
     }
@@ -130,8 +135,7 @@ class VehicleImpl implements Vehicle {
         return compatibleFoodTypes;
     }
 
-    @Override
-    public void loadOrder(ConfirmedOrder order) {
+    void loadOrder(ConfirmedOrder order) {
         double capacityNeeded = getCurrentWeight() + order.getTotalWeight();
 
         if (capacityNeeded > capacity) {
@@ -147,8 +151,7 @@ class VehicleImpl implements Vehicle {
         orders.add(order);
     }
 
-    @Override
-    public void unloadOrder(ConfirmedOrder order) {
+    void unloadOrder(ConfirmedOrder order) {
         orders.remove(order);
     }
 
