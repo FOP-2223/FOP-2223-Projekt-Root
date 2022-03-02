@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static projekt.delivery.routing.VehicleManager.*;
+import static projekt.delivery.routing.VehicleManager.Occupied;
 
 public interface Utils {
 
@@ -42,11 +42,7 @@ public interface Utils {
         if (occupied.getComponent() instanceof Region.Node) {
             return toPoint(((Region.Node) occupied.getComponent()).getLocation());
         } else if (occupied.getComponent() instanceof Region.Edge) {
-            //noinspection PatternVariableCanBeUsed
-            var edge = ((Region.Edge) occupied.getComponent());
-            var l1 = edge.getNodeA().getLocation();
-            var l2 = edge.getNodeB().getLocation();
-            return new Point2D.Double((l1.getX() + l2.getX()) / 2d, (l1.getY() + l2.getY())/2d) ;
+            return toPoint((Region.Edge) occupied.getComponent());
         }
         throw new UnsupportedOperationException("unsupported type of component");
     }
@@ -63,6 +59,12 @@ public interface Utils {
         return toPoint(node.getLocation());
     }
 
+    static Point2D toPoint(Region.Edge edge) {
+        var l1 = edge.getNodeA().getLocation();
+        var l2 = edge.getNodeB().getLocation();
+        return new Point2D.Double((l1.getX() + l2.getX()) / 2d, (l1.getY() + l2.getY()) / 2d);
+    }
+
     interface Collectors {
 
         Collector<Point2D, Point2D, Point2D> POINT_MIN = point((a, e) -> a < e);
@@ -71,11 +73,9 @@ public interface Utils {
         static Collector<Point2D, Point2D, Point2D> point(BiPredicate<Double, Double> pred) {
 
             return Collector.of(Point2D.Double::new,
-                (a, e) -> {
-                    a.setLocation(
-                        pred.test(a.getX(), e.getX()) ? a.getX() : e.getX(),
-                        pred.test(a.getY(), e.getY()) ? a.getY() : e.getY());
-                },
+                (a, e) -> a.setLocation(
+                    pred.test(a.getX(), e.getX()) ? a.getX() : e.getX(),
+                    pred.test(a.getY(), e.getY()) ? a.getY() : e.getY()),
                 (a, e) -> {
                    throw new UnsupportedOperationException();
                 });
@@ -86,7 +86,7 @@ public interface Utils {
 
             return new Collector<>() {
 
-                AtomicInteger counter = new AtomicInteger();
+                final AtomicInteger counter = new AtomicInteger();
 
                 @Override
                 public Supplier<Point2D> supplier() {
