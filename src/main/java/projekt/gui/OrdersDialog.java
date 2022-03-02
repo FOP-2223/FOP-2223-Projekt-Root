@@ -36,7 +36,7 @@ class OrdersDialog extends JDialog {
             okButton.removeActionListener(listener);
         }
         okButton.addActionListener(actionEvent -> {
-            ordersPanel.addOrder(textField1.getText());
+            // ordersPanel.addOrder(textField1.getText()); // TODO add order in model?!
             setVisible(false);
         });
         for (ActionListener listener : cancelButton.getActionListeners()) {

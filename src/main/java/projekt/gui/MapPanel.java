@@ -7,27 +7,16 @@ import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
 import projekt.pizzeria.Pizzeria;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.font.TextLayout;
 import java.awt.geom.*;
-import java.util.Map;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 import static projekt.gui.Utils.getDifference;
 import static projekt.gui.Utils.toPoint;
@@ -36,24 +25,19 @@ public class MapPanel extends JPanel {
 
     private static final double NODE_DIAMETER = 0.8;
     private static final double IMAGE_DIAMETER = 0.7;
-    //private static final Image IMAGE_CAR = getDefaultToolkit().getImage(Resources.getResource("car.png"));
-    private static final Image IMAGE_CAR = Utils.loadImage("car.png", TUColors.COLOR_0D);
+    private static final Image[] IMAGE_CAR =  Arrays.stream(TUColors.COLOR_C).map(c -> Utils.loadImage("car.png", c)).toArray(Image[]::new);
+    private static final Image[] IMAGE_CAR_SELECTED =  Arrays.stream(TUColors.COLOR_A).map(c -> Utils.loadImage("car.png", c)).toArray(Image[]::new);
     private static final double SCALE_IN = 1.1;
     private static final double SCALE_OUT = 1 / SCALE_IN;
+
+    private final MainFrame mainFrame;
 
     private final Region region;
     private final VehicleManager vehicleManager;
     private final DeliveryService deliveryService;
     private final Pizzeria pizzeria;
 
-    private final MainFrame mainFrame;
-    private final Map<Location, String> nodes;
-
-
-    private final AffineTransform t = new AffineTransform();
-    //private final AffineTransform t = new AffineTransform();
-
-    private Vehicle selectedVehicle = null;
+    private final AffineTransform transformation = new AffineTransform();
 
     public MapPanel(Region region,
                     VehicleManager vehicleManager,
@@ -65,8 +49,6 @@ public class MapPanel extends JPanel {
         this.deliveryService = deliveryService;
         this.pizzeria = pizzeria;
         this.mainFrame = mainFrame;
-
-        nodes = region.getNodes().stream().collect(Collectors.toMap(Region.Node::getLocation, Region.Component::getName));
         initComponents();
     }
 
@@ -81,10 +63,10 @@ public class MapPanel extends JPanel {
             @Override
             public void mouseDragged(MouseEvent event) {
                 try {
-                    var lastTransformed = t.inverseTransform(lastPoint.get(), null);
-                    var currentTransformed = t.inverseTransform(event.getPoint(), null);
+                    var lastTransformed = transformation.inverseTransform(lastPoint.get(), null);
+                    var currentTransformed = transformation.inverseTransform(event.getPoint(), null);
                     var difference = getDifference(currentTransformed, lastTransformed);
-                    t.translate(difference.getX(), difference.getY());
+                    transformation.translate(difference.getX(), difference.getY());
                     repaint();
                     lastPoint.set(event.getPoint());
                     updateLocation();
@@ -102,19 +84,18 @@ public class MapPanel extends JPanel {
 
         this.addMouseWheelListener(event -> {
             try {
-                var before = t.inverseTransform(lastPoint.get(), null);
+                var before = transformation.inverseTransform(lastPoint.get(), null);
                 var scale = event.getWheelRotation() > 0 ? SCALE_OUT : SCALE_IN;
-                t.scale(scale, scale);
-                var after = t.inverseTransform(lastPoint.get(), null);
+                transformation.scale(scale, scale);
+                var after = transformation.inverseTransform(lastPoint.get(), null);
                 var difference = getDifference(after, before);
-                t.translate(difference.getX(), difference.getY());
+                transformation.translate(difference.getX(), difference.getY());
                 repaint();
                 updateLocation();
             } catch (NoninvertibleTransformException e) {
-                throw new IllegalStateException();
+                throw new IllegalStateException("");
             }
         });
-
         this.addMouseListener(new MouseAdapter() {
 
             @Override
@@ -122,7 +103,34 @@ public class MapPanel extends JPanel {
                 updateVehicleSelection();
             }
         });
+    }
 
+
+    private boolean centered = false;
+
+    public void center() {
+        if (centered)
+            return;
+        var width = getWidth();
+        var height = getHeight();
+        var reverse = getReverseTransform();
+        // scale view
+        var min = region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.POINT_MIN);
+        var max = region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.POINT_MAX);
+        reverse.transform(min, min);
+        reverse.transform(max, max);
+        var currentWidth = max.getY() - min.getY();
+        var currentHeight = max.getY() - min.getY();
+        var scale = Math.min(getWidth() / currentWidth, getHeight() / currentHeight);
+        scale *= 0.75;
+        getTransform().scale(scale, scale);
+        // translate
+        reverse = getReverseTransform();
+        var center = new Point2D.Double(width/2d, height/2d);
+        reverse.transform(center, center);
+        var nodeCenter = region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.center());
+        transformation.translate(center.getX() - nodeCenter.getX() , center.getY() - nodeCenter.getY());
+        centered = true;
     }
 
     public Point2D getCurrentPoint() {
@@ -139,13 +147,10 @@ public class MapPanel extends JPanel {
         return new Location((int) Math.round(currentPoint.getX()), (int) Math.round(currentPoint.getY()));
     }
 
-    public Set<Vehicle> getVehicles(Point2D position) {
-
+    public List<Vehicle> getVehicles(Point2D position) {
         return vehicleManager.getVehicles()
             .stream()
-            .filter(v -> toPoint(v).distance(position) < 1)
-            .collect(Collectors.toUnmodifiableSet());
-
+            .filter(v -> toPoint(v).distance(position) < 1).toList();
     }
 
     public void updateLocation() {
@@ -155,19 +160,22 @@ public class MapPanel extends JPanel {
     }
 
     public void updateVehicleSelection() {
-        mainFrame.setVehicles(getVehicles(getCurrentPoint()));
-
+        var vehicles = getVehicles(getCurrentPoint());
+        if (!vehicles.isEmpty()) {
+            var firstVehicle = vehicles.get(0);
+            mainFrame.setSelectedVehicle(mainFrame.getSelectedVehicle() != firstVehicle ? firstVehicle : null);
+        }
     }
 
     private AffineTransform getTransform() {
-        return t;
+        return transformation;
     }
 
     private AffineTransform getReverseTransform() {
         try {
-            return t.createInverse();
+            return getTransform().createInverse();
         } catch (NoninvertibleTransformException e) {
-            throw new IllegalStateException("transformation is non-invertible");
+            throw new IllegalStateException("transformation is not invertible");
         }
     }
 
@@ -244,8 +252,8 @@ public class MapPanel extends JPanel {
     }
 
     public void paintVehicle(Graphics2D g2d, Vehicle vehicle) {
-        paintImage(g2d, toPoint(vehicle), IMAGE_CAR);
-
+        var ID = vehicle.getId() % IMAGE_CAR.length;
+        paintImage(g2d, toPoint(vehicle), mainFrame.getSelectedVehicle() != vehicle ? IMAGE_CAR[ID] : IMAGE_CAR_SELECTED[ID]);
     }
 
     public void paintImage(Graphics2D g2d, Location l1, Location l2, Image image) {
@@ -264,29 +272,22 @@ public class MapPanel extends JPanel {
     public Shape fitTextInBounds(Graphics2D g2d, Rectangle2D bounds, float borderThickness, String text, Font f) {
         // Store current g2d Configuration
         Font oldFont = g2d.getFont();
-
         // graphics configuration
         g2d.setFont(f);
-
         // Prepare Shape creation
         TextLayout tl = new TextLayout(text, f, g2d.getFontRenderContext());
         Rectangle2D fontBounds = tl.getOutline(null).getBounds2D();
-
         // Calculate scale Factor
         double factorX = (bounds.getWidth() - borderThickness) / fontBounds.getWidth();
         double factorY = (bounds.getHeight() - borderThickness) / fontBounds.getHeight();
         double factor = Math.min(factorX, factorY);
-
         // Scale
-        // TODO: Calculate scale accordingly when resizing window
         AffineTransform scaleTf = new AffineTransform();
         scaleTf.scale(factor, factor);
-
         // Move
         scaleTf.translate(bounds.getCenterX() / factor - fontBounds.getCenterX(),
             bounds.getCenterY() / factor - fontBounds.getCenterY());
         Shape outline = tl.getOutline(scaleTf);
-
         // Restore graphics configuration
         g2d.setFont(oldFont);
         return outline;
@@ -308,15 +309,12 @@ public class MapPanel extends JPanel {
         // save g2d configuration
         Color oldColor = g2d.getColor();
         Stroke oldStroke = g2d.getStroke();
-
         // G2d Configuration
         g2d.setColor(TUColors.COLOR_0D);
-
         float outerTicksWidth = .5f;
         float tenTicksWidth = .25f;
         float fiveTicksWidth = .125f;
         float oneTicksWidth = 1f/32f;
-
         // Vertical Lines
         for (int i = 0, x = -width / 2; x < width / 2; i++, x += 1) {
             float strokeWidth;
@@ -367,33 +365,13 @@ public class MapPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
+        if (lastPoint.get() == null)
+            center();
         var g2d = (Graphics2D) g;
-
-        var insets = getInsets();
-        var innerBounds = new Rectangle(getX() + insets.left,
-            getY() + insets.top,
-            getWidth() - insets.left - insets.right,
-            getHeight() - insets.top - insets.bottom);
-
         AffineTransform old = g2d.getTransform();
-
-        AffineTransform at = new AffineTransform();
-
-        at.concatenate(t);
-        g2d.setTransform(at);
-
-//        var oldTranslation = g2d.getTransform();
-//        g2d.scale(scale, scale);
-//        g2d.translate((innerBounds.getCenterX() + centerLocation.getX()) / scale,
-//            (innerBounds.getCenterY() + centerLocation.getY()) / scale);
-
+        g2d.setTransform(getTransform());
         paintMap(g2d);
-
         g2d.setTransform(old);
-
-
-
     }
 
     /**
@@ -405,8 +383,6 @@ public class MapPanel extends JPanel {
      */
     private void paintMap(Graphics2D g2d) {
         // Background
-        // g2d.setColor(Color.BLACK);
-        // g2d.fill(MapBounds);
         drawGrid(g2d, 40, 40, true);
         g2d.setStroke(new BasicStroke(0.125f));
         var actualNodeDiameter = NODE_DIAMETER;
@@ -434,21 +410,9 @@ public class MapPanel extends JPanel {
                 new Ellipse2D.Double(location.getX(), location.getY(),
                     actualNodeDiameter,
                     actualNodeDiameter)));
-
         vehicleManager
             .getVehicles()
-            .stream()
             .forEach(v -> paintVehicle(g2d, v));
-
-//        // Mark Center
-//        g2d.setColor(Color.GREEN);
-//        fillAt(g2d, 0, 0, new Ellipse2D.Double(0, 0, actualNodeDiameter, actualNodeDiameter));
-//        // g2d.drawString("Center", 0, 0);
-//        var centerLabel = getLabel(g2d, 0, 0, Math.max(10,100 / scale), 1, "Center");
-//        g2d.setStroke(new BasicStroke(0.5f));
-//        g2d.fill(centerLabel);
-
-        // TODO: Draw Actual Map
     }
 
 }

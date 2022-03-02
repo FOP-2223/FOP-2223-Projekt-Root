@@ -1,56 +1,98 @@
 package projekt.gui;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import projekt.delivery.routing.Vehicle;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 public class DetailsPanel extends JPanel {
-    private JScrollPane scrollPane;
-    private JComboBox<VehicleEntry> detailsArea;
-    private List<VehicleEntry> vehicles;
 
-    public DetailsPanel() {
+    private final MainFrame mainFrame;
+
+    private JScrollPane scrollPane;
+    private JComboBox<Vehicle> selectionArea;
+
+    public DetailsPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
         initComponents();
     }
 
     public void initComponents() {
         setLayout(new GridLayout(0, 1));
         setBorder(new TitledBorder("Location Details"));
-        detailsArea = new JComboBox<>();
-        detailsArea.setEnabled(false);
-        add(detailsArea, BorderLayout.CENTER);
+        selectionArea = new JComboBox<>();
+
+        add(selectionArea, BorderLayout.CENTER);
         // TODO: Basically everything lol
         // TODO: Replace with JTable, Add Data
+
+        selectionArea.setRenderer(new ListCellRenderer<Vehicle>() {
+
+            ListCellRenderer<? super Vehicle> original = selectionArea.getRenderer();
+
+            @Override
+            public Component getListCellRendererComponent(JList<? extends Vehicle> list, Vehicle value, int index, boolean isSelected, boolean cellHasFocus) {
+
+                var component = (JLabel) original.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value != null) {
+                    component.setText(String.format("Vehicle %d", value.getId()));
+                } else {
+                    component.setText("No Vehicle");
+                }
+                return component;
+            }
+        });
+
+        selectionArea.addActionListener(l -> {
+            mainFrame.setSelectedVehicle((Vehicle) selectionArea.getSelectedItem());
+        });
+
     }
 
-    public void setVehicles(Set<Vehicle> vehicles) {
-        detailsArea.removeAllItems();
-        vehicles.stream().map(VehicleEntry::new).forEach(detailsArea::addItem);
-        detailsArea.setEnabled(detailsArea.getItemCount() != 0);
+    public void setVehicles(Collection<Vehicle> vehicles) {
+        if (selectionArea.getItemCount() > 0)
+            // initialize selection are only once
+            return;
+        selectionArea.addItem(null);
+        vehicles.forEach(selectionArea::addItem);
+
     }
 
-    public JComboBox getDetailsArea() {
-        return detailsArea;
+    public void setSelectedVehicle(Vehicle vehicle) {
+        selectionArea.setSelectedItem(vehicle);
     }
 
-    private static class VehicleEntry {
-
-        private final Vehicle vehicle;
-
-        private VehicleEntry(Vehicle vehicle) {
-            this.vehicle = vehicle;
-            vehicle.getOrders()
-        }
-
-        @Override
-        public String toString() {
-
-            return String.format("Vehicle %d", vehicle.getId());
-        }
-    }
+//    private static class VehicleEntry {
+//
+//        private static final VehicleEntry NULL = new VehicleEntry(null);
+//
+//        private final Vehicle vehicle;
+//
+//        private VehicleEntry(@Nullable Vehicle vehicle) {
+//            this.vehicle = vehicle;
+//        }
+//
+//
+//
+//        @Override
+//        public String toString() {
+//            if (vehicle == null)
+//                return "No Vehicle";
+//            return String.format("Vehicle %d", vehicle.getId());
+//
+//        }
+//
+//        @Override
+//        public boolean equals(Object obj) {
+//            return super.equals(obj) || Objects.equals(vehicle, obj);
+//        }
+//
+//    }
 
 }

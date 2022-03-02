@@ -10,6 +10,10 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 import static projekt.delivery.routing.VehicleManager.*;
 
@@ -55,5 +59,70 @@ public interface Utils {
         return toPoint(vehicle.getOccupied());
     }
 
+    static Point2D toPoint(Region.Node node) {
+        return toPoint(node.getLocation());
+    }
+
+    interface Collectors {
+
+        Collector<Point2D, Point2D, Point2D> POINT_MIN = point((a, e) -> a < e);
+        Collector<Point2D, Point2D, Point2D> POINT_MAX = point((a, e) -> a > e);
+
+        static Collector<Point2D, Point2D, Point2D> point(BiPredicate<Double, Double> pred) {
+
+            return Collector.of(Point2D.Double::new,
+                (a, e) -> {
+                    a.setLocation(
+                        pred.test(a.getX(), e.getX()) ? a.getX() : e.getX(),
+                        pred.test(a.getY(), e.getY()) ? a.getY() : e.getY());
+                },
+                (a, e) -> {
+                   throw new UnsupportedOperationException();
+                });
+
+        }
+
+        static Collector<Point2D, Point2D, Point2D> center() {
+
+            return new Collector<>() {
+
+                AtomicInteger counter = new AtomicInteger();
+
+                @Override
+                public Supplier<Point2D> supplier() {
+                    return Point2D.Double::new;
+                }
+
+                @Override
+                public BiConsumer<Point2D, Point2D> accumulator() {
+                    return (acc, elem) -> {
+                        counter.incrementAndGet();
+                        acc.setLocation(acc.getX() + elem.getX(), acc.getY() + elem.getY());
+                    };
+                }
+
+                @Override
+                public BinaryOperator<Point2D> combiner() {
+                    return (a, b) -> new Point2D.Double((a.getX()+b.getX())/2d, (a.getY()+b.getY())/2d);
+                }
+
+                @Override
+                public Function<Point2D, Point2D> finisher() {
+                    return acc -> {
+                        System.out.println("---> " + counter);
+                        acc.setLocation(acc.getX() / counter.get(), acc.getY() / counter.get());
+                        return acc;
+                    };
+                }
+
+                @Override
+                public Set<Characteristics> characteristics() {
+                    return Set.of();
+                }
+            };
+
+        }
+
+    }
 
 }

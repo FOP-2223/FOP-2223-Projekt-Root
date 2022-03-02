@@ -5,19 +5,24 @@ import projekt.delivery.routing.Vehicle;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.Collection;
 import java.util.Set;
 
 public class InfoPanel extends JPanel {
+
+    private final MainFrame mainFrame;
+
     private DetailsPanel detailsPanel;
     private OrdersPanel ordersPanel;
 
-    public InfoPanel() {
+    public InfoPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
         initComponents();
     }
 
     public void initComponents() {
-        detailsPanel = new DetailsPanel();
-        ordersPanel = new OrdersPanel();
+        detailsPanel = new DetailsPanel(mainFrame);
+        ordersPanel = new OrdersPanel(mainFrame);
         setLayout(new GridLayout(2, 1, 6, 6));
         add(detailsPanel, BorderLayout.NORTH);
         add(ordersPanel, BorderLayout.SOUTH);
@@ -31,8 +36,11 @@ public class InfoPanel extends JPanel {
         return ordersPanel;
     }
 
-    public void setVehicles(Set<Vehicle> vehicles) {
+    public void setVehicles(Collection<Vehicle> vehicles) {
         detailsPanel.setVehicles(vehicles);
     }
 
+    public void setSelectedVehicle(Vehicle selectedVehicle) {
+        detailsPanel.setSelectedVehicle(selectedVehicle);
+    }
 }

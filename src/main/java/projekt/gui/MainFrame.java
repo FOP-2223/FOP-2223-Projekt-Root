@@ -1,5 +1,6 @@
 package projekt.gui;
 
+import org.jetbrains.annotations.Nullable;
 import projekt.delivery.DeliveryService;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
@@ -9,7 +10,6 @@ import projekt.pizzeria.Pizzeria;
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.util.Set;
 
 public class MainFrame extends JFrame {
 
@@ -22,6 +22,10 @@ public class MainFrame extends JFrame {
     private InfoPanel infoPanel;
     private MapPanel mapPanel;
     private MenuBar menuBar;
+
+
+
+    private Vehicle selectedVehicle;
 
     public MainFrame(Region region, VehicleManager vehicleManager, DeliveryService deliverService, Pizzeria pizzeria) {
         this.region = region;
@@ -36,7 +40,7 @@ public class MainFrame extends JFrame {
      * This method is called from within the constructor to initialize the form.
      */
     private void initComponents() {
-        infoPanel = new InfoPanel();
+        infoPanel = new InfoPanel(this);
         mapPanel = new MapPanel(region, vehicleManager, deliveryService, pizzeria, this);
         controlsPanel = new ControlsPanel(deliveryService.getSimulationConfig());
         menuBar = new MenuBar(this);
@@ -48,10 +52,6 @@ public class MainFrame extends JFrame {
 
         // Menu Bar
         setJMenuBar(menuBar);
-
-        // mapPanel.setBackground(Color.red);
-        // infoPanel.setBackground(Color.green);
-        // controlsPanel.setBackground(Color.blue);
         add(mapPanel, BorderLayout.CENTER);
         add(infoPanel, BorderLayout.EAST);
         add(controlsPanel, BorderLayout.SOUTH);
@@ -70,14 +70,24 @@ public class MainFrame extends JFrame {
         return controlsPanel;
     }
 
-    public void setVehicles(Set<Vehicle> vehicles) {
-        infoPanel.setVehicles(vehicles);
+
+    public void setSelectedVehicle(@Nullable Vehicle vehicle) {
+        this.selectedVehicle = vehicle;
+        onUpdate();
     }
 
-    public void update() {
+    public Vehicle getSelectedVehicle() {
+        return selectedVehicle;
+    }
 
+    public void onModelUpdate() {
+        infoPanel.setVehicles(vehicleManager.getVehicles());
+        onUpdate();
+    }
+
+    public void onUpdate() {
+        infoPanel.setSelectedVehicle(selectedVehicle);
         mapPanel.repaint();
     }
-
 
 }
