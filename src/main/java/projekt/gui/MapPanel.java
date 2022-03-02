@@ -1,20 +1,15 @@
 package projekt.gui;
 
 import projekt.base.Location;
-import projekt.delivery.DeliveryService;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
-import projekt.delivery.routing.VehicleManager;
-import projekt.pizzeria.Pizzeria;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.font.TextLayout;
 import java.awt.geom.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -23,10 +18,15 @@ import static projekt.gui.Utils.toPoint;
 
 public class MapPanel extends JPanel {
 
-    private static final double NODE_DIAMETER = 0.8;
-    private static final double IMAGE_DIAMETER = 0.7;
-    private static final Image[] IMAGE_CAR =  Arrays.stream(TUColors.COLOR_C).map(c -> Utils.loadImage("car.png", c)).toArray(Image[]::new);
-    private static final Image[] IMAGE_CAR_SELECTED =  Arrays.stream(TUColors.COLOR_A).map(c -> Utils.loadImage("car.png", c)).toArray(Image[]::new);
+    private static final Stroke STROKE = new BasicStroke(.1f);
+    private static final Color NODE_COLOR = TUColors.COLOR_0D;
+    private static final Color EDGE_COLOR = TUColors.COLOR_0C;
+
+    private static final double NODE_DIAMETER = .95;
+    private static final double IMAGE_SIZE = .5;
+    private static final Color CAR_COLOR = TUColors.COLOR_6C;
+    private static final Image CAR = Utils.loadImage("car.png", new Color(CAR_COLOR.getRed(), CAR_COLOR.getGreen(), CAR_COLOR.getBlue(), 255/4));
+    private static final Image CAR_SELECTED = Utils.loadImage("car.png", CAR_COLOR);
     private static final double SCALE_IN = 1.1;
     private static final double SCALE_OUT = 1 / SCALE_IN;
 
@@ -44,7 +44,6 @@ public class MapPanel extends JPanel {
     private void initComponents() {
         setBackground(Color.BLACK);
         setBorder(new TitledBorder("Map"));
-
         this.addMouseMotionListener(new MouseAdapter() {
 
             @Override
@@ -68,7 +67,6 @@ public class MapPanel extends JPanel {
                 updateLocation();
             }
         });
-
         this.addMouseWheelListener(event -> {
             try {
                 var before = transformation.inverseTransform(lastPoint.get(), null);
@@ -93,10 +91,13 @@ public class MapPanel extends JPanel {
     }
 
 
-    private boolean centered = false;
+    private boolean alreadyCentered = false;
 
-    public void center() {
-        if (centered)
+    /**
+     * Performs scale and translation of the view so that the given map fills this view.
+     */
+    private void center() {
+        if (alreadyCentered)
             return;
         var width = getWidth();
         var height = getHeight();
@@ -117,16 +118,26 @@ public class MapPanel extends JPanel {
         reverse.transform(center, center);
         var nodeCenter = mainFrame.region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.center());
         transformation.translate(center.getX() - nodeCenter.getX() , center.getY() - nodeCenter.getY());
-        centered = true;
+        alreadyCentered = true;
     }
 
-    public Point2D getCurrentPoint() {
+    /**
+     * Returns the last point hovered by the mouse or {@code null} if no point was hovered by the mouse.
+     * @return the point
+     * @see MapPanel#getCurrentLocation()
+     */
+    private Point2D getCurrentPoint() {
         if (lastPoint.get() == null)
             return null;
         var reverse = getReverseTransform();
         return reverse.transform(lastPoint.get(), null);
     }
 
+    /**
+     * Returns the last location hovered by the mouse or {@code null} if no location was hovered by the mouse.
+     * @return the location
+     * @see MapPanel#getCurrentPoint()
+     */
     public Location getCurrentLocation() {
         var currentPoint = getCurrentPoint();
         if (currentPoint == null)
@@ -134,18 +145,29 @@ public class MapPanel extends JPanel {
         return new Location((int) Math.round(currentPoint.getX()), (int) Math.round(currentPoint.getY()));
     }
 
-    public List<Vehicle> getVehicles(Point2D position) {
+    /**
+     * Returns a list of vehicles positioned at the given position.
+     * @param position the position to look for
+     * @return the list of vehicles
+     */
+    private List<Vehicle> getVehicles(Point2D position) {
         return mainFrame.vehicleManager.getVehicles()
             .stream()
             .filter(v -> toPoint(v).distance(position) < 1).toList();
     }
 
-    public void updateLocation() {
+    /**
+     * Updates the location information in the main frame.
+     */
+    private void updateLocation() {
         var location = getCurrentLocation();
         mainFrame.getControlsPanel().getMousePositionLabel().setText(
             String.format("(x: %d, y: %d)", location.getX(), location.getY()));
     }
 
+    /**
+     * Updates the vehicle selection.
+     */
     public void updateVehicleSelection() {
         var vehicles = getVehicles(getCurrentPoint());
         if (!vehicles.isEmpty()) {
@@ -154,10 +176,21 @@ public class MapPanel extends JPanel {
         }
     }
 
+
+    /**
+     * Returns the affine transformation used to map model locations to view locations.
+     * @return the affine transformation
+     * @see MapPanel#getReverseTransform()
+     */
     private AffineTransform getTransform() {
         return transformation;
     }
 
+    /**
+     * Returns the reverse affine transformation used to map view locations to model locations.
+     * @return the reverse affine transformation
+     * @see MapPanel#getReverseTransform()
+     */
     private AffineTransform getReverseTransform() {
         try {
             return getTransform().createInverse();
@@ -167,123 +200,109 @@ public class MapPanel extends JPanel {
     }
 
     /**
-     * Fills a Given Shape and also draws a border with the given Colors saving and
-     * restoring the original stoke and color of g2d.
-     *
-     * @param g2d           the specified Graphics context
-     * @param interiorColor the Color of the filled Area
-     * @param borderColor   the border Color
-     * @param borderWidth   the Width of the Border
-     * @param s             the Shape to draw
+     * Paints the given image at the given location with a size of {@link #IMAGE_SIZE}.
+     * @param g a graphics object to paint the image on
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @param image the image to paint
      */
-    public void fillDraw(Graphics2D g2d, Color interiorColor, Color borderColor, float borderWidth, Shape s) {
-        // Store current g2d Configuration
-        Color oldColor = g2d.getColor();
-        Stroke oldStroke = g2d.getStroke();
-
-        // Fill the shape
-        g2d.setColor(interiorColor);
-        g2d.fill(s);
-
-        if (borderWidth > 0) {
-            // Draw a border on top
-            g2d.setStroke(new BasicStroke(borderWidth));
-            g2d.setColor(borderColor);
-            g2d.draw(s);
-        }
-
-        // Restore g2d Configuration
-        g2d.setStroke(oldStroke);
-        g2d.setColor(oldColor);
-    }
-
-    public Shape centerShapeAtPos(double x, double y, Shape s) {
-        return AffineTransform.getTranslateInstance(
-                x - s.getBounds2D().getCenterX(),
-                y - s.getBounds2D().getCenterY())
-            .createTransformedShape(s);
-    }
-
-    public Shape centerShapeAtPos(Point center, Shape s) {
-        return centerShapeAtPos(center.x, center.y, s);
-    }
-
-    public Rectangle2D r2dFromCenter(double x, double y, double w, double h) {
-        return new Rectangle2D.Double(x - w / 2, y - w / 2, w, h);
-    }
-
-    public Rectangle2D r2dFromCenter(Point center, double w, double h) {
-        return r2dFromCenter(center.x, center.y, w, h);
-    }
-
-    public void drawAt(Graphics2D g2d, double x, double y, Shape s) {
-        g2d.draw(centerShapeAtPos(x, y, s));
-    }
-
-    public void fillAt(Graphics2D g2d, double x, double y, Shape s) {
-        g2d.fill(centerShapeAtPos(x, y, s));
-    }
-
-    public void paintImage(Graphics2D g2d, double x, double y, Image image) {
-        var old = g2d.getTransform();
+    private void paintImage(Graphics2D g, double x, double y, Image image) {
+        var old = g.getTransform();
         var transformation = new AffineTransform(old);
-        transformation.translate(x - IMAGE_DIAMETER / 2, y - IMAGE_DIAMETER / 2);
-        transformation.scale(IMAGE_DIAMETER, IMAGE_DIAMETER);
-        g2d.setTransform(transformation);
-        g2d.drawImage(image, 0, 0, 1, 1, null);
-        g2d.setTransform(old);
-    }
-
-    public void paintImage(Graphics2D g2d, Point2D p, Image image) {
-        paintImage(g2d, p.getX(), p.getY(), image);
-    }
-
-    public void paintVehicle(Graphics2D g2d, Vehicle vehicle) {
-        var ID = vehicle.getId() % IMAGE_CAR.length;
-        paintImage(g2d, toPoint(vehicle), mainFrame.getSelectedVehicle() != vehicle ? IMAGE_CAR[ID] : IMAGE_CAR_SELECTED[ID]);
-    }
-
-    public void paintImage(Graphics2D g2d, Location l1, Location l2, Image image) {
-        paintImage(g2d, (l1.getX() + l2.getX()) / 2d, (l1.getY() + l2.getY()) / 2d, image);
+        transformation.translate(x - IMAGE_SIZE / 2, y - IMAGE_SIZE / 2);
+        transformation.scale(IMAGE_SIZE, IMAGE_SIZE);
+        g.setTransform(transformation);
+        g.drawImage(image, 0, 0, 1, 1, null);
+        g.setTransform(old);
     }
 
     /**
-     * Create A shape with the desired Text and the desired width
-     *
-     * @param g2d             the specified Graphics context to draw the font with
-     * @param borderThickness the border thickness to account for
-     * @param text            the string to display
-     * @param f               the font used for drawing the string
-     * @return The Shape of the outline
+     * Paints the given image at the given location with a size of {@link #IMAGE_SIZE}.
+     * @param g a graphics object to paint the image on
+     * @param location the location
+     * @param image the image to paint
      */
-    public Shape fitTextInBounds(Graphics2D g2d, Rectangle2D bounds, float borderThickness, String text, Font f) {
-        // Store current g2d Configuration
-        Font oldFont = g2d.getFont();
-        // graphics configuration
-        g2d.setFont(f);
-        // Prepare Shape creation
-        TextLayout tl = new TextLayout(text, f, g2d.getFontRenderContext());
-        Rectangle2D fontBounds = tl.getOutline(null).getBounds2D();
-        // Calculate scale Factor
-        double factorX = (bounds.getWidth() - borderThickness) / fontBounds.getWidth();
-        double factorY = (bounds.getHeight() - borderThickness) / fontBounds.getHeight();
-        double factor = Math.min(factorX, factorY);
-        // Scale
-        AffineTransform scaleTf = new AffineTransform();
-        scaleTf.scale(factor, factor);
-        // Move
-        scaleTf.translate(bounds.getCenterX() / factor - fontBounds.getCenterX(),
-            bounds.getCenterY() / factor - fontBounds.getCenterY());
-        Shape outline = tl.getOutline(scaleTf);
-        // Restore graphics configuration
-        g2d.setFont(oldFont);
-        return outline;
+    private void paintImage(Graphics2D g, Point2D location, Image image) {
+        paintImage(g, location.getX(), location.getY(), image);
     }
 
-    public Shape getLabel(Graphics2D g2d, double x, double y, double width, double offset, String text) {
-        var bounds = r2dFromCenter(x, y - width / 2 - offset, width, width);
-        var scaledText = fitTextInBounds(g2d, bounds, 0, text, g2d.getFont());
-        return centerShapeAtPos(x, y - scaledText.getBounds2D().getHeight() / 2 - offset, scaledText);
+    /**
+     * Paints the given vehicle.
+     * @param g g a graphics object to paint the image on
+     * @param vehicle the vehicle to paint
+     */
+    private void paintVehicle(Graphics2D g, Vehicle vehicle) {
+        var image = CAR_SELECTED;
+        if (mainFrame.getSelectedVehicle() != null && mainFrame.getSelectedVehicle() != vehicle)
+            image = CAR;
+        paintImage(g, toPoint(vehicle), image);
+    }
+
+    /**
+     * Paints the given node.
+     * @param g a graphics object to paint the image on
+     * @param node the node to paint
+     */
+    private void drawNode(Graphics2D g, Region.Node node) {
+        var oldColor = g.getColor();
+        var oldStroke = g.getStroke();
+        g.setStroke(STROKE);
+        g.setColor(NODE_COLOR);
+        var location = node.getLocation();
+        var circle = new Ellipse2D.Double(location.getX() - NODE_DIAMETER/2f, location.getY() - NODE_DIAMETER/2f,
+            NODE_DIAMETER,
+            NODE_DIAMETER);
+        var textPoint = Utils.toPoint(node);
+        textPoint.setLocation(textPoint.getX()+.5, textPoint.getY()-.5);
+        text(g, textPoint, TUColors.COLOR_0A, node.getName());
+        g.fill(circle);
+        g.setColor(EDGE_COLOR);
+        g.draw(circle);
+        g.setStroke(oldStroke);
+        g.setColor(oldColor);
+    }
+
+    /**
+     * Paints the given edge.
+     * @param g the graphics object to paint the image on
+     * @param edge the edge to paint
+     */
+    private void paintEdge(Graphics2D g, Region.Edge edge) {
+        var oldColor = g.getColor();
+        var oldStroke = g.getStroke();
+        g.setColor(EDGE_COLOR);
+        g.setStroke(STROKE);
+        var l = Utils.toPoint(edge);
+        var l1 = edge.getNodeA().getLocation();
+        var l2 = edge.getNodeB().getLocation();
+        Line2D.Double line = new Line2D.Double(
+            l1.getX(),
+            l1.getY(),
+            l2.getX(),
+            l2.getY());
+        g.draw(line);
+        text(g, l, TUColors.COLOR_0A, String.format("%s", edge.getName()));
+        g.setStroke(oldStroke);
+        g.setColor(oldColor);
+    }
+
+    /**
+     * Paints the given text at the given position using the given position.
+     * @param g the graphics object to paint the image on
+     * @param position the position to start
+     * @param color the color of the text
+     * @param text the text
+     */
+    private void text(Graphics2D g, Point2D position, Color color, String text) {
+        var oldTransformation = g.getTransform();
+        var oldColor = g.getColor();
+        g.setColor(color);
+        position = oldTransformation.transform(position, null);
+        g.setTransform(new AffineTransform());
+        g.setFont(g.getFont().deriveFont(Font.BOLD));
+        g.drawString(text, (float) position.getX(), (float) position.getY());
+        g.setColor(oldColor);
+        g.setTransform(oldTransformation);
     }
 
     /**
@@ -291,7 +310,6 @@ public class MapPanel extends JPanel {
      *
      * @param g2d the specified graphics context
      */
-    @SuppressWarnings("unused")
     public void drawGrid(Graphics2D g2d, int width, int height, boolean drawMinors) {
         // save g2d configuration
         Color oldColor = g2d.getColor();
@@ -318,7 +336,6 @@ public class MapPanel extends JPanel {
             g2d.setStroke(new BasicStroke(strokeWidth));
             g2d.drawLine(x, -height / 2, x, height / 2);
         }
-
         // Horizontal Lines
         for (int i = 0, y = -height / 2; y < height / 2; i++, y += 1) {
             float strokeWidth;
@@ -365,41 +382,15 @@ public class MapPanel extends JPanel {
      * Paints the Map using the given g2d. This method assumes that (0,0) paints
      * centered
      *
-     * @param g2d       The specified Graphics Context, transformed so (0,0) is
+     * @param g       The specified Graphics Context, transformed so (0,0) is
      *                  centered.
      */
-    private void paintMap(Graphics2D g2d) {
+    private void paintMap(Graphics2D g) {
         // Background
-        drawGrid(g2d, 40, 40, true);
-        g2d.setStroke(new BasicStroke(0.125f));
-        var actualNodeDiameter = NODE_DIAMETER;
-        g2d.setColor(TUColors.COLOR_0B);
-        mainFrame.region
-            .getEdges()
-            .stream()
-            .map(edge -> new Location[]{edge.getNodeA().getLocation(), edge.getNodeB().getLocation()})
-            .forEach(locations -> {
-                Line2D.Double line = new Line2D.Double(
-                    locations[0].getX(),
-                    locations[0].getY(),
-                    locations[1].getX(),
-                    locations[1].getY());
-                g2d.draw(line);
-            });
-        g2d.setColor(TUColors.COLOR_0C);
-        mainFrame.region
-            .getNodes()
-            .stream()
-            .map(Region.Node::getLocation)
-            .forEach(location -> fillAt(g2d,
-                location.getX(),
-                location.getY(),
-                new Ellipse2D.Double(location.getX(), location.getY(),
-                    actualNodeDiameter,
-                    actualNodeDiameter)));
-        mainFrame.vehicleManager
-            .getVehicles()
-            .forEach(v -> paintVehicle(g2d, v));
+        drawGrid(g, 50, 50, true);
+        mainFrame.region.getEdges().forEach(e -> paintEdge(g, e));
+        mainFrame.getRegion().getNodes().forEach(n -> drawNode(g, n));
+        mainFrame.vehicleManager.getVehicles().forEach(v -> paintVehicle(g, v));
     }
 
 }
