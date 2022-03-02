@@ -6,13 +6,12 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.Collection;
-import java.util.Set;
 
 public class InfoPanel extends JPanel {
 
     private final MainFrame mainFrame;
 
-    private DetailsPanel detailsPanel;
+    private VehiclePanel detailsPanel;
     private OrdersPanel ordersPanel;
 
     public InfoPanel(MainFrame mainFrame) {
@@ -21,14 +20,14 @@ public class InfoPanel extends JPanel {
     }
 
     public void initComponents() {
-        detailsPanel = new DetailsPanel(mainFrame);
+        detailsPanel = new VehiclePanel(mainFrame);
         ordersPanel = new OrdersPanel(mainFrame);
         setLayout(new GridLayout(2, 1, 6, 6));
         add(detailsPanel, BorderLayout.NORTH);
         add(ordersPanel, BorderLayout.SOUTH);
     }
 
-    public DetailsPanel getDetailsPanel() {
+    public VehiclePanel getDetailsPanel() {
         return detailsPanel;
     }
 

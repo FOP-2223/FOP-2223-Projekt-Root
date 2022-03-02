@@ -1,24 +1,20 @@
 package projekt.gui;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import projekt.delivery.routing.Vehicle;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 
-public class DetailsPanel extends JPanel {
+public class VehiclePanel extends JPanel {
 
     private final MainFrame mainFrame;
 
     private JScrollPane scrollPane;
     private JComboBox<Vehicle> selectionArea;
 
-    public DetailsPanel(MainFrame mainFrame) {
+    public VehiclePanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         initComponents();
     }
