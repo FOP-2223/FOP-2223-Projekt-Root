@@ -5,7 +5,6 @@ import projekt.delivery.routing.Vehicle;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.util.Collection;
 
 public class InfoPanel extends JPanel {
 
@@ -42,8 +41,8 @@ public class InfoPanel extends JPanel {
         return currentTimePanel;
     }
 
-    public void setVehicles(Collection<Vehicle> vehicles) {
-        detailsPanel.setVehicles(vehicles);
+    public void onUpdate() {
+        detailsPanel.onUpdate();
     }
 
     public void setSelectedVehicle(Vehicle selectedVehicle) {
