@@ -1,9 +1,9 @@
 package projekt.gui;
 
-import com.google.common.io.Resources;
 import projekt.base.Location;
 import projekt.delivery.DeliveryService;
 import projekt.delivery.routing.Region;
+import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
 import projekt.pizzeria.Pizzeria;
 
@@ -21,19 +21,25 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.font.TextLayout;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static java.awt.Toolkit.getDefaultToolkit;
+import static projekt.gui.Utils.getDifference;
+import static projekt.gui.Utils.toPoint;
 
 public class MapPanel extends JPanel {
 
-    private static final Image IMAGE_CAR = getDefaultToolkit().getImage(Resources.getResource("car.png"));
+    private static final double NODE_DIAMETER = 0.8;
+    private static final double IMAGE_DIAMETER = 0.7;
+    //private static final Image IMAGE_CAR = getDefaultToolkit().getImage(Resources.getResource("car.png"));
+    private static final Image IMAGE_CAR = Utils.loadImage("car.png", TUColors.COLOR_0D);
+    private static final double SCALE_IN = 1.1;
+    private static final double SCALE_OUT = 1 / SCALE_IN;
 
     private final Region region;
     private final VehicleManager vehicleManager;
@@ -43,12 +49,11 @@ public class MapPanel extends JPanel {
     private final MainFrame mainFrame;
     private final Map<Location, String> nodes;
 
-    private Point anchorPoint;
-    private Point centerLocation = new Point(0, 0);
-    private double scale = 10d;
-    private double scaleModifierFactor = 0.1;
 
-    private static final double NODE_DIAMETER = 1;
+    private final AffineTransform t = new AffineTransform();
+    //private final AffineTransform t = new AffineTransform();
+
+    private Vehicle selectedVehicle = null;
 
     public MapPanel(Region region,
                     VehicleManager vehicleManager,
@@ -62,67 +67,108 @@ public class MapPanel extends JPanel {
         this.mainFrame = mainFrame;
 
         nodes = region.getNodes().stream().collect(Collectors.toMap(Region.Node::getLocation, Region.Component::getName));
-
         initComponents();
     }
+
+    final AtomicReference<Point> lastPoint = new AtomicReference<>();
 
     private void initComponents() {
         setBackground(Color.BLACK);
         setBorder(new TitledBorder("Map"));
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-            }
-        });
+
         this.addMouseMotionListener(new MouseAdapter() {
 
             @Override
             public void mouseDragged(MouseEvent event) {
-                int anchorX = anchorPoint.x;
-                int anchorY = anchorPoint.y;
-
-                Point parentOnScreen = getParent().getLocationOnScreen();
-                Point mouseOnScreen = event.getLocationOnScreen();
-                Point position = new Point(mouseOnScreen.x - parentOnScreen.x - anchorX,
-                    mouseOnScreen.y - parentOnScreen.y - anchorY);
-                // setLocation(position);
-                // TODO: Fix Mouse Movent always calculating from center
-                setCenterLocation(position);
-                // setCenterLocation(new Point((int) (centerLocation.getX() + position.getX()),
-                // (int) (centerLocation.getY() + centerLocation.getY())));
+                try {
+                    var lastTransformed = t.inverseTransform(lastPoint.get(), null);
+                    var currentTransformed = t.inverseTransform(event.getPoint(), null);
+                    var difference = getDifference(currentTransformed, lastTransformed);
+                    t.translate(difference.getX(), difference.getY());
+                    repaint();
+                    lastPoint.set(event.getPoint());
+                    updateLocation();
+                } catch (NoninvertibleTransformException e) {
+                    throw new IllegalStateException();
+                }
             }
 
             @Override
             public void mouseMoved(MouseEvent event) {
-                Point p = event.getPoint();
-
-                // save current cursor position, used by mouseDragged()
-                anchorPoint = p;
-                Point mapCoordinates = new Point((int) ((anchorPoint.x - getBounds().getCenterX()) / scale),
-                    (int) ((anchorPoint.y - getBounds().getCenterY()) / scale));
-                mainFrame.getControlsPanel().getMousePositionLabel().setText(
-                    String.format("(x: %d, y: %d)", mapCoordinates.x, mapCoordinates.y));
-                mainFrame.getInfoPanel().getDetailsPanel().getDetailsArea().setText(
-                    nodes.entrySet()
-                        .stream()
-                        .filter(entry -> entry.getKey().equals(new Location(mapCoordinates.x, mapCoordinates.y)))
-                        .map(Map.Entry::getValue)
-                        .findAny()
-                        .orElse("")
-                );
-
-                // TODO: Fix position at which the node is displayed in the details panel
+                lastPoint.set(event.getPoint());
+                updateLocation();
             }
         });
+
         this.addMouseWheelListener(event -> {
-            int notches = event.getWheelRotation();
-            if (notches < 0) {
-                increaseScale();
-            } else {
-                decreaseScale();
+            try {
+                var before = t.inverseTransform(lastPoint.get(), null);
+                var scale = event.getWheelRotation() > 0 ? SCALE_OUT : SCALE_IN;
+                t.scale(scale, scale);
+                var after = t.inverseTransform(lastPoint.get(), null);
+                var difference = getDifference(after, before);
+                t.translate(difference.getX(), difference.getY());
+                repaint();
+                updateLocation();
+            } catch (NoninvertibleTransformException e) {
+                throw new IllegalStateException();
             }
         });
+
+        this.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                updateVehicleSelection();
+            }
+        });
+
+    }
+
+    public Point2D getCurrentPoint() {
+        if (lastPoint.get() == null)
+            return null;
+        var reverse = getReverseTransform();
+        return reverse.transform(lastPoint.get(), null);
+    }
+
+    public Location getCurrentLocation() {
+        var currentPoint = getCurrentPoint();
+        if (currentPoint == null)
+            return null;
+        return new Location((int) Math.round(currentPoint.getX()), (int) Math.round(currentPoint.getY()));
+    }
+
+    public Set<Vehicle> getVehicles(Point2D position) {
+
+        return vehicleManager.getVehicles()
+            .stream()
+            .filter(v -> toPoint(v).distance(position) < 1)
+            .collect(Collectors.toUnmodifiableSet());
+
+    }
+
+    public void updateLocation() {
+        var location = getCurrentLocation();
+        mainFrame.getControlsPanel().getMousePositionLabel().setText(
+            String.format("(x: %d, y: %d)", location.getX(), location.getY()));
+    }
+
+    public void updateVehicleSelection() {
+        mainFrame.setVehicles(getVehicles(getCurrentPoint()));
+
+    }
+
+    private AffineTransform getTransform() {
+        return t;
+    }
+
+    private AffineTransform getReverseTransform() {
+        try {
+            return t.createInverse();
+        } catch (NoninvertibleTransformException e) {
+            throw new IllegalStateException("transformation is non-invertible");
+        }
     }
 
     /**
@@ -185,15 +231,21 @@ public class MapPanel extends JPanel {
 
     public void paintImage(Graphics2D g2d, double x, double y, Image image) {
         var old = g2d.getTransform();
-        var translation = new AffineTransform(old);
-        translation.translate(x - 0.5, y - 0.5);
-        g2d.setTransform(translation);
+        var transformation = new AffineTransform(old);
+        transformation.translate(x - IMAGE_DIAMETER / 2, y - IMAGE_DIAMETER / 2);
+        transformation.scale(IMAGE_DIAMETER, IMAGE_DIAMETER);
+        g2d.setTransform(transformation);
         g2d.drawImage(image, 0, 0, 1, 1, null);
         g2d.setTransform(old);
     }
 
-    public void paintImage(Graphics2D g2d, Location l, Image image) {
-        paintImage(g2d, l.getX(), l.getY(), image);
+    public void paintImage(Graphics2D g2d, Point2D p, Image image) {
+        paintImage(g2d, p.getX(), p.getY(), image);
+    }
+
+    public void paintVehicle(Graphics2D g2d, Vehicle vehicle) {
+        paintImage(g2d, toPoint(vehicle), IMAGE_CAR);
+
     }
 
     public void paintImage(Graphics2D g2d, Location l1, Location l2, Image image) {
@@ -258,12 +310,12 @@ public class MapPanel extends JPanel {
         Stroke oldStroke = g2d.getStroke();
 
         // G2d Configuration
-        g2d.setColor(Color.GRAY);
+        g2d.setColor(TUColors.COLOR_0D);
 
-        float outerTicksWidth = .6f;
-        float tenTicksWidth = .3f;
-        float fiveTicksWidth = .2f;
-        float oneTicksWidth = .1f;
+        float outerTicksWidth = .5f;
+        float tenTicksWidth = .25f;
+        float fiveTicksWidth = .125f;
+        float oneTicksWidth = 1f/32f;
 
         // Vertical Lines
         for (int i = 0, x = -width / 2; x < width / 2; i++, x += 1) {
@@ -324,18 +376,24 @@ public class MapPanel extends JPanel {
             getWidth() - insets.left - insets.right,
             getHeight() - insets.top - insets.bottom);
 
-        var oldTranslation = g2d.getTransform();
-        g2d.scale(scale, scale);
-        g2d.translate((innerBounds.getCenterX() + centerLocation.getX()) / scale,
-            (innerBounds.getCenterY() + centerLocation.getY()) / scale);
+        AffineTransform old = g2d.getTransform();
 
-        paintMap(g2d, new Rectangle2D.Double(
-            -innerBounds.getWidth() / 2,
-            -innerBounds.getHeight() / 2,
-            innerBounds.getWidth(),
-            innerBounds.getHeight()));
+        AffineTransform at = new AffineTransform();
 
-        g2d.setTransform(oldTranslation);
+        at.concatenate(t);
+        g2d.setTransform(at);
+
+//        var oldTranslation = g2d.getTransform();
+//        g2d.scale(scale, scale);
+//        g2d.translate((innerBounds.getCenterX() + centerLocation.getX()) / scale,
+//            (innerBounds.getCenterY() + centerLocation.getY()) / scale);
+
+        paintMap(g2d);
+
+        g2d.setTransform(old);
+
+
+
     }
 
     /**
@@ -344,25 +402,15 @@ public class MapPanel extends JPanel {
      *
      * @param g2d       The specified Graphics Context, transformed so (0,0) is
      *                  centered.
-     * @param MapBounds the visual Bounds of the Map
      */
-    private void paintMap(Graphics2D g2d, Rectangle2D MapBounds) {
+    private void paintMap(Graphics2D g2d) {
         // Background
         // g2d.setColor(Color.BLACK);
         // g2d.fill(MapBounds);
-        drawGrid(g2d, 40, 40, scale > 30d);
-        g2d.setStroke(new BasicStroke(0.3f));
+        drawGrid(g2d, 40, 40, true);
+        g2d.setStroke(new BasicStroke(0.125f));
         var actualNodeDiameter = NODE_DIAMETER;
-        region
-            .getNodes()
-            .stream()
-            .map(Region.Node::getLocation)
-            .forEach(location -> fillAt(g2d,
-                location.getX(),
-                location.getY(),
-                new Ellipse2D.Double(location.getX(), location.getY(),
-                    actualNodeDiameter,
-                    actualNodeDiameter)));
+        g2d.setColor(TUColors.COLOR_0B);
         region
             .getEdges()
             .stream()
@@ -375,16 +423,22 @@ public class MapPanel extends JPanel {
                     locations[1].getY());
                 g2d.draw(line);
             });
+        g2d.setColor(TUColors.COLOR_0C);
+        region
+            .getNodes()
+            .stream()
+            .map(Region.Node::getLocation)
+            .forEach(location -> fillAt(g2d,
+                location.getX(),
+                location.getY(),
+                new Ellipse2D.Double(location.getX(), location.getY(),
+                    actualNodeDiameter,
+                    actualNodeDiameter)));
+
         vehicleManager
             .getVehicles()
-            .forEach(vehicle -> {
-                var component = vehicle.getOccupied().getComponent();
-                if (component instanceof Region.Node node) {
-                    paintImage(g2d, node.getLocation(), IMAGE_CAR);
-                } else if (component instanceof Region.Edge edge) {
-                    paintImage(g2d, edge.getNodeA().getLocation(), edge.getNodeB().getLocation(), IMAGE_CAR);
-                }
-            });
+            .stream()
+            .forEach(v -> paintVehicle(g2d, v));
 
 //        // Mark Center
 //        g2d.setColor(Color.GREEN);
@@ -397,39 +451,4 @@ public class MapPanel extends JPanel {
         // TODO: Draw Actual Map
     }
 
-    public double getScale() {
-        return scale;
-    }
-
-    public void setScale(double scale) {
-        this.scale = Math.max(10d, Math.min(100, scale));
-        repaint();
-    }
-
-    public void increaseScale() {
-        setScale(this.scale * (1d + scaleModifierFactor));
-    }
-
-    public void decreaseScale() {
-        setScale(this.scale * (1d - scaleModifierFactor));
-    }
-
-    public void resetScale() {
-        this.scale = 10d;
-        repaint();
-    }
-
-    public Point getCenterLocation() {
-        return centerLocation;
-    }
-
-    public void setCenterLocation(Point centerLocation) {
-        this.centerLocation = centerLocation;
-        repaint();
-    }
-
-    public void resetCenterLocation() {
-        this.centerLocation = new Point();
-        repaint();
-    }
 }

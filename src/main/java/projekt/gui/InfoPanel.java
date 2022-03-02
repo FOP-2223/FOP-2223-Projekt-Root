@@ -1,8 +1,11 @@
 package projekt.gui;
 
+import projekt.delivery.routing.Vehicle;
+
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.Set;
 
 public class InfoPanel extends JPanel {
     private DetailsPanel detailsPanel;
@@ -27,4 +30,9 @@ public class InfoPanel extends JPanel {
     public OrdersPanel getOrdersPanel() {
         return ordersPanel;
     }
+
+    public void setVehicles(Set<Vehicle> vehicles) {
+        detailsPanel.setVehicles(vehicles);
+    }
+
 }

@@ -58,7 +58,7 @@ public class Main {
 
             @Override
             public void onStateUpdated() {
-                SwingUtilities.invokeLater(mainFrame::repaint);
+                SwingUtilities.invokeLater(mainFrame::update);
             }
 
             public void setMainFrame(MainFrame mainFrame) {

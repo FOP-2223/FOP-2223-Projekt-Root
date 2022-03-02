@@ -2,12 +2,14 @@ package projekt.gui;
 
 import projekt.delivery.DeliveryService;
 import projekt.delivery.routing.Region;
+import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
 import projekt.pizzeria.Pizzeria;
 
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.Set;
 
 public class MainFrame extends JFrame {
 
@@ -67,4 +69,15 @@ public class MainFrame extends JFrame {
     public ControlsPanel getControlsPanel() {
         return controlsPanel;
     }
+
+    public void setVehicles(Set<Vehicle> vehicles) {
+        infoPanel.setVehicles(vehicles);
+    }
+
+    public void update() {
+
+        mapPanel.repaint();
+    }
+
+
 }

@@ -64,10 +64,10 @@ public class MenuBar extends JMenuBar {
     }
 
     public void centerViewMenuEntry_actionPerformed(ActionEvent e) {
-        mf.getMapPanel().resetCenterLocation();
+        //mf.getMapPanel().resetCenterLocation(); TODO
     }
 
     public void resetZoomMenuEntry_actionPerformed(ActionEvent e) {
-        mf.getMapPanel().resetScale();
+        //mf.getMapPanel().resetScale(); TODO
     }
 }
