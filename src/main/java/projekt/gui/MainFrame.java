@@ -23,8 +23,6 @@ public class MainFrame extends JFrame {
     private MapPanel mapPanel;
     private MenuBar menuBar;
 
-
-
     private Vehicle selectedVehicle;
 
     public MainFrame(Region region, VehicleManager vehicleManager, DeliveryService deliverService, Pizzeria pizzeria) {
@@ -81,13 +79,29 @@ public class MainFrame extends JFrame {
     }
 
     public void onModelUpdate() {
-        infoPanel.setVehicles(vehicleManager.getVehicles());
+        infoPanel.onUpdate();
         onUpdate();
     }
 
     public void onUpdate() {
         infoPanel.setSelectedVehicle(selectedVehicle);
         mapPanel.repaint();
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public VehicleManager getVehicleManager() {
+        return vehicleManager;
+    }
+
+    public DeliveryService getDeliveryService() {
+        return deliveryService;
+    }
+
+    public Pizzeria getPizzeria() {
+        return pizzeria;
     }
 
 }
