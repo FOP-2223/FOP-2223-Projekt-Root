@@ -58,7 +58,7 @@ class VehicleImpl implements Vehicle {
     public void moveDirect(Region.Node node, Consumer<? super Vehicle> arrivalAction) {
         checkMoveToNode(node);
         moveQueue.clear();
-        if (node instanceof Region.Edge) {
+        if (occupied instanceof OccupiedEdgeImpl) {
             // if a vehicle is on an edge, keep the movement to the next node
             final @Nullable VehicleManager.Occupied<?> previousOccupied = occupied.vehicles.get(this).previous;
             if (!(previousOccupied instanceof OccupiedNodeImpl<?>)) {
