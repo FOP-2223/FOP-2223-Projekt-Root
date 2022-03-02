@@ -43,9 +43,11 @@ public class ControlsPanel extends JPanel {
         playPauseButton.setFont(new Font("Dialog", 0, 16)); // NOI18N
         playPauseButton.setText("Play / Pause");
         playPauseButton.addActionListener(actionEvent -> {
-            simulationConfig.setPaused(paused = !paused);
-            singleStepButton.setEnabled(paused);
-            updateText();
+            if (!paused) {
+                pause();
+            } else {
+                unpause();
+            }
         });
 
         stopButton.setFont(new Font("Dialog", 0, 16)); // NOI18N
@@ -95,5 +97,17 @@ public class ControlsPanel extends JPanel {
 
     public JLabel getMousePositionLabel() {
         return mousePositionLabel;
+    }
+
+    public void pause() {
+        simulationConfig.setPaused(paused = true);
+        singleStepButton.setEnabled(true);
+        updateText();
+    }
+
+    public void unpause() {
+        simulationConfig.setPaused(paused = false);
+        singleStepButton.setEnabled(false);
+        updateText();
     }
 }

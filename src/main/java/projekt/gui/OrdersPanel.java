@@ -21,7 +21,6 @@ public class OrdersPanel extends JPanel {
     private JList<String> ordersArea;
     private OrdersControlPanel ordersControlPanel;
 
-
     private JTable table;
 
     public OrdersPanel(MainFrame mainFrame) {
@@ -32,7 +31,7 @@ public class OrdersPanel extends JPanel {
     public void initComponents() {
         table = new JTable();
         scrollPane = new JScrollPane(table);
-        ordersControlPanel = new OrdersControlPanel(this);
+        ordersControlPanel = new OrdersControlPanel(mainFrame, this);
 
         setLayout(new BorderLayout(6, 6));
         setBorder(new TitledBorder("Orders"));

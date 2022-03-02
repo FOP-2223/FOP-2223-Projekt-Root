@@ -8,12 +8,14 @@ public class OrdersControlPanel extends JPanel {
     private JButton addOrderButton;
     private JButton editOrderButton;
     private JButton removeOrderButton;
-    private OrdersPanel ordersPanel;
-    private OrdersDialog ordersDialog;
+    private final MainFrame mainFrame;
+    private final OrdersPanel ordersPanel;
+    private final OrdersDialog ordersDialog;
 
-    public OrdersControlPanel(OrdersPanel ordersPanel) {
+    public OrdersControlPanel(MainFrame mainFrame, OrdersPanel ordersPanel) {
+        this.mainFrame = mainFrame;
         this.ordersPanel = ordersPanel;
-        this.ordersDialog = new OrdersDialog();
+        this.ordersDialog = new OrdersDialog(mainFrame, ordersPanel);
         initComponents();
     }
 
@@ -22,7 +24,10 @@ public class OrdersControlPanel extends JPanel {
         editOrderButton = new JButton("Edit");
         removeOrderButton = new JButton("Remove");
 
-        addOrderButton.addActionListener(actionEvent -> ordersDialog.showAddOrderDialog(ordersPanel));
+        addOrderButton.addActionListener(actionEvent -> {
+            mainFrame.getControlsPanel().pause();
+            ordersDialog.showAddOrderDialog();
+        });
         editOrderButton.addActionListener(actionEvent -> {});
         removeOrderButton.addActionListener(actionEvent -> ordersPanel.removeSelected());
 

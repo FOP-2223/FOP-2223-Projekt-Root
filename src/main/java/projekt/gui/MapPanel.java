@@ -32,22 +32,9 @@ public class MapPanel extends JPanel {
 
     private final MainFrame mainFrame;
 
-    private final Region region;
-    private final VehicleManager vehicleManager;
-    private final DeliveryService deliveryService;
-    private final Pizzeria pizzeria;
-
     private final AffineTransform transformation = new AffineTransform();
 
-    public MapPanel(Region region,
-                    VehicleManager vehicleManager,
-                    DeliveryService deliveryService,
-                    Pizzeria pizzeria,
-                    MainFrame mainFrame) {
-        this.region = region;
-        this.vehicleManager = vehicleManager;
-        this.deliveryService = deliveryService;
-        this.pizzeria = pizzeria;
+    public MapPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         initComponents();
     }
@@ -115,8 +102,8 @@ public class MapPanel extends JPanel {
         var height = getHeight();
         var reverse = getReverseTransform();
         // scale view
-        var min = region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.POINT_MIN);
-        var max = region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.POINT_MAX);
+        var min = mainFrame.region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.POINT_MIN);
+        var max = mainFrame.region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.POINT_MAX);
         reverse.transform(min, min);
         reverse.transform(max, max);
         var currentWidth = max.getY() - min.getY();
@@ -128,7 +115,7 @@ public class MapPanel extends JPanel {
         reverse = getReverseTransform();
         var center = new Point2D.Double(width/2d, height/2d);
         reverse.transform(center, center);
-        var nodeCenter = region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.center());
+        var nodeCenter = mainFrame.region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.center());
         transformation.translate(center.getX() - nodeCenter.getX() , center.getY() - nodeCenter.getY());
         centered = true;
     }
@@ -148,7 +135,7 @@ public class MapPanel extends JPanel {
     }
 
     public List<Vehicle> getVehicles(Point2D position) {
-        return vehicleManager.getVehicles()
+        return mainFrame.vehicleManager.getVehicles()
             .stream()
             .filter(v -> toPoint(v).distance(position) < 1).toList();
     }
@@ -387,7 +374,7 @@ public class MapPanel extends JPanel {
         g2d.setStroke(new BasicStroke(0.125f));
         var actualNodeDiameter = NODE_DIAMETER;
         g2d.setColor(TUColors.COLOR_0B);
-        region
+        mainFrame.region
             .getEdges()
             .stream()
             .map(edge -> new Location[]{edge.getNodeA().getLocation(), edge.getNodeB().getLocation()})
@@ -400,7 +387,7 @@ public class MapPanel extends JPanel {
                 g2d.draw(line);
             });
         g2d.setColor(TUColors.COLOR_0C);
-        region
+        mainFrame.region
             .getNodes()
             .stream()
             .map(Region.Node::getLocation)
@@ -410,7 +397,7 @@ public class MapPanel extends JPanel {
                 new Ellipse2D.Double(location.getX(), location.getY(),
                     actualNodeDiameter,
                     actualNodeDiameter)));
-        vehicleManager
+        mainFrame.vehicleManager
             .getVehicles()
             .forEach(v -> paintVehicle(g2d, v));
     }

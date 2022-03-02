@@ -13,10 +13,10 @@ import java.awt.Dimension;
 
 public class MainFrame extends JFrame {
 
-    private Region region;
-    private VehicleManager vehicleManager;
-    private DeliveryService deliveryService;
-    private Pizzeria pizzeria;
+    final Region region;
+    final VehicleManager vehicleManager;
+    final DeliveryService deliveryService;
+    final Pizzeria pizzeria;
 
     private ControlsPanel controlsPanel;
     private InfoPanel infoPanel;
@@ -41,7 +41,7 @@ public class MainFrame extends JFrame {
      */
     private void initComponents() {
         infoPanel = new InfoPanel(this);
-        mapPanel = new MapPanel(region, vehicleManager, deliveryService, pizzeria, this);
+        mapPanel = new MapPanel(this);
         controlsPanel = new ControlsPanel(deliveryService.getSimulationConfig());
         menuBar = new MenuBar(this);
 
