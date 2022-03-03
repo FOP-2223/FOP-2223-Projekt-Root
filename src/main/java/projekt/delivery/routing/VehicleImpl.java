@@ -149,7 +149,7 @@ class VehicleImpl implements Vehicle {
         return compatibleFoodTypes;
     }
 
-    boolean loadOrder(ConfirmedOrder order) {
+    void loadOrder(ConfirmedOrder order) {
         double capacityNeeded = getCurrentWeight() + order.getTotalWeight();
 
         if (capacityNeeded > capacity) {
@@ -162,7 +162,7 @@ class VehicleImpl implements Vehicle {
             throw new FoodNotSupportedException(this, incompatibleFood.get());
         }
 
-        return orders.add(order);
+        orders.add(order);
     }
 
     boolean unloadOrder(ConfirmedOrder order) {
