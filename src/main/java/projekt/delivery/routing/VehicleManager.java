@@ -60,7 +60,7 @@ public interface VehicleManager {
     }
 
     interface OccupiedNeighborhood extends Occupied<Region.Neighborhood> {
-        boolean deliverOrder(Vehicle vehicle, ConfirmedOrder order);
+        void deliverOrder(Vehicle vehicle, ConfirmedOrder order);
     }
 
     interface Builder {

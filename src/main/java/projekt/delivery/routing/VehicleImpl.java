@@ -165,8 +165,8 @@ class VehicleImpl implements Vehicle {
         orders.add(order);
     }
 
-    boolean unloadOrder(ConfirmedOrder order) {
-        return orders.remove(order);
+    void unloadOrder(ConfirmedOrder order) {
+        orders.remove(order);
     }
 
     @Override
