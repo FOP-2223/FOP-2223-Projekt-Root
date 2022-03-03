@@ -22,6 +22,7 @@ public class DijkstraPathCalculator implements PathCalculator {
      * @param u the first node of the edge
      * @param v the second node of the edge
      * @param w the edge between the two nodes
+     *
      * @return {@code true} if the edge was relaxed, {@code false} otherwise
      */
     private boolean relax(DijkstraNode u, DijkstraNode v, Region.Edge w) {
@@ -30,6 +31,7 @@ public class DijkstraPathCalculator implements PathCalculator {
             weight = u.duration.plus(weight);
         }
         // Relax the edge if the new duration is shorter
+        // New weight must be smaller than the old weight (new weight can be infinity)
         if (v.duration == null || weight.compareTo(v.duration) < 0) {
             v.duration = weight;
             v.previous = u;
@@ -50,10 +52,12 @@ public class DijkstraPathCalculator implements PathCalculator {
             DijkstraNode dijkstraNode;
             if (node.equals(start)) {
                 dijkstraNode = new DijkstraNode(node, Duration.ZERO);
+                // Starting node in queue only contains the starting node since new relaxed node will be added to the queue anyway
+                queue.add(dijkstraNode);
             } else {
+                // Infinity weight
                 dijkstraNode = new DijkstraNode(node);
             }
-            queue.add(dijkstraNode);
             references.put(node, dijkstraNode);
         }
     }
@@ -80,8 +84,17 @@ public class DijkstraPathCalculator implements PathCalculator {
             }
             u.visited = true;
 
+            // If the lowest distance in the queue is infinity, we can stop as all relax attempts from here will fail
+            if (u.duration == null) {
+                break;
+            }
+
             for (Region.Node node : u.node.getAdjacentNodes()) {
                 DijkstraNode v = references.get(node);
+                // Only relax if the node is not visited (v must be in Q)
+                if (v.visited) {
+                    continue;
+                }
                 Region.Edge edge = u.node.getEdge(node);
                 assert edge != null;
                 if (relax(u, v, edge)) {
@@ -91,11 +104,12 @@ public class DijkstraPathCalculator implements PathCalculator {
         }
 
         // Reconstruct path, the start node is not part of the path
-        Deque<Region.Node> path = new ArrayDeque<>();
+        Deque<Region.Node> path = new ArrayDeque<>(size);
         DijkstraNode node = references.get(end);
         DijkstraNode startNode = references.get(start);
         while (node != startNode) {
             path.addFirst(node.node);
+            assert node.previous != null;
             node = references.get(node.previous.node);
         }
 
@@ -134,7 +148,7 @@ public class DijkstraPathCalculator implements PathCalculator {
          * @param previous the previous node in the shortest path from the start node to this node
          * @param visited  whether this node has been visited
          */
-        private DijkstraNode(@NotNull Region.Node node, Duration duration, @Nullable DijkstraNode previous,
+        private DijkstraNode(@NotNull Region.Node node, @Nullable Duration duration, @Nullable DijkstraNode previous,
                              boolean visited) {
             this.node = node;
             this.duration = duration;
