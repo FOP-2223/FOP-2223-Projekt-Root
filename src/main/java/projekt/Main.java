@@ -62,7 +62,6 @@ public class Main {
         VehicleManager vehicleManager = VehicleManager.builder()
             .time(LocalDateTime.now())
             .region(region)
-            .distanceCalculator(new EuclideanDistanceCalculator())
             .pathCalculator(new DijkstraPathCalculator())
             .warehouse(region.getNode(new Location(0, 5)))
             .addVehicle(2, List.of())
