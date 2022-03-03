@@ -19,8 +19,6 @@ public interface VehicleManager {
 
     Region getRegion();
 
-    DistanceCalculator getDistanceCalculator();
-
     PathCalculator getPathCalculator();
 
     Collection<Vehicle> getVehicles();
@@ -67,8 +65,6 @@ public interface VehicleManager {
         Builder time(LocalDateTime time);
 
         Builder region(Region region);
-
-        Builder distanceCalculator(DistanceCalculator distanceCalculator);
 
         Builder pathCalculator(PathCalculator pathCalculator);
 

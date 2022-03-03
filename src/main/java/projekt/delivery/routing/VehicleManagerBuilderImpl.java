@@ -15,7 +15,6 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
 
     private LocalDateTime time;
     private Region region;
-    private DistanceCalculator distanceCalculator;
     private PathCalculator pathCalculator;
     private Region.Node warehouse;
     private final List<VehicleBuilder> vehicles = new ArrayList<>();
@@ -29,12 +28,6 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     @Override
     public VehicleManager.Builder region(Region region) {
         this.region = region;
-        return this;
-    }
-
-    @Override
-    public VehicleManager.Builder distanceCalculator(DistanceCalculator distanceCalculator) {
-        this.distanceCalculator = distanceCalculator;
         return this;
     }
 
@@ -72,13 +65,12 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     public VehicleManager build() {
         Objects.requireNonNull(time, "time");
         Objects.requireNonNull(region, "region");
-        Objects.requireNonNull(distanceCalculator, "distanceCalculator");
         Objects.requireNonNull(pathCalculator, "pathCalculator");
         Objects.requireNonNull(warehouse, "warehouse");
         if (!warehouse.getRegion().equals(region)) {
             throw new IllegalArgumentException(String.format("Warehouse %s is not in region %s", warehouse, region));
         }
-        VehicleManagerImpl vehicleManager = new VehicleManagerImpl(time, region, distanceCalculator, pathCalculator, warehouse);
+        VehicleManagerImpl vehicleManager = new VehicleManagerImpl(time, region, pathCalculator, warehouse);
         for (VehicleBuilder vehicleBuilder : vehicles) {
             vehicleManager.addVehicle(vehicleBuilder.capacity, vehicleBuilder.compatibleFoodTypes, vehicleBuilder.nodePredicate);
         }

@@ -26,7 +26,6 @@ class VehicleManagerImpl implements VehicleManager {
     private final Region region;
     final Map<Region.Node, OccupiedNodeImpl<? extends Region.Node>> occupiedNodes;
     final Map<Region.Edge, OccupiedEdgeImpl> occupiedEdges;
-    private final DistanceCalculator distanceCalculator;
     private final PathCalculator pathCalculator;
     private final OccupiedWarehouseImpl warehouse;
     private final List<VehicleImpl> vehiclesToSpawn = new ArrayList<>();
@@ -38,13 +37,11 @@ class VehicleManagerImpl implements VehicleManager {
     VehicleManagerImpl(
         LocalDateTime currentTime,
         Region region,
-        DistanceCalculator distanceCalculator,
         PathCalculator pathCalculator,
         Region.Node warehouse
     ) {
         this.currentTime = currentTime;
         this.region = region;
-        this.distanceCalculator = distanceCalculator;
         this.pathCalculator = pathCalculator;
         this.warehouse = new OccupiedWarehouseImpl(warehouse, this);
         occupiedNodes = toOccupiedNodes(region.getNodes());
@@ -89,11 +86,6 @@ class VehicleManagerImpl implements VehicleManager {
     @Override
     public Region getRegion() {
         return region;
-    }
-
-    @Override
-    public DistanceCalculator getDistanceCalculator() {
-        return distanceCalculator;
     }
 
     @Override
