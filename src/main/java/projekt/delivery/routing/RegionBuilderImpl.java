@@ -1,5 +1,6 @@
 package projekt.delivery.routing;
 
+import projekt.base.DistanceCalculator;
 import projekt.base.Location;
 
 import java.time.Duration;
@@ -8,11 +9,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 class RegionBuilderImpl implements Region.Builder {
-
+    private DistanceCalculator distanceCalc;
     private final Map<Location, NodeBuilder> nodes = new HashMap<>();
     private final Set<EdgeBuilder> edges = new TreeSet<>(
         Comparator.comparing(EdgeBuilder::getLocationA).thenComparing(EdgeBuilder::getLocationB)
@@ -23,6 +25,12 @@ class RegionBuilderImpl implements Region.Builder {
         if (!allNames.add(name)) {
             throw new IllegalArgumentException(String.format("Duplicate name '%s'", name));
         }
+    }
+
+    @Override
+    public Region.Builder distanceCalculator(DistanceCalculator distanceCalculator) {
+        this.distanceCalc = distanceCalculator;
+        return this;
     }
 
     @Override
@@ -46,18 +54,18 @@ class RegionBuilderImpl implements Region.Builder {
     }
 
     @Override
-    public Region.Builder addEdge(String name, Location locationA, Location locationB, Duration duration) {
+    public Region.Builder addEdge(String name, Location locationA, Location locationB) {
         if (locationA.compareTo(locationB) < 0) {
-            addSortedEdge(name, locationA, locationB, duration);
+            addSortedEdge(name, locationA, locationB);
         } else {
-            addSortedEdge(name, locationB, locationA, duration);
+            addSortedEdge(name, locationB, locationA);
         }
         return this;
     }
 
-    private void addSortedEdge(String name, Location locationA, Location locationB, Duration duration) {
+    private void addSortedEdge(String name, Location locationA, Location locationB) {
         addName(name);
-        if (!edges.add(new EdgeBuilder(name, locationA, locationB, duration))) {
+        if (!edges.add(new EdgeBuilder(name, locationA, locationB))) {
             allNames.remove(name);
             throw new IllegalArgumentException("Duplicate edge connecting %s to %s".formatted(locationA, locationB));
         }
@@ -65,12 +73,13 @@ class RegionBuilderImpl implements Region.Builder {
 
     @Override
     public Region build() {
+        Objects.requireNonNull(distanceCalc, "distanceCalculator");
         RegionImpl region = new RegionImpl();
         nodes.forEach((l, n) -> region.putNode(n.build(region)));
         edges.forEach(e -> {
             nodes.get(e.locationA).connections.add(e.locationB);
             nodes.get(e.locationB).connections.add(e.locationA);
-            region.putEdge(e.build(region));
+            region.putEdge(e.build(region, distanceCalc));
         });
         return region;
     }
@@ -116,16 +125,16 @@ class RegionBuilderImpl implements Region.Builder {
         private final String name;
         private final Location locationA;
         private final Location locationB;
-        private final Duration duration;
 
-        EdgeBuilder(String name, Location locationA, Location locationB, Duration duration) {
+        EdgeBuilder(String name, Location locationA, Location locationB) {
             this.name = name;
             this.locationA = locationA;
             this.locationB = locationB;
-            this.duration = duration;
         }
 
-        EdgeImpl build(Region region) {
+        EdgeImpl build(Region region, DistanceCalculator distanceCalculator) {
+            double distance = distanceCalculator.calculateDistance(locationA, locationB);
+            Duration duration = Duration.ofMinutes((long)Math.ceil(distance));
             return new EdgeImpl(region, name, locationA, locationB, duration);
         }
 

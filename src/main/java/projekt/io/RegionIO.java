@@ -14,7 +14,7 @@ public class RegionIO {
 
     public static Region readRegion(Reader reader) {
         Region.Builder builder = Region.builder();
-
+        // TODO: Read used distance function
         try (BufferedReader bufferedReader = new BufferedReader(reader)) {
             bufferedReader.lines().forEach(line -> {
                 if (line.startsWith("N ")) {
@@ -24,8 +24,7 @@ public class RegionIO {
                     String[] serializedEdge = line.substring(2).split(",", 4);
                     builder.addEdge(serializedEdge[0],
                         parseLocation(serializedEdge[1]),
-                        parseLocation(serializedEdge[2]),
-                        Duration.parse(serializedEdge[3]));
+                        parseLocation(serializedEdge[2]));
                 } else {
                     // TODO: throw exception or ignore?
                 }
@@ -33,22 +32,22 @@ public class RegionIO {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        // TODO: builder.distanceCalculator(distanceCalculator);
         return builder.build();
     }
 
     public static void writeRegion(Writer writer, Region region) {
+        // TODO: Write used distance function
         try (BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
             for (Region.Node node : region.getNodes()) {
                 bufferedWriter.write("N %s,%s\n".formatted(node.getName(), node.getLocation()));
             }
 
             for (Region.Edge edge : region.getEdges()) {
-                bufferedWriter.write("E %s,%s,%s,%s\n".formatted(
+                bufferedWriter.write("E %s,%s,%s\n".formatted(
                     edge.getName(),
                     serializeNode(edge.getNodeA()),
-                    serializeNode(edge.getNodeB()),
-                    edge.getDuration().toString()
+                    serializeNode(edge.getNodeB())
                 ));
             }
         } catch (IOException e) {

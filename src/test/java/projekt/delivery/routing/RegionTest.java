@@ -2,12 +2,14 @@ package projekt.delivery.routing;
 
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
+import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -103,9 +105,9 @@ class RegionTest {
         assertNotNull(builder);
         assertEquals(builder, builder.addNode("a", new Location(2, 3)));
         assertEquals(builder, builder.addNeighborhood("b", new Location(5, 6), 5.0));
-        assertEquals(builder, builder.addEdge("c", new Location(2, 3), new Location(4, 5), Duration.ZERO));
+        assertEquals(builder, builder.addEdge("c", new Location(2, 3), new Location(4, 5)));
         // loops allowed
-        assertEquals(builder, builder.addEdge("d", new Location(1, 2), new Location(1, 2), Duration.ZERO));
+        assertEquals(builder, builder.addEdge("d", new Location(1, 2), new Location(1, 2)));
     }
 
     @Test
@@ -129,18 +131,18 @@ class RegionTest {
     @Test
     void testRegionBuilderEdgeThrows() {
         final Region.Builder builder = Region.builder();
-        builder.addEdge("a", new Location(2, 3), new Location(4, 5), Duration.ZERO);
+        builder.addEdge("a", new Location(2, 3), new Location(4, 5));
         assertEquals("Duplicate name 'a'",
             assertThrows(IllegalArgumentException.class,
-                () -> builder.addEdge("a", new Location(2, 3), new Location(4, 5), Duration.ZERO)).getMessage()
+                () -> builder.addEdge("a", new Location(2, 3), new Location(4, 5))).getMessage()
         );
         assertEquals("Duplicate edge connecting (2, 3) to (4, 5)",
             assertThrows(IllegalArgumentException.class,
-                () -> builder.addEdge("b", new Location(2, 3), new Location(4, 5), Duration.ZERO)).getMessage()
+                () -> builder.addEdge("b", new Location(2, 3), new Location(4, 5))).getMessage()
         );
         assertEquals("Duplicate edge connecting (2, 3) to (4, 5)",
             assertThrows(IllegalArgumentException.class,
-                () -> builder.addEdge("b", new Location(4, 5), new Location(2, 3), Duration.ZERO)).getMessage()
+                () -> builder.addEdge("b", new Location(4, 5), new Location(2, 3))).getMessage()
         );
     }
 
@@ -152,7 +154,8 @@ class RegionTest {
         final Region.Builder builder = Region.builder()
             .addNode("a", new Location(1, 1))
             .addNeighborhood("b", new Location(2, 2), 0.5)
-            .addEdge("e1", new Location(1, 1), new Location(2, 2), Duration.ZERO);
+            .addEdge("e1", new Location(1, 1), new Location(2, 2))
+            .distanceCalculator(new EuclideanDistanceCalculator());
         Region r1 = assertDoesNotThrow(builder::build);
         Region r2 = assertDoesNotThrow(builder::build);
         assertArrayEquals(r1.getNodes().toArray(), r2.getNodes().toArray());
@@ -184,9 +187,10 @@ class RegionTest {
         int i = 0;
         for (Map.Entry<String, LocationTuple> entry : edges.entrySet()) {
             final LocationTuple loc = entry.getValue();
-            builder.addEdge(entry.getKey(), loc.a, loc.b, Duration.ofMinutes(++i));
+            builder.addEdge(entry.getKey(), loc.a, loc.b);
         }
         // build region
+        builder.distanceCalculator(new EuclideanDistanceCalculator());
         final Region region = builder.build();
         for (Map.Entry<String, Location> entry : nodes.entrySet()) {
             final Region.Node node = region.getNodes().stream().filter(Region.Component.named(entry.getKey()))
@@ -202,7 +206,6 @@ class RegionTest {
             final LocationTuple loc = entry.getValue();
             assertEquals(edge, region.getEdge(loc.a, loc.b));
             assertEquals(edge, region.getEdge(loc.b, loc.a));
-            assertEquals(Duration.ofMinutes(++j), edge.getDuration());
         }
     }
 }

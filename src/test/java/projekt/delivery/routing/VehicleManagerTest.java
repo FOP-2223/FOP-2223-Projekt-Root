@@ -13,10 +13,10 @@ class VehicleManagerTest {
             .addNode("nodeB", new Location(-2, 2))
             .addNeighborhood("nodeC", new Location(2, 2), 0.5)
             .addNode("nodeD", new Location(2, -2))
-            .addEdge("edge1", new Location(-2, -2), new Location(-2, 2), Duration.ofMinutes(1))
-            .addEdge("edge2", new Location(-2, 2), new Location(-2, 2), Duration.ofMinutes(1))
-            .addEdge("edge3", new Location(-2, -2), new Location(-2, 2), Duration.ofMinutes(1))
-            .addEdge("edge4", new Location(-2, -2), new Location(-2, 2), Duration.ofMinutes(1))
+            .addEdge("edge1", new Location(-2, -2), new Location(-2, 2))
+            .addEdge("edge2", new Location(-2, 2), new Location(-2, 2))
+            .addEdge("edge3", new Location(-2, -2), new Location(-2, 2))
+            .addEdge("edge4", new Location(-2, -2), new Location(-2, 2))
             .build();
     }
 

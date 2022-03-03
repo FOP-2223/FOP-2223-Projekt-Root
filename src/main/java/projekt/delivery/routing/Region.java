@@ -71,11 +71,13 @@ public interface Region {
 
     interface Builder {
 
+        Builder distanceCalculator(DistanceCalculator distanceCalculator);
+
         Builder addNode(String name, Location location);
 
         Builder addNeighborhood(String name, Location location, double distance);
 
-        Builder addEdge(String name, Location locationA, Location locationB, Duration duration);
+        Builder addEdge(String name, Location locationA, Location locationB);
 
         Region build();
     }
