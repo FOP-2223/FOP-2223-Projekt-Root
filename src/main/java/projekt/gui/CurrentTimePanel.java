@@ -7,13 +7,23 @@ public class CurrentTimePanel extends JPanel {
 
     private JLabel currentTimeLabel = new JLabel();
     private final MainFrame mainFrame;
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
 
     CurrentTimePanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
 
-        // TODO: update on tick
-        currentTimeLabel.setText("Current time: " + mainFrame.vehicleManager.getCurrentTime().format(dateTimeFormatter));
         add(currentTimeLabel);
+
+        new Thread(() -> {
+            while (true) {
+                currentTimeLabel.setText("Current time and date: " + mainFrame.vehicleManager.getCurrentTime().format(dateTimeFormatter));
+                try {
+                    //noinspection BusyWait
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }

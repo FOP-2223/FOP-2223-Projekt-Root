@@ -3,8 +3,7 @@ package projekt.gui;
 import projekt.delivery.routing.Vehicle;
 
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 
 public class InfoPanel extends JPanel {
 
@@ -16,6 +15,7 @@ public class InfoPanel extends JPanel {
 
     public InfoPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
+
         initComponents();
     }
 
@@ -23,10 +23,26 @@ public class InfoPanel extends JPanel {
         currentTimePanel = new CurrentTimePanel(mainFrame);
         detailsPanel = new VehiclePanel(mainFrame);
         ordersPanel = new OrdersPanel(mainFrame);
-        setLayout(new GridLayout(3, 1, 6, 6));
-        add(currentTimePanel, BorderLayout.NORTH);
-        add(detailsPanel, BorderLayout.CENTER);
-        add(ordersPanel, BorderLayout.SOUTH);
+
+        setLayout(new GridBagLayout());
+        final GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.PAGE_START;
+
+        constraints.gridheight = 1;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        add(currentTimePanel, constraints);
+
+        constraints.gridheight = 3;
+        constraints.gridy = 1;
+        constraints.weighty = 1;
+        add(detailsPanel, constraints);
+
+        constraints.gridy = 4;
+        add(ordersPanel, constraints);
     }
 
     public VehiclePanel getDetailsPanel() {

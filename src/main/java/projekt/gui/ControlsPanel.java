@@ -11,6 +11,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.function.IntUnaryOperator;
 
 public class ControlsPanel extends JPanel {
 
@@ -20,10 +21,13 @@ public class ControlsPanel extends JPanel {
     private JSlider tickIntervalSlider;
     private JLabel tickIntervalSliderLabel;
     private JLabel mousePositionLabel;
-    private SimulationConfig simulationConfig;
+    private final MainFrame mainFrame;
+    private final SimulationConfig simulationConfig;
     private boolean paused = false;
+    private final IntUnaryOperator speedFunction = i -> 1000 - 100 * i;
 
-    public ControlsPanel(SimulationConfig simulationConfig) {
+    public ControlsPanel(MainFrame mainFrame, SimulationConfig simulationConfig) {
+        this.mainFrame = mainFrame;
         this.simulationConfig = simulationConfig;
         initComponents();
     }
@@ -60,18 +64,19 @@ public class ControlsPanel extends JPanel {
         singleStepButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-
+                // TODO: advance one step - make AbstractDeliverService#runTick() public?
+                mainFrame.deliveryService.runTick();
             }
         });
 
         // tickSpeedSlider.setToolTipText("");
-        tickIntervalSlider.setValue(5);
-        tickIntervalSlider.setMinimum(2);
-        tickIntervalSlider.setMaximum(10);
+        tickIntervalSlider.setValue(0);
+        tickIntervalSlider.setMinimum(0);
+        tickIntervalSlider.setMaximum(9);
         tickIntervalSlider.setMajorTickSpacing(1);
         tickIntervalSlider.setSnapToTicks(true);
         tickIntervalSlider.addChangeListener(changeEvent -> {
-            simulationConfig.setMillisecondsPerTick(-50 * tickIntervalSlider.getValue() + 600);
+            simulationConfig.setMillisecondsPerTick(speedFunction.applyAsInt(tickIntervalSlider.getValue()));
             updateText();
         });
 
@@ -89,7 +94,7 @@ public class ControlsPanel extends JPanel {
         tickIntervalSliderLabel.setText(
             String.format(
                 "Tick interval: %d ms %s",
-                -50 * tickIntervalSlider.getValue() + 600,
+                speedFunction.applyAsInt(tickIntervalSlider.getValue()),
                 paused ? "(paused)" : ""
             )
         );

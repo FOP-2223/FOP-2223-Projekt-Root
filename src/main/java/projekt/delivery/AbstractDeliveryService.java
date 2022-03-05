@@ -64,7 +64,7 @@ public abstract class AbstractDeliveryService implements DeliveryService {
         }
     }
 
-    private void runTick() {
+    public void runTick() {
         // Schedule new orders
         List<ConfirmedOrder> newOrders = Collections.emptyList();
         synchronized (lock) {

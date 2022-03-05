@@ -15,7 +15,7 @@ public class OrdersControlPanel extends JPanel {
     public OrdersControlPanel(MainFrame mainFrame, OrdersPanel ordersPanel) {
         this.mainFrame = mainFrame;
         this.ordersPanel = ordersPanel;
-        this.ordersDialog = new OrdersDialog(mainFrame, ordersPanel);
+        this.ordersDialog = new OrdersDialog(mainFrame);
         initComponents();
     }
 

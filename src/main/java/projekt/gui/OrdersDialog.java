@@ -7,7 +7,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -18,11 +17,6 @@ import java.util.stream.IntStream;
 
 class OrdersDialog extends JDialog {
 
-    private final JLabel textField1Label = new JLabel("  Location:", JLabel.LEFT);
-    private final JLabel textField2Label = new JLabel("  Delivery time:", JLabel.LEFT);
-    private final JLabel textField3Label = new JLabel("  Food type:", JLabel.LEFT);
-    private final JLabel textField4Label = new JLabel("  Food variant:", JLabel.LEFT);
-    private final JLabel textField5Label = new JLabel("  Extras:", JLabel.LEFT);
     private final JTextField textField1 = new JTextField();
     private final JSpinner deliveryTimeSelector;
     private final JComboBox<String> foodTypeSelector = new JComboBox<>(FoodTypes.ALL.keySet().toArray(String[]::new));
@@ -32,14 +26,14 @@ class OrdersDialog extends JDialog {
     private final JScrollPane extrasPane = new JScrollPane(extrasPanel);
     private final JButton addFoodButton = new JButton("Add food");
     private final DefaultListModel<Food> foodListModel = new DefaultListModel<>();
-    private final JList<Food> currentOrderList = new JList<>(foodListModel);
-    private final JButton removeButton = new JButton("Remove");
-    private final JButton okButton = new JButton("Ok");
+    private final JList<Food> foodList = new JList<>(foodListModel);
+    private final JScrollPane foodListPane = new JScrollPane(foodList);
+    private final JButton removeFoodButton = new JButton("Remove Food");
+    private final JButton okButton = new JButton("Submit order");
     private final JButton cancelButton = new JButton("Cancel");
 
     private final MainFrame mainFrame;
-    private final OrdersPanel ordersPanel;
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
     private final Map<String, List<Pair<JCheckBox, Extra<?>>>> extraCheckboxes = FoodTypes.ALL
         .entrySet()
         .stream()
@@ -60,15 +54,14 @@ class OrdersDialog extends JDialog {
             entry -> entry.getValue().getFoodVariants().stream().map(Food.Variant::getName).toList()
         ));
 
-    OrdersDialog(MainFrame mainFrame, OrdersPanel ordersPanel) {
+    OrdersDialog(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        this.ordersPanel = ordersPanel;
 
-        setMinimumSize(new Dimension(600, 300));
-        setResizable(false);
+        setMinimumSize(new Dimension(600, 500));
+        setMaximumSize(new Dimension(600, 600)); // ignored for whatever reason... ask your favorite higher being as to why
 
         deliveryTimeSelector = new JSpinner(new SpinnerModel() {
-            private List<ChangeListener> changeListeners = new ArrayList<>();
+            private final List<ChangeListener> changeListeners = new ArrayList<>();
             private LocalDateTime savedLocalDateTime = LocalDateTime.now();
 
             @Override
@@ -121,6 +114,7 @@ class OrdersDialog extends JDialog {
             });
             extrasPanel.updateUI();
         });
+        foodList.addListSelectionListener(listSelectionEvent -> removeFoodButton.setEnabled(foodList.getSelectedIndex() >= 0));
         addFoodButton.addActionListener(actionEvent -> {
             String selectedFoodType = (String) foodTypeSelector.getSelectedItem();
 
@@ -150,6 +144,8 @@ class OrdersDialog extends JDialog {
             foodListModel.addElement(food);
             resetFields();
         });
+        removeFoodButton.setEnabled(false);
+        removeFoodButton.addActionListener(actionEvent -> foodListModel.remove(foodList.getSelectedIndex()));
         okButton.addActionListener(actionEvent -> {
             Integer[] coordinates = Arrays.stream(textField1.getText().replaceAll("\\(?\\)?", "").split(","))
                 .map(String::trim)
@@ -170,63 +166,129 @@ class OrdersDialog extends JDialog {
             setVisible(false);
         });
 
+        // TODO: why are the components jumping around depending on the number of entries in extrasPane...
+        setLayout(new GridBagLayout());
+        final GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.PAGE_START;
+        constraints.weighty = 1;
+        constraints.insets = new Insets(6, 6, 6, 6);
+
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0;
+        add(new JLabel("Location:", JLabel.LEFT), constraints);
+
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.gridwidth = 3;
+        constraints.weightx = 1;
+        add(textField1, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0;
+        add(new JLabel("Delivery time:", JLabel.LEFT), constraints);
+
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.gridwidth = 3;
+        constraints.weightx = 1;
+        add(deliveryTimeSelector, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0;
+        add(new JLabel("Food type:", JLabel.LEFT), constraints);
+
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        constraints.gridwidth = 3;
+        constraints.weightx = 1;
+        add(foodTypeSelector, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0;
+        add(new JLabel("Food variant:", JLabel.LEFT), constraints);
+
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.gridwidth = 3;
+        constraints.weightx = 1;
+        add(foodVariantSelector, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0;
+        add(new JLabel("Extras:", JLabel.LEFT), constraints);
+
+        constraints.gridx = 1;
+        constraints.gridy = 4;
+        constraints.gridwidth = 3;
+        constraints.gridheight = 2;
+        constraints.weightx = 1;
+        add(extrasPane, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 6;
+        constraints.gridwidth = 2;
+        constraints.gridheight = 2;
+        add(foodListPane, constraints);
+
+        constraints.gridx = 2;
+        constraints.gridy = 6;
+        constraints.gridwidth = 2;
+        constraints.gridheight = 1;
+        add(addFoodButton, constraints);
+
+        constraints.gridx = 2;
+        constraints.gridy = 7;
+        constraints.gridwidth = 2;
+        constraints.gridheight = 1;
+        add(removeFoodButton, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 8;
+        constraints.gridwidth = 2;
+        constraints.gridheight = 1;
+        add(okButton, constraints);
+
+        constraints.gridx = 2;
+        constraints.gridy = 8;
+        constraints.gridwidth = 2;
+        constraints.gridheight = 1;
+        add(cancelButton, constraints);
+
         setModal(true);
     }
 
     void showAddOrderDialog() {
         setTitle("Add order");
-        setLayout(new GridLayout(8, 2, 6, 6));
+        // For some reason every time the dialog is opened, a component is added at the beginning, but I can't remove it
+        // or everything else goes belly up because Swing...
+        // removeAll();
 
         textField1.setText("(0, 0)");
         deliveryTimeSelector.setValue(mainFrame.vehicleManager.getCurrentTime().format(dateTimeFormatter));
 
-        add(textField1Label);
-        add(textField1);
-        add(textField2Label);
-        add(deliveryTimeSelector);
-        add(textField3Label);
-        add(foodTypeSelector);
-        add(textField4Label);
-        add(foodVariantSelector);
-        add(textField5Label);
-        add(extrasPane);
-        add(new JLabel());
-        add(addFoodButton);
-        add(currentOrderList);
-        add(removeButton);
-        add(okButton);
-        add(cancelButton);
-
         pack();
-        setModal(true);
         setVisible(true);
     }
 
     void showEditOrderDialog(ConfirmedOrder order) {
         setTitle("Edit order");
-        setLayout(new GridLayout(4, 2, 6, 6));
 
         textField1.setText(order.getLocation().toString());
-//        deliveryTimeSelector.setText(order.getTimeInterval().getStart().format(dateTimeFormatter));
-
-        okButton.addActionListener(actionEvent -> {
-            mainFrame.getControlsPanel().unpause();
-            setVisible(false);
-        });
-        cancelButton.addActionListener(actionEvent -> {
-            mainFrame.getControlsPanel().unpause();
-            setVisible(false);
-        });
-
-        add(textField1Label);
-        add(textField1);
-        add(textField2Label);
-        add(deliveryTimeSelector);
-        add(okButton);
-        add(cancelButton);
+        deliveryTimeSelector.setValue(order.getTimeInterval().getStart().format(dateTimeFormatter));
+        order.getFoodList().forEach(foodListModel::addElement);
 
         pack();
-        setModal(true);
         setVisible(true);
     }
 

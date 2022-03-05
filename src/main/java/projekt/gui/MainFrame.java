@@ -40,7 +40,7 @@ public class MainFrame extends JFrame {
     private void initComponents() {
         infoPanel = new InfoPanel(this);
         mapPanel = new MapPanel(this);
-        controlsPanel = new ControlsPanel(deliveryService.getSimulationConfig());
+        controlsPanel = new ControlsPanel(this, deliveryService.getSimulationConfig());
         menuBar = new MenuBar(this);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
