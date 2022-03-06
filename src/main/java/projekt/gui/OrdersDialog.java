@@ -284,6 +284,7 @@ class OrdersDialog extends JDialog {
     void showEditOrderDialog(ConfirmedOrder order) {
         setTitle("Edit order");
 
+        // TODO: make okButton update actual order
         textField1.setText(order.getLocation().toString());
         deliveryTimeSelector.setValue(order.getTimeInterval().getStart().format(dateTimeFormatter));
         order.getFoodList().forEach(foodListModel::addElement);
@@ -298,22 +299,4 @@ class OrdersDialog extends JDialog {
         foodTypeSelector.setSelectedIndex(0);
     }
 
-    private static class Pair<A, B> {
-
-        private final A a;
-        private final B b;
-
-        private Pair(A a, B b) {
-            this.a = a;
-            this.b = b;
-        }
-
-        public A getFirst() {
-            return a;
-        }
-
-        public B getSecond() {
-            return b;
-        }
-    }
 }

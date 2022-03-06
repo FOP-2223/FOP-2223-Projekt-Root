@@ -5,9 +5,9 @@ import javax.swing.JPanel;
 import java.awt.GridLayout;
 
 public class OrdersControlPanel extends JPanel {
-    private JButton addOrderButton;
-    private JButton editOrderButton;
-    private JButton removeOrderButton;
+    final JButton addOrderButton;
+    final JButton editOrderButton;
+    final JButton removeOrderButton;
     private final MainFrame mainFrame;
     private final OrdersPanel ordersPanel;
     private final OrdersDialog ordersDialog;
@@ -16,19 +16,24 @@ public class OrdersControlPanel extends JPanel {
         this.mainFrame = mainFrame;
         this.ordersPanel = ordersPanel;
         this.ordersDialog = new OrdersDialog(mainFrame);
+
+        addOrderButton = new JButton("Add");
+        editOrderButton = new JButton("Edit");
+        removeOrderButton = new JButton("Remove");
         initComponents();
     }
 
     private void initComponents() {
-        addOrderButton = new JButton("Add");
-        editOrderButton = new JButton("Edit");
-        removeOrderButton = new JButton("Remove");
-
         addOrderButton.addActionListener(actionEvent -> {
             mainFrame.getControlsPanel().pause();
             ordersDialog.showAddOrderDialog();
         });
-        editOrderButton.addActionListener(actionEvent -> {});
+        editOrderButton.setEnabled(false);
+        editOrderButton.addActionListener(actionEvent -> {
+            mainFrame.getControlsPanel().pause();
+            ordersDialog.showEditOrderDialog(ordersPanel.getSelectedOrder());
+        });
+        removeOrderButton.setEnabled(false);
         removeOrderButton.addActionListener(actionEvent -> ordersPanel.removeSelected());
 
         setLayout(new GridLayout(1, 3, 6, 6));
