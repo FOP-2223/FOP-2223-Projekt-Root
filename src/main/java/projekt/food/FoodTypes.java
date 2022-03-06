@@ -11,7 +11,7 @@ public final class FoodTypes {
     private FoodTypes() {
     }
 
-    public static final FoodType<Pizza, Pizza.Config> PIZZA = new FoodTypeImpl<Pizza, Pizza.Config>(
+    public static final FoodType<Pizza, Pizza.Config> PIZZA = new FoodTypeImpl<>(
         "Pizza",
         List.of(
             Extras.EXTRA_HAM,
@@ -22,7 +22,7 @@ public final class FoodTypes {
         )
     );
 
-    public static final FoodType<Pasta, Pasta.Config> PASTA = new FoodTypeImpl<Pasta, Pasta.Config>(
+    public static final FoodType<Pasta, Pasta.Config> PASTA = new FoodTypeImpl<>(
         "Pasta",
         List.of(
             Extras.EXTRA_THICK,

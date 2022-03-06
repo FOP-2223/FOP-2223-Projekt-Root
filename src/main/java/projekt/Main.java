@@ -13,8 +13,7 @@ import projekt.delivery.routing.VehicleManager;
 import projekt.gui.MainFrame;
 import projekt.pizzeria.Pizzeria;
 
-import javax.swing.*;
-import java.time.Duration;
+import javax.swing.SwingUtilities;
 import java.time.LocalDateTime;
 import java.util.List;
 

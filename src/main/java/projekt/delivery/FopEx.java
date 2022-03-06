@@ -1,5 +1,6 @@
 package projekt.delivery;
 
+import projekt.delivery.event.Event;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.VehicleManager;
@@ -19,6 +20,7 @@ public class FopEx extends AbstractDeliveryService {
 
     @Override
     void tick(List<ConfirmedOrder> newOrders) {
+        List<Event> events = vehicleManager.tick();
         // TODO: H9
     }
 }
