@@ -42,9 +42,10 @@ class LocationTest {
 
         final int exp = 10;
         final int bound = 1 << exp;
+        final int positiveBound = bound - 1; // 1024 -> 1023
         final Map<Integer, Location> map = new HashMap<>(1 << ((exp + 1) * 2), 1);
-        for (int x = -bound; x < bound; x++) {
-            for (int y = -bound; y < bound; y++) {
+        for (int x = -bound; x < positiveBound; x++) {
+            for (int y = -bound; y < positiveBound; y++) {
                 final Location location = new Location(x, y);
                 final int hash = location.hashCode();
                 final @Nullable Location firstPreimage = map.put(hash, location);
