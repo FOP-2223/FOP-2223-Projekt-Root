@@ -1,1 +1,1 @@
-rootProject.name = "FOP-2022-Projekt-Root"
+rootProject.name = "FOP-2223-Projekt-Root"
