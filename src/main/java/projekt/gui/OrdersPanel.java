@@ -4,10 +4,8 @@ import projekt.delivery.routing.ConfirmedOrder;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -17,10 +15,9 @@ public class OrdersPanel extends JPanel {
 
     private final MainFrame mainFrame;
     private final OrdersControlPanel ordersControlPanel;
-
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
     private OrderTableModel tableModel;
     private JTable table;
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
 
     public OrdersPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -36,7 +33,7 @@ public class OrdersPanel extends JPanel {
         setLayout(new BorderLayout(6, 6));
         setBorder(new TitledBorder("Orders"));
 
-        tableModel.addRow(new Object[] {0, "19:15 05.03.2022"});
+        tableModel.addRow(new Object[]{0, "19:15 05.03.2022"});
         table.setModel(new OrderTableModel());
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getSelectionModel().addListSelectionListener(e -> {
@@ -70,8 +67,8 @@ public class OrdersPanel extends JPanel {
             addColumn("Order ID");
             addColumn("Delivery time");
 
-            addRow(new Object[] {0, LocalDateTime.now().format(dateTimeFormatter)});
-            orders.values().forEach(order -> addRow(new Object[] {
+            addRow(new Object[]{0, LocalDateTime.now().format(dateTimeFormatter)});
+            orders.values().forEach(order -> addRow(new Object[]{
                 order.getOrderID(),
                 order.getActualDeliveryTime().format(dateTimeFormatter)
             }));

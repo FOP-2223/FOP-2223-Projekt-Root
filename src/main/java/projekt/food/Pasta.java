@@ -8,6 +8,39 @@ import java.util.function.DoubleUnaryOperator;
  */
 public interface Pasta extends Saucable {
 
+    Variant SPAGHETTI = new PastaImpl.Variant(
+        "Spaghetti",
+        FoodTypes.PASTA,
+        BigDecimal.valueOf(12.5),
+        0.2,
+        null,
+        2
+    );
+    Variant RIGATONI = new PastaImpl.Variant(
+        "Rigatoni",
+        FoodTypes.PASTA,
+        BigDecimal.valueOf(11.5),
+        0.2,
+        null,
+        10
+    );
+    Variant RAVIOLI = new PastaImpl.Variant(
+        "Ravioli",
+        FoodTypes.PASTA,
+        BigDecimal.valueOf(11.5),
+        0.2,
+        null,
+        40
+    );
+    Variant FUSILLI = new PastaImpl.Variant(
+        "Fusilli",
+        FoodTypes.PASTA,
+        BigDecimal.valueOf(11.5),
+        0.2,
+        null,
+        15
+    );
+
     /**
      * The thickness of this pasta in mm.
      */
@@ -45,40 +78,4 @@ public interface Pasta extends Saucable {
          */
         double getBaseThickness();
     }
-
-    Variant SPAGHETTI = new PastaImpl.Variant(
-        "Spaghetti",
-        FoodTypes.PASTA,
-        BigDecimal.valueOf(12.5),
-        0.2,
-        null,
-        2
-    );
-
-    Variant RIGATONI = new PastaImpl.Variant(
-        "Rigatoni",
-        FoodTypes.PASTA,
-        BigDecimal.valueOf(11.5),
-        0.2,
-        null,
-        10
-    );
-
-    Variant RAVIOLI = new PastaImpl.Variant(
-        "Ravioli",
-        FoodTypes.PASTA,
-        BigDecimal.valueOf(11.5),
-        0.2,
-        null,
-        40
-    );
-
-    Variant FUSILLI = new PastaImpl.Variant(
-        "Fusilli",
-        FoodTypes.PASTA,
-        BigDecimal.valueOf(11.5),
-        0.2,
-        null,
-        15
-    );
 }

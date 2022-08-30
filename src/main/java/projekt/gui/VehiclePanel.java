@@ -60,5 +60,4 @@ public class VehiclePanel extends JPanel {
     public void setSelectedVehicle(Vehicle vehicle) {
         selectionList.setSelectedValue(vehicle, true);
     }
-
 }

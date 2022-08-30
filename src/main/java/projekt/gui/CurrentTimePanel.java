@@ -5,9 +5,9 @@ import java.time.format.DateTimeFormatter;
 
 public class CurrentTimePanel extends JPanel {
 
-    private JLabel currentTimeLabel = new JLabel();
     private final MainFrame mainFrame;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
+    private final JLabel currentTimeLabel = new JLabel();
 
     CurrentTimePanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;

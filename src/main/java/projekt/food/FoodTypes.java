@@ -8,9 +8,6 @@ import java.util.Map;
  */
 public final class FoodTypes {
 
-    private FoodTypes() {
-    }
-
     public static final FoodType<Pizza, Pizza.Config> PIZZA = new FoodTypeImpl<>(
         "Pizza",
         List.of(
@@ -21,7 +18,6 @@ public final class FoodTypes {
             Extras.NO_SAUCE
         )
     );
-
     public static final FoodType<Pasta, Pasta.Config> PASTA = new FoodTypeImpl<>(
         "Pasta",
         List.of(
@@ -31,7 +27,6 @@ public final class FoodTypes {
             Extras.NO_SAUCE
         )
     );
-
     public static final FoodType<IceCream, IceCream.Config> ICE_CREAM = new FoodTypeImpl<>(
         "Ice Cream",
         List.of(
@@ -39,7 +34,6 @@ public final class FoodTypes {
             Extras.EXTRA_SCOOP
         )
     );
-
     public static final Map<String, FoodType<?, ?>> ALL = Map.of(
         PIZZA.getName(), PIZZA,
         PASTA.getName(), PASTA,
@@ -51,5 +45,8 @@ public final class FoodTypes {
         PASTA.addFoodVariant(Pasta.RAVIOLI);
         PASTA.addFoodVariant(Pasta.RIGATONI);
         PASTA.addFoodVariant(Pasta.SPAGHETTI);
+    }
+
+    private FoodTypes() {
     }
 }

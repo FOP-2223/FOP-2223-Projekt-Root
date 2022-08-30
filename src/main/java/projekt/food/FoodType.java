@@ -11,6 +11,14 @@ import java.util.List;
  */
 public interface FoodType<F extends Food, C extends Food.Config> {
 
+    static FoodType<?, ?> parse(String name) {
+        final FoodType<?, ?> result = FoodTypes.ALL.get(name);
+        if (result == null) {
+            throw new IllegalArgumentException("Could not find FoodType with name " + name);
+        }
+        return result;
+    }
+
     /**
      * The name of this food type.
      *
@@ -52,12 +60,4 @@ public interface FoodType<F extends Food, C extends Food.Config> {
      * @return The {@link Food.Variant food variants} that this food type are part of
      */
     List<? extends Food.Variant<F, C>> getFoodVariants();
-
-    static FoodType<?, ?> parse(String name) {
-        final FoodType<?, ?> result = FoodTypes.ALL.get(name);
-        if (result == null) {
-            throw new IllegalArgumentException("Could not find FoodType with name " + name);
-        }
-        return result;
-    }
 }

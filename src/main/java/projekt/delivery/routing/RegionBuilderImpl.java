@@ -14,12 +14,12 @@ import java.util.Set;
 import java.util.TreeSet;
 
 class RegionBuilderImpl implements Region.Builder {
-    private DistanceCalculator distanceCalc;
     private final Map<Location, NodeBuilder> nodes = new HashMap<>();
     private final Set<EdgeBuilder> edges = new TreeSet<>(
         Comparator.comparing(EdgeBuilder::getLocationA).thenComparing(EdgeBuilder::getLocationB)
     );
     private final Set<String> allNames = new HashSet<>();
+    private DistanceCalculator distanceCalc;
 
     private void addName(String name) {
         if (!allNames.add(name)) {
@@ -63,14 +63,6 @@ class RegionBuilderImpl implements Region.Builder {
         return this;
     }
 
-    private void addSortedEdge(String name, Location locationA, Location locationB) {
-        addName(name);
-        if (!edges.add(new EdgeBuilder(name, locationA, locationB))) {
-            allNames.remove(name);
-            throw new IllegalArgumentException("Duplicate edge connecting %s to %s".formatted(locationA, locationB));
-        }
-    }
-
     @Override
     public Region build() {
         Objects.requireNonNull(distanceCalc, "distanceCalculator");
@@ -82,6 +74,14 @@ class RegionBuilderImpl implements Region.Builder {
             region.putEdge(e.build(region, distanceCalc));
         });
         return region;
+    }
+
+    private void addSortedEdge(String name, Location locationA, Location locationB) {
+        addName(name);
+        if (!edges.add(new EdgeBuilder(name, locationA, locationB))) {
+            allNames.remove(name);
+            throw new IllegalArgumentException("Duplicate edge connecting %s to %s".formatted(locationA, locationB));
+        }
     }
 
     private static class NodeBuilder {
@@ -134,7 +134,7 @@ class RegionBuilderImpl implements Region.Builder {
 
         EdgeImpl build(Region region, DistanceCalculator distanceCalculator) {
             double distance = distanceCalculator.calculateDistance(locationA, locationB);
-            Duration duration = Duration.ofMinutes((long)Math.ceil(distance));
+            Duration duration = Duration.ofMinutes((long) Math.ceil(distance));
             return new EdgeImpl(region, name, locationA, locationB, duration);
         }
 

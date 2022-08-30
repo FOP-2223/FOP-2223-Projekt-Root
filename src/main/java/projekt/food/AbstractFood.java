@@ -37,13 +37,13 @@ abstract class AbstractFood<F extends Food, C extends Food.Config> implements Fo
     }
 
     @Override
-    public double getWeight() {
-        return weight;
+    public BigDecimal getPrice() {
+        return price;
     }
 
     @Override
-    public BigDecimal getPrice() {
-        return price;
+    public double getWeight() {
+        return weight;
     }
 
     @Override

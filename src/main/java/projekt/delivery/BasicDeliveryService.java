@@ -1,9 +1,6 @@
 package projekt.delivery;
 
-import projekt.base.Location;
-import projekt.delivery.event.ArrivedAtNeighborhoodEvent;
 import projekt.delivery.event.Event;
-import projekt.delivery.event.SpawnEvent;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;

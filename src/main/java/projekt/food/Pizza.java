@@ -8,6 +8,39 @@ import java.util.function.DoubleUnaryOperator;
  */
 public interface Pizza extends Saucable {
 
+    Variant MARGHERITA = new PizzaImpl.Variant(
+        "Margherita",
+        FoodTypes.PIZZA,
+        BigDecimal.valueOf(9.75),
+        0.8,
+        "Tomato",
+        30.0
+    );
+    Variant HAWAII = new PizzaImpl.Variant(
+        "Hawaii",
+        FoodTypes.PIZZA,
+        BigDecimal.valueOf(13.75),
+        1.0,
+        "Tomato",
+        30.0
+    );
+    Variant RUCOLA = new PizzaImpl.Variant(
+        "Rucola",
+        FoodTypes.PIZZA,
+        BigDecimal.valueOf(14.5),
+        0.9,
+        "Tomato",
+        30.0
+    );
+    Variant BBQ = new PizzaImpl.Variant(
+        "BBQ",
+        FoodTypes.PIZZA,
+        BigDecimal.valueOf(14.5),
+        1.1,
+        "BBQ",
+        30.0
+    );
+
     /**
      * Returns the diameter of this pizza.
      *
@@ -47,40 +80,4 @@ public interface Pizza extends Saucable {
          */
         double getBaseDiameter();
     }
-
-    Variant MARGHERITA = new PizzaImpl.Variant(
-        "Margherita",
-        FoodTypes.PIZZA,
-        BigDecimal.valueOf(9.75),
-        0.8,
-        "Tomato",
-        30.0
-    );
-
-    Variant HAWAII = new PizzaImpl.Variant(
-        "Hawaii",
-        FoodTypes.PIZZA,
-        BigDecimal.valueOf(13.75),
-        1.0,
-        "Tomato",
-        30.0
-    );
-
-    Variant RUCOLA = new PizzaImpl.Variant(
-        "Rucola",
-        FoodTypes.PIZZA,
-        BigDecimal.valueOf(14.5),
-        0.9,
-        "Tomato",
-        30.0
-    );
-
-    Variant BBQ = new PizzaImpl.Variant(
-        "BBQ",
-        FoodTypes.PIZZA,
-        BigDecimal.valueOf(14.5),
-        1.1,
-        "BBQ",
-        30.0
-    );
 }

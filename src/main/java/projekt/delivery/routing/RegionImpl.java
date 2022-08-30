@@ -24,14 +24,6 @@ class RegionImpl implements Region {
         return nodes.get(location);
     }
 
-    void putNode(NodeImpl node) {
-        // TODO: Test exception
-        if (this != node.getRegion()) {
-            throw new IllegalArgumentException("Node " + node + " has incorrect region");
-        }
-        nodes.put(node.getLocation(), node);
-    }
-
     @Override
     public @Nullable Edge getEdge(Location locationA, Location locationB) {
         if (locationA.compareTo(locationB) > 0) {
@@ -44,6 +36,24 @@ class RegionImpl implements Region {
             return null;
         }
         return firstDim.get(locationB);
+    }
+
+    @Override
+    public Collection<Node> getNodes() {
+        return unmodifiableNodes;
+    }
+
+    @Override
+    public Collection<Edge> getEdges() {
+        return unmodifiableEdges;
+    }
+
+    void putNode(NodeImpl node) {
+        // TODO: Test exception
+        if (this != node.getRegion()) {
+            throw new IllegalArgumentException("Node " + node + " has incorrect region");
+        }
+        nodes.put(node.getLocation(), node);
     }
 
     void putEdge(EdgeImpl edge) {
@@ -61,13 +71,8 @@ class RegionImpl implements Region {
     }
 
     @Override
-    public Collection<Node> getNodes() {
-        return unmodifiableNodes;
-    }
-
-    @Override
-    public Collection<Edge> getEdges() {
-        return unmodifiableEdges;
+    public int hashCode() {
+        return Objects.hash(nodes, edges);
     }
 
     @Override
@@ -80,10 +85,5 @@ class RegionImpl implements Region {
         }
         RegionImpl region = (RegionImpl) o;
         return Objects.equals(nodes, region.nodes) && Objects.equals(edges, region.edges);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(nodes, edges);
     }
 }

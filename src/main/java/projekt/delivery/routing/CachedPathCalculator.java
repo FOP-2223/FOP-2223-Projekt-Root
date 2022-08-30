@@ -62,6 +62,11 @@ public class CachedPathCalculator implements PathCalculator {
         }
 
         @Override
+        public int hashCode() {
+            return hashcode;
+        }
+
+        @Override
         public boolean equals(Object o) {
             if (this == o) {
                 return true;
@@ -75,11 +80,6 @@ public class CachedPathCalculator implements PathCalculator {
             }
             return Objects.equals(start, that.start)
                 && Objects.equals(end, that.end);
-        }
-
-        @Override
-        public int hashCode() {
-            return hashcode;
         }
     }
 }

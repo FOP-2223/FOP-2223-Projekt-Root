@@ -6,9 +6,6 @@ import projekt.delivery.routing.Vehicle;
 import java.time.LocalDateTime;
 
 public interface ArrivedAtNeighborhoodEvent extends ArrivedAtNodeEvent {
-    @Override
-    Region.Neighborhood getNode();
-
     static ArrivedAtNeighborhoodEvent of(
         LocalDateTime time,
         Vehicle vehicle,
@@ -17,4 +14,7 @@ public interface ArrivedAtNeighborhoodEvent extends ArrivedAtNodeEvent {
     ) {
         return new ArrivedAtNeighborhoodEventImpl(time, vehicle, node, lastEdge);
     }
+
+    @Override
+    Region.Neighborhood getNode();
 }

@@ -1,7 +1,6 @@
 package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
-import projekt.base.DistanceCalculator;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.EventBus;
 import projekt.food.FoodType;
@@ -42,15 +41,15 @@ public interface VehicleManager {
 
     interface Occupied<C extends Region.Component<? super C>> {
 
+        static <RC extends Region.Component<RC>> Predicate<? super Occupied<RC>> named(String name) {
+            return c -> c.getComponent().getName().equals(name);
+        }
+
         C getComponent();
 
         VehicleManager getVehicleManager();
 
         Collection<Vehicle> getVehicles();
-
-        static <RC extends Region.Component<RC>> Predicate<? super Occupied<RC>> named(String name) {
-            return c -> c.getComponent().getName().equals(name);
-        }
     }
 
     interface Warehouse extends Occupied<Region.Node> {

@@ -15,8 +15,8 @@ public class ConfirmedOrder implements Serializable {
     private final Location location;
     private final int orderID;
     private final TimeInterval timeInterval;
-    private LocalDateTime actualDeliveryTime;
     private final List<Food> foodList;
+    private LocalDateTime actualDeliveryTime;
 
     public ConfirmedOrder(Location location, int orderID, TimeInterval timeInterval, List<Food> foodList) {
         this.location = location;

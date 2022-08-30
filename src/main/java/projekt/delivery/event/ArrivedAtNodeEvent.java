@@ -7,10 +7,6 @@ import java.time.LocalDateTime;
 
 public interface ArrivedAtNodeEvent extends Event {
 
-    Region.Node getNode();
-
-    Region.Edge getLastEdge();
-
     static ArrivedAtNodeEvent of(
         LocalDateTime time,
         Vehicle vehicle,
@@ -19,4 +15,8 @@ public interface ArrivedAtNodeEvent extends Event {
     ) {
         return new ArrivedAtNodeEventImpl(time, vehicle, node, lastEdge);
     }
+
+    Region.Node getNode();
+
+    Region.Edge getLastEdge();
 }

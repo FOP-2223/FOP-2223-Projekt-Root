@@ -48,5 +48,4 @@ public interface TUColors {
     Color COLOR_11C = new Color(97, 28, 115);
 
     Color[] COLOR_C = new Color[]{COLOR_1C, COLOR_2C, COLOR_3C, COLOR_4C, COLOR_5C, COLOR_6C, COLOR_7C, COLOR_8C, COLOR_9C, COLOR_10C, COLOR_11C};
-
 }

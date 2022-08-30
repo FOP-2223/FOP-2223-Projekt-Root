@@ -1,7 +1,6 @@
 package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
-import projekt.base.DistanceCalculator;
 import projekt.food.FoodType;
 
 import java.time.LocalDateTime;
@@ -13,11 +12,11 @@ import java.util.function.Predicate;
 
 class VehicleManagerBuilderImpl implements VehicleManager.Builder {
 
+    private final List<VehicleBuilder> vehicles = new ArrayList<>();
     private LocalDateTime time;
     private Region region;
     private PathCalculator pathCalculator;
     private Region.Node warehouse;
-    private final List<VehicleBuilder> vehicles = new ArrayList<>();
 
     @Override
     public VehicleManager.Builder time(LocalDateTime time) {
@@ -78,9 +77,9 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     }
 
     private static class VehicleBuilder {
-        private double capacity;
-        private Collection<FoodType<?, ?>> compatibleFoodTypes;
-        private @Nullable Predicate<? super VehicleManager.Occupied<? extends Region.Node>> nodePredicate;
+        private final double capacity;
+        private final Collection<FoodType<?, ?>> compatibleFoodTypes;
+        private final @Nullable Predicate<? super VehicleManager.Occupied<? extends Region.Node>> nodePredicate;
 
         private VehicleBuilder(
             double capacity,

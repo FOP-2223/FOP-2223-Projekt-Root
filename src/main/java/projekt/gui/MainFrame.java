@@ -7,9 +7,8 @@ import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
 import projekt.pizzeria.Pizzeria;
 
-import javax.swing.JFrame;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 
 public class MainFrame extends JFrame {
 
@@ -68,14 +67,13 @@ public class MainFrame extends JFrame {
         return controlsPanel;
     }
 
+    public Vehicle getSelectedVehicle() {
+        return selectedVehicle;
+    }
 
     public void setSelectedVehicle(@Nullable Vehicle vehicle) {
         this.selectedVehicle = vehicle;
         onUpdate();
-    }
-
-    public Vehicle getSelectedVehicle() {
-        return selectedVehicle;
     }
 
     public void onModelUpdate() {
@@ -103,5 +101,4 @@ public class MainFrame extends JFrame {
     public Pizzeria getPizzeria() {
         return pizzeria;
     }
-
 }

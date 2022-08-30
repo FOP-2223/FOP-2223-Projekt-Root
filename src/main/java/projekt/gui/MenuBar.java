@@ -1,11 +1,11 @@
 package projekt.gui;
 
-import javax.swing.JMenuBar;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 public class MenuBar extends JMenuBar {
 
-    private MainFrame mf;
+    private final MainFrame mf;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu viewMenu;

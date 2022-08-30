@@ -12,7 +12,11 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static projekt.delivery.routing.VehicleManager.Occupied;
@@ -77,9 +81,8 @@ public interface Utils {
                     pred.test(a.getX(), e.getX()) ? a.getX() : e.getX(),
                     pred.test(a.getY(), e.getY()) ? a.getY() : e.getY()),
                 (a, e) -> {
-                   throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException();
                 });
-
         }
 
         static Collector<Point2D, Point2D, Point2D> center() {
@@ -103,7 +106,7 @@ public interface Utils {
 
                 @Override
                 public BinaryOperator<Point2D> combiner() {
-                    return (a, b) -> new Point2D.Double((a.getX()+b.getX())/2d, (a.getY()+b.getY())/2d);
+                    return (a, b) -> new Point2D.Double((a.getX() + b.getX()) / 2d, (a.getY() + b.getY()) / 2d);
                 }
 
                 @Override
@@ -120,9 +123,6 @@ public interface Utils {
                     return Set.of();
                 }
             };
-
         }
-
     }
-
 }

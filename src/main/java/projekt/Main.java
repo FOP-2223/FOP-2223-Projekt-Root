@@ -13,7 +13,7 @@ import projekt.delivery.routing.VehicleManager;
 import projekt.gui.MainFrame;
 import projekt.pizzeria.Pizzeria;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class Main {
             .addEdge("A3_1", new Location(1, -2), new Location(4, -4))
             .addEdge("A5", new Location(4, -4), new Location(8, -8))
             .addEdge("A3_2", new Location(4, -4), new Location(10, -7))
-            .addEdge("A5_1", new Location(4,- 4), new Location(6, 0))
+            .addEdge("A5_1", new Location(4, -4), new Location(6, 0))
             .addEdge("A5_2", new Location(6, 0), new Location(6, 8))
             .addEdge("A67_1", new Location(0, 5), new Location(6, 8))
             .addEdge("A67_2", new Location(0, 5), new Location(-2, 0))

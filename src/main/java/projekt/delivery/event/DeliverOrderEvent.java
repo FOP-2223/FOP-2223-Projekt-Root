@@ -8,10 +8,6 @@ import java.time.LocalDateTime;
 
 public interface DeliverOrderEvent extends Event {
 
-    ConfirmedOrder getOrder();
-
-    Region.Neighborhood getNode();
-
     static DeliverOrderEvent of(
         LocalDateTime time,
         Vehicle vehicle,
@@ -20,4 +16,8 @@ public interface DeliverOrderEvent extends Event {
     ) {
         return new DeliverOrderEventImpl(time, vehicle, node, order);
     }
+
+    ConfirmedOrder getOrder();
+
+    Region.Neighborhood getNode();
 }

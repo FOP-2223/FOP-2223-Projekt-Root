@@ -32,13 +32,13 @@ public interface Region {
 
     interface Component<C extends Component<C>> extends Comparable<C> {
 
-        Region getRegion();
-
-        String getName();
-
         static <RC extends Region.Component<RC>> Predicate<? super RC> named(String name) {
             return c -> c.getName().equals(name);
         }
+
+        Region getRegion();
+
+        String getName();
     }
 
     interface Node extends Component<Node> {

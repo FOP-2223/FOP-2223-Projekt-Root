@@ -8,10 +8,6 @@ import java.time.LocalDateTime;
 
 public interface LoadOrderEvent extends Event {
 
-    ConfirmedOrder getOrder();
-
-    VehicleManager.Warehouse getWarehouse();
-
     static LoadOrderEvent of(
         LocalDateTime time,
         Vehicle vehicle,
@@ -20,4 +16,8 @@ public interface LoadOrderEvent extends Event {
     ) {
         return new LoadOrderEventImpl(time, vehicle, order, warehouse);
     }
+
+    ConfirmedOrder getOrder();
+
+    VehicleManager.Warehouse getWarehouse();
 }

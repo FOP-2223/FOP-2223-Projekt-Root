@@ -63,6 +63,11 @@ class EdgeImpl implements Region.Edge {
     }
 
     @Override
+    public Duration getDuration() {
+        return duration;
+    }
+
+    @Override
     public Region.Node getNodeA() {
         return getNode(locationA);
     }
@@ -73,13 +78,13 @@ class EdgeImpl implements Region.Edge {
     }
 
     @Override
-    public Duration getDuration() {
-        return duration;
+    public int compareTo(Region.Edge o) {
+        return COMPARATOR.compare(this, o);
     }
 
     @Override
-    public int compareTo(Region.Edge o) {
-        return COMPARATOR.compare(this, o);
+    public int hashCode() {
+        return Objects.hash(name, locationA, locationB, duration);
     }
 
     @Override
@@ -95,11 +100,6 @@ class EdgeImpl implements Region.Edge {
             && Objects.equals(locationA, edge.locationA)
             && Objects.equals(locationB, edge.locationB)
             && Objects.equals(duration, edge.duration);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, locationA, locationB, duration);
     }
 
     @Override

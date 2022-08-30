@@ -7,9 +7,6 @@ import java.time.LocalDateTime;
 
 public interface ArrivedAtWarehouseEvent extends ArrivedAtNodeEvent {
 
-    @Override
-    Region.Node getNode();
-
     static ArrivedAtWarehouseEvent of(
         LocalDateTime time,
         Vehicle vehicle,
@@ -18,4 +15,7 @@ public interface ArrivedAtWarehouseEvent extends ArrivedAtNodeEvent {
     ) {
         return new ArrivedAtWarehouseEventImpl(time, vehicle, node, lastEdge);
     }
+
+    @Override
+    Region.Node getNode();
 }

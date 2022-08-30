@@ -11,6 +11,21 @@ import java.util.List;
 public interface Extra<C extends Food.Config> {
 
     /**
+     * Applies all extras in {@code extras} to {@code config}.
+     * Extras are applied in ascending order of priority, or the extra's name
+     * if two or more extras have the same priority.
+     *
+     * @param config the configuration the extras should be applied to
+     * @param extras a list of extras to apply
+     * @param <C>    the configuration
+     */
+    static <C extends Food.Config> void writeToConfig(C config, List<? extends Extra<? super C>> extras) {
+        extras.stream()
+            .sorted(Comparator.<Extra<?>>comparingInt(Extra::getPriority).thenComparing(Extra::getName))
+            .forEach(e -> e.apply(config));
+    }
+
+    /**
      * The name of this extra.
      *
      * @return The name of this extra
@@ -30,19 +45,4 @@ public interface Extra<C extends Food.Config> {
      * @param config the configuration to which to apply the modifications
      */
     void apply(C config);
-
-    /**
-     * Applies all extras in {@code extras} to {@code config}.
-     * Extras are applied in ascending order of priority, or the extra's name
-     * if two or more extras have the same priority.
-     *
-     * @param config the configuration the extras should be applied to
-     * @param extras a list of extras to apply
-     * @param <C>    the configuration
-     */
-    static <C extends Food.Config> void writeToConfig(C config, List<? extends Extra<? super C>> extras) {
-        extras.stream()
-            .sorted(Comparator.<Extra<?>>comparingInt(Extra::getPriority).thenComparing(Extra::getName))
-            .forEach(e -> e.apply(config));
-    }
 }

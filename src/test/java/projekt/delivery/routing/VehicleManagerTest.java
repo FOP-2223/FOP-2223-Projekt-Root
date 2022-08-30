@@ -1,13 +1,10 @@
 package projekt.delivery.routing;
 
 import org.junit.jupiter.api.Test;
-import projekt.base.DistanceCalculator;
 import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 

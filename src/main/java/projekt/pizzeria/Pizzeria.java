@@ -10,6 +10,19 @@ import java.util.List;
 
 public interface Pizzeria {
 
+    Pizzeria.Factory LOS_FOPBOTS_HERMANOS = (deliveryService) -> null;
+    Pizzeria.Factory JAVA_HUT = (deliveryService) -> new PizzeriaImpl("FopHut",
+        List.of(
+            Pizza.MARGHERITA
+        ),
+        deliveryService
+    );
+    Pizzeria.Factory PASTAFAR = (deliveryService) -> null;
+    Pizzeria.Factory PALPAPIZZA = (deliveryService) -> null;
+    Pizzeria.Factory ISENJAR = (deliveryService) -> null;
+    Pizzeria.Factory MIDDLE_FOP = (deliveryService) -> null;
+    Pizzeria.Factory MOUNT_DOOM_PIZZA = (deliveryService) -> null;
+
     String getName();
 
     List<? extends Food.Variant<?, ?>> getMenu();
@@ -27,23 +40,4 @@ public interface Pizzeria {
 
         Pizzeria create(DeliveryService deliveryService);
     }
-
-    Pizzeria.Factory LOS_FOPBOTS_HERMANOS = (deliveryService) -> null;
-
-    Pizzeria.Factory JAVA_HUT = (deliveryService) -> new PizzeriaImpl("FopHut",
-        List.of(
-            Pizza.MARGHERITA
-        ),
-        deliveryService
-    );
-
-    Pizzeria.Factory PASTAFAR = (deliveryService) -> null;
-
-    Pizzeria.Factory PALPAPIZZA = (deliveryService) -> null;
-
-    Pizzeria.Factory ISENJAR = (deliveryService) -> null;
-
-    Pizzeria.Factory MIDDLE_FOP = (deliveryService) -> null;
-
-    Pizzeria.Factory MOUNT_DOOM_PIZZA = (deliveryService) -> null;
 }

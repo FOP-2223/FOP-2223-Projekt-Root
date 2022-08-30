@@ -26,6 +26,11 @@ class NeighborhoodImpl extends NodeImpl implements Region.Neighborhood {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), distance);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -38,11 +43,6 @@ class NeighborhoodImpl extends NodeImpl implements Region.Neighborhood {
         }
         NeighborhoodImpl that = (NeighborhoodImpl) o;
         return Double.compare(that.distance, distance) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), distance);
     }
 
     @Override

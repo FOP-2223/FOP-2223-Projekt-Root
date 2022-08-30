@@ -21,9 +21,9 @@ class VehicleImpl implements Vehicle {
     private final double capacity;
     private final List<ConfirmedOrder> orders = new ArrayList<>();
     private final Collection<FoodType<?, ?>> compatibleFoodTypes;
-    private AbstractOccupied<?> occupied;
     private final VehicleManagerImpl vehicleManager;
     private final Deque<PathImpl> moveQueue = new LinkedList<>();
+    private AbstractOccupied<?> occupied;
 
     public VehicleImpl(
         int id,
@@ -48,12 +48,6 @@ class VehicleImpl implements Vehicle {
         this.occupied = occupied;
     }
 
-    private void checkMoveToNode(Region.Node node) {
-        if (occupied.component.equals(node)) {
-            throw new IllegalArgumentException("Vehicle " + getId() + " cannot move to own node " + node);
-        }
-    }
-
     @Override
     public void moveDirect(Region.Node node, Consumer<? super Vehicle> arrivalAction) {
         checkMoveToNode(node);
@@ -68,7 +62,8 @@ class VehicleImpl implements Vehicle {
             final Region.Node nodeA = ((Region.Edge) occupied.component).getNodeA();
             final Region.Node nodeB = ((Region.Edge) occupied.component).getNodeB();
             final Region.Node nextNode = previousNode.equals(nodeA) ? nodeB : nodeA;
-            moveQueue.add(new PathImpl(new ArrayDeque<>(Collections.singleton(nextNode)), v -> {}));
+            moveQueue.add(new PathImpl(new ArrayDeque<>(Collections.singleton(nextNode)), v -> {
+            }));
         }
         moveQueued(node, arrivalAction);
     }
@@ -97,6 +92,37 @@ class VehicleImpl implements Vehicle {
             System.out.println("Vehicle " + v.getId() + " arrived at node " + node)).andThen(arrivalAction)));
     }
 
+    @Override
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public double getCapacity() {
+        return capacity;
+    }
+
+    @Override
+    public VehicleManager getVehicleManager() {
+        return vehicleManager;
+    }
+
+    @Override
+    public Collection<ConfirmedOrder> getOrders() {
+        return orders;
+    }
+
+    @Override
+    public Collection<FoodType<?, ?>> getCompatibleFoodTypes() {
+        return compatibleFoodTypes;
+    }
+
+    private void checkMoveToNode(Region.Node node) {
+        if (occupied.component.equals(node)) {
+            throw new IllegalArgumentException("Vehicle " + getId() + " cannot move to own node " + node);
+        }
+    }
+
     void move() {
         final Region region = vehicleManager.getRegion();
         if (moveQueue.isEmpty()) {
@@ -122,31 +148,6 @@ class VehicleImpl implements Vehicle {
                 throw new AssertionError("Component must be either node or component");
             }
         }
-    }
-
-    @Override
-    public int getId() {
-        return id;
-    }
-
-    @Override
-    public double getCapacity() {
-        return capacity;
-    }
-
-    @Override
-    public VehicleManager getVehicleManager() {
-        return vehicleManager;
-    }
-
-    @Override
-    public Collection<ConfirmedOrder> getOrders() {
-        return orders;
-    }
-
-    @Override
-    public Collection<FoodType<?, ?>> getCompatibleFoodTypes() {
-        return compatibleFoodTypes;
     }
 
     void loadOrder(ConfirmedOrder order) {

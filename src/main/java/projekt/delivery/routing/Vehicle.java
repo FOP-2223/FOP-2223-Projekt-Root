@@ -23,7 +23,8 @@ public interface Vehicle extends Comparable<Vehicle> {
      * Deletes the entire move queue and moves directly to the provided {@link Region.Node}.
      */
     default void moveDirect(Region.Node node) {
-        moveDirect(node, v -> {});
+        moveDirect(node, v -> {
+        });
     }
 
     void moveDirect(Region.Node node, Consumer<? super Vehicle> arrivalAction);
@@ -32,7 +33,8 @@ public interface Vehicle extends Comparable<Vehicle> {
      * Adds the provided {@link Region.Node} to the move queue.
      */
     default void moveQueued(Region.Node node) {
-        moveQueued(node, v -> {});
+        moveQueued(node, v -> {
+        });
     }
 
     /**

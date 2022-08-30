@@ -9,7 +9,11 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -25,21 +29,19 @@ public class MapPanel extends JPanel {
     private static final double NODE_DIAMETER = .95;
     private static final double IMAGE_SIZE = .5;
     private static final Color CAR_COLOR = TUColors.COLOR_6C;
-    private static final Image CAR = Utils.loadImage("car.png", new Color(CAR_COLOR.getRed(), CAR_COLOR.getGreen(), CAR_COLOR.getBlue(), 255/4));
+    private static final Image CAR = Utils.loadImage("car.png", new Color(CAR_COLOR.getRed(), CAR_COLOR.getGreen(), CAR_COLOR.getBlue(), 255 / 4));
     private static final Image CAR_SELECTED = Utils.loadImage("car.png", CAR_COLOR);
     private static final double SCALE_IN = 1.1;
     private static final double SCALE_OUT = 1 / SCALE_IN;
-
+    final AtomicReference<Point> lastPoint = new AtomicReference<>();
     private final MainFrame mainFrame;
-
     private final AffineTransform transformation = new AffineTransform();
+    private boolean alreadyCentered = false;
 
     public MapPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         initComponents();
     }
-
-    final AtomicReference<Point> lastPoint = new AtomicReference<>();
 
     private void initComponents() {
         setBackground(Color.BLACK);
@@ -90,9 +92,6 @@ public class MapPanel extends JPanel {
         });
     }
 
-
-    private boolean alreadyCentered = false;
-
     /**
      * Performs scale and translation of the view so that the given map fills this view.
      */
@@ -114,15 +113,16 @@ public class MapPanel extends JPanel {
         getTransform().scale(scale, scale);
         // translate
         reverse = getReverseTransform();
-        var center = new Point2D.Double(width/2d, height/2d);
+        var center = new Point2D.Double(width / 2d, height / 2d);
         reverse.transform(center, center);
         var nodeCenter = mainFrame.region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.center());
-        transformation.translate(center.getX() - nodeCenter.getX() , center.getY() - nodeCenter.getY());
+        transformation.translate(center.getX() - nodeCenter.getX(), center.getY() - nodeCenter.getY());
         alreadyCentered = true;
     }
 
     /**
      * Returns the last point hovered by the mouse or {@code null} if no point was hovered by the mouse.
+     *
      * @return the point
      * @see MapPanel#getCurrentLocation()
      */
@@ -135,6 +135,7 @@ public class MapPanel extends JPanel {
 
     /**
      * Returns the last location hovered by the mouse or {@code null} if no location was hovered by the mouse.
+     *
      * @return the location
      * @see MapPanel#getCurrentPoint()
      */
@@ -147,6 +148,7 @@ public class MapPanel extends JPanel {
 
     /**
      * Returns a list of vehicles positioned at the given position.
+     *
      * @param position the position to look for
      * @return the list of vehicles
      */
@@ -176,9 +178,9 @@ public class MapPanel extends JPanel {
         }
     }
 
-
     /**
      * Returns the affine transformation used to map model locations to view locations.
+     *
      * @return the affine transformation
      * @see MapPanel#getReverseTransform()
      */
@@ -188,6 +190,7 @@ public class MapPanel extends JPanel {
 
     /**
      * Returns the reverse affine transformation used to map view locations to model locations.
+     *
      * @return the reverse affine transformation
      * @see MapPanel#getReverseTransform()
      */
@@ -201,9 +204,10 @@ public class MapPanel extends JPanel {
 
     /**
      * Paints the given image at the given location with a size of {@link #IMAGE_SIZE}.
-     * @param g a graphics object to paint the image on
-     * @param x the x-coordinate
-     * @param y the y-coordinate
+     *
+     * @param g     a graphics object to paint the image on
+     * @param x     the x-coordinate
+     * @param y     the y-coordinate
      * @param image the image to paint
      */
     private void paintImage(Graphics2D g, double x, double y, Image image) {
@@ -218,9 +222,10 @@ public class MapPanel extends JPanel {
 
     /**
      * Paints the given image at the given location with a size of {@link #IMAGE_SIZE}.
-     * @param g a graphics object to paint the image on
+     *
+     * @param g        a graphics object to paint the image on
      * @param location the location
-     * @param image the image to paint
+     * @param image    the image to paint
      */
     private void paintImage(Graphics2D g, Point2D location, Image image) {
         paintImage(g, location.getX(), location.getY(), image);
@@ -228,7 +233,8 @@ public class MapPanel extends JPanel {
 
     /**
      * Paints the given vehicle.
-     * @param g g a graphics object to paint the image on
+     *
+     * @param g       g a graphics object to paint the image on
      * @param vehicle the vehicle to paint
      */
     private void paintVehicle(Graphics2D g, Vehicle vehicle) {
@@ -240,7 +246,8 @@ public class MapPanel extends JPanel {
 
     /**
      * Paints the given node.
-     * @param g a graphics object to paint the image on
+     *
+     * @param g    a graphics object to paint the image on
      * @param node the node to paint
      */
     private void drawNode(Graphics2D g, Region.Node node) {
@@ -249,11 +256,11 @@ public class MapPanel extends JPanel {
         g.setStroke(STROKE);
         g.setColor(NODE_COLOR);
         var location = node.getLocation();
-        var circle = new Ellipse2D.Double(location.getX() - NODE_DIAMETER/2f, location.getY() - NODE_DIAMETER/2f,
+        var circle = new Ellipse2D.Double(location.getX() - NODE_DIAMETER / 2f, location.getY() - NODE_DIAMETER / 2f,
             NODE_DIAMETER,
             NODE_DIAMETER);
         var textPoint = Utils.toPoint(node);
-        textPoint.setLocation(textPoint.getX()+.5, textPoint.getY()-.5);
+        textPoint.setLocation(textPoint.getX() + .5, textPoint.getY() - .5);
         text(g, textPoint, TUColors.COLOR_0A, node.getName());
         g.fill(circle);
         g.setColor(EDGE_COLOR);
@@ -264,7 +271,8 @@ public class MapPanel extends JPanel {
 
     /**
      * Paints the given edge.
-     * @param g the graphics object to paint the image on
+     *
+     * @param g    the graphics object to paint the image on
      * @param edge the edge to paint
      */
     private void paintEdge(Graphics2D g, Region.Edge edge) {
@@ -288,10 +296,11 @@ public class MapPanel extends JPanel {
 
     /**
      * Paints the given text at the given position using the given position.
-     * @param g the graphics object to paint the image on
+     *
+     * @param g        the graphics object to paint the image on
      * @param position the position to start
-     * @param color the color of the text
-     * @param text the text
+     * @param color    the color of the text
+     * @param text     the text
      */
     private void text(Graphics2D g, Point2D position, Color color, String text) {
         var oldTransformation = g.getTransform();
@@ -319,7 +328,7 @@ public class MapPanel extends JPanel {
         float outerTicksWidth = .5f;
         float tenTicksWidth = .25f;
         float fiveTicksWidth = .125f;
-        float oneTicksWidth = 1f/32f;
+        float oneTicksWidth = 1f / 32f;
         // Vertical Lines
         for (int i = 0, x = -width / 2; x < width / 2; i++, x += 1) {
             float strokeWidth;
@@ -382,8 +391,8 @@ public class MapPanel extends JPanel {
      * Paints the Map using the given g2d. This method assumes that (0,0) paints
      * centered
      *
-     * @param g       The specified Graphics Context, transformed so (0,0) is
-     *                  centered.
+     * @param g The specified Graphics Context, transformed so (0,0) is
+     *          centered.
      */
     private void paintMap(Graphics2D g) {
         // Background
@@ -392,5 +401,4 @@ public class MapPanel extends JPanel {
         mainFrame.getRegion().getNodes().forEach(n -> drawNode(g, n));
         mainFrame.vehicleManager.getVehicles().forEach(v -> paintVehicle(g, v));
     }
-
 }

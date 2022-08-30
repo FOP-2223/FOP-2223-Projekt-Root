@@ -2,7 +2,7 @@ package projekt.gui;
 
 import projekt.delivery.routing.Vehicle;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.*;
 
 public class InfoPanel extends JPanel {

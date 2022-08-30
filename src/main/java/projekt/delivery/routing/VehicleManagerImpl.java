@@ -1,7 +1,6 @@
 package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
-import projekt.base.DistanceCalculator;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.EventBus;
 import projekt.delivery.event.SpawnEvent;
@@ -22,10 +21,9 @@ import java.util.stream.Collectors;
 
 class VehicleManagerImpl implements VehicleManager {
 
-    private LocalDateTime currentTime;
-    private final Region region;
     final Map<Region.Node, OccupiedNodeImpl<? extends Region.Node>> occupiedNodes;
     final Map<Region.Edge, OccupiedEdgeImpl> occupiedEdges;
+    private final Region region;
     private final PathCalculator pathCalculator;
     private final OccupiedWarehouseImpl warehouse;
     private final List<VehicleImpl> vehiclesToSpawn = new ArrayList<>();
@@ -33,6 +31,7 @@ class VehicleManagerImpl implements VehicleManager {
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
     private final Set<AbstractOccupied<?>> allOccupied;
     private final EventBus eventBus = new EventBus();
+    private LocalDateTime currentTime;
 
     VehicleManagerImpl(
         LocalDateTime currentTime,
@@ -53,8 +52,8 @@ class VehicleManagerImpl implements VehicleManager {
         return node.equals(warehouse.getComponent())
             ? warehouse
             : node instanceof Region.Neighborhood
-            ? new OccupiedNeighborhoodImpl((Region.Neighborhood) node, this)
-            : new OccupiedNodeImpl<>(node, this);
+                ? new OccupiedNeighborhoodImpl((Region.Neighborhood) node, this)
+                : new OccupiedNodeImpl<>(node, this);
     }
 
     private Map<Region.Node, OccupiedNodeImpl<? extends Region.Node>> toOccupiedNodes(Collection<Region.Node> nodes) {
@@ -89,6 +88,11 @@ class VehicleManagerImpl implements VehicleManager {
     }
 
     @Override
+    public PathCalculator getPathCalculator() {
+        return pathCalculator;
+    }
+
+    @Override
     public Collection<Vehicle> getVehicles() {
         return unmodifiableVehicles;
     }
@@ -96,29 +100,6 @@ class VehicleManagerImpl implements VehicleManager {
     @Override
     public OccupiedWarehouseImpl getWarehouse() {
         return warehouse;
-    }
-
-    Vehicle addVehicle(
-        double capacity,
-        Collection<FoodType<?, ?>> compatibleFoodTypes,
-        @Nullable Predicate<? super Occupied<? extends Region.Node>> nodePredicate
-    ) {
-        final OccupiedNodeImpl<?> occupied;
-        if (nodePredicate == null) {
-            occupied = warehouse;
-        } else {
-            occupied = findNode(nodePredicate);
-        }
-        final VehicleImpl vehicle = new VehicleImpl(
-            vehicles.size() + vehiclesToSpawn.size(),
-            capacity,
-            compatibleFoodTypes,
-            occupied,
-            this
-        );
-        vehiclesToSpawn.add(vehicle);
-        vehicle.setOccupied(occupied);
-        return vehicle;
     }
 
     @Override
@@ -172,13 +153,6 @@ class VehicleManagerImpl implements VehicleManager {
         return currentTime;
     }
 
-    private void spawnVehicle(VehicleImpl vehicle) {
-        vehicles.add(vehicle);
-        OccupiedWarehouseImpl warehouse = (OccupiedWarehouseImpl) vehicle.getOccupied();
-        warehouse.vehicles.put(vehicle, new AbstractOccupied.VehicleStats(currentTime, null));
-        getEventBus().queuePost(SpawnEvent.of(currentTime, vehicle, warehouse.getComponent()));
-    }
-
     @Override
     public List<Event> tick() {
         for (VehicleImpl vehicle : vehiclesToSpawn) {
@@ -197,8 +171,33 @@ class VehicleManagerImpl implements VehicleManager {
         return eventBus.popEvents(currentTime);
     }
 
-    @Override
-    public PathCalculator getPathCalculator() {
-        return pathCalculator;
+    Vehicle addVehicle(
+        double capacity,
+        Collection<FoodType<?, ?>> compatibleFoodTypes,
+        @Nullable Predicate<? super Occupied<? extends Region.Node>> nodePredicate
+    ) {
+        final OccupiedNodeImpl<?> occupied;
+        if (nodePredicate == null) {
+            occupied = warehouse;
+        } else {
+            occupied = findNode(nodePredicate);
+        }
+        final VehicleImpl vehicle = new VehicleImpl(
+            vehicles.size() + vehiclesToSpawn.size(),
+            capacity,
+            compatibleFoodTypes,
+            occupied,
+            this
+        );
+        vehiclesToSpawn.add(vehicle);
+        vehicle.setOccupied(occupied);
+        return vehicle;
+    }
+
+    private void spawnVehicle(VehicleImpl vehicle) {
+        vehicles.add(vehicle);
+        OccupiedWarehouseImpl warehouse = (OccupiedWarehouseImpl) vehicle.getOccupied();
+        warehouse.vehicles.put(vehicle, new AbstractOccupied.VehicleStats(currentTime, null));
+        getEventBus().queuePost(SpawnEvent.of(currentTime, vehicle, warehouse.getComponent()));
     }
 }

@@ -2,29 +2,25 @@ package projekt.gui;
 
 import projekt.delivery.SimulationConfig;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.function.IntUnaryOperator;
 
 public class ControlsPanel extends JPanel {
 
+    private final MainFrame mainFrame;
+    private final SimulationConfig simulationConfig;
+    private final IntUnaryOperator speedFunction = i -> 1000 - 100 * i;
     private JButton playPauseButton;
     private JButton singleStepButton;
     private JButton stopButton;
     private JSlider tickIntervalSlider;
     private JLabel tickIntervalSliderLabel;
     private JLabel mousePositionLabel;
-    private final MainFrame mainFrame;
-    private final SimulationConfig simulationConfig;
     private boolean paused = false;
-    private final IntUnaryOperator speedFunction = i -> 1000 - 100 * i;
 
     public ControlsPanel(MainFrame mainFrame, SimulationConfig simulationConfig) {
         this.mainFrame = mainFrame;

@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 
 class NodeImpl implements Region.Node {
 
+    protected final Set<Location> connections;
     private final Region region;
     private final String name;
     private final Location location;
-    protected final Set<Location> connections;
 
     NodeImpl(
         Region region,
@@ -62,6 +62,11 @@ class NodeImpl implements Region.Node {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(name, location, connections);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -76,11 +81,6 @@ class NodeImpl implements Region.Node {
         return Objects.equals(name, node.name)
             && Objects.equals(location, node.location)
             && Objects.equals(connections, node.connections);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, location, connections);
     }
 
     @Override

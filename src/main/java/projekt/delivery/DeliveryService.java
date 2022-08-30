@@ -8,6 +8,9 @@ import java.util.List;
 
 public interface DeliveryService {
 
+    Factory SIMPLE = BasicDeliveryService::new;
+    Factory BOGO = BogoDeliveryService::new;
+
     void deliver(List<ConfirmedOrder> confirmedOrders);
 
     /**
@@ -30,8 +33,4 @@ public interface DeliveryService {
 
         DeliveryService create(VehicleManager vehicleManager, Rater rater, Simulation simulation, SimulationConfig simulationConfig);
     }
-
-    Factory SIMPLE = BasicDeliveryService::new;
-
-    Factory BOGO = BogoDeliveryService::new;
 }

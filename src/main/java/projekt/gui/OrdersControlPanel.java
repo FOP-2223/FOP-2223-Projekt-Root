@@ -1,8 +1,7 @@
 package projekt.gui;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import java.awt.GridLayout;
+import javax.swing.*;
+import java.awt.*;
 
 public class OrdersControlPanel extends JPanel {
     final JButton addOrderButton;

@@ -1,7 +1,9 @@
 package projekt.gui;
 
 import projekt.delivery.routing.ConfirmedOrder;
-import projekt.food.*;
+import projekt.food.Extra;
+import projekt.food.Food;
+import projekt.food.FoodTypes;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -10,8 +12,11 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -123,12 +128,12 @@ class OrdersDialog extends JDialog {
                 .map(component ->
                     component instanceof JCheckBox checkBox && checkBox.isSelected()
                         ? extraCheckboxes
-                            .get(selectedFoodType)
-                            .stream()
-                            .filter(pair -> checkBox == pair.getFirst())
-                            .findAny()
-                            .orElse(new Pair<>(null, null))
-                            .getSecond()
+                        .get(selectedFoodType)
+                        .stream()
+                        .filter(pair -> checkBox == pair.getFirst())
+                        .findAny()
+                        .orElse(new Pair<>(null, null))
+                        .getSecond()
                         : null
                 )
                 .filter(Objects::nonNull)
@@ -298,5 +303,4 @@ class OrdersDialog extends JDialog {
         deliveryTimeSelector.setValue(mainFrame.vehicleManager.getCurrentTime().format(dateTimeFormatter));
         foodTypeSelector.setSelectedIndex(0);
     }
-
 }

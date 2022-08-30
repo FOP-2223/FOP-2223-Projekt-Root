@@ -6,11 +6,11 @@ import java.time.LocalDateTime;
 
 public interface Event {
 
-    LocalDateTime getTime();
-
-    Vehicle getVehicle();
-
     static Event of(LocalDateTime time, Vehicle vehicle) {
         return new EventImpl(time, vehicle);
     }
+
+    LocalDateTime getTime();
+
+    Vehicle getVehicle();
 }

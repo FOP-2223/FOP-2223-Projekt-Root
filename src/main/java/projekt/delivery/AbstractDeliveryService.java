@@ -13,8 +13,8 @@ public abstract class AbstractDeliveryService implements DeliveryService {
     protected final Rater rater;
     private final Simulation simulation;
     private final SimulationConfig simulationConfig;
-    private volatile boolean terminationRequested = false;
     private final Object lock = new Object();
+    private volatile boolean terminationRequested = false;
     private List<ConfirmedOrder> unprocessedOrders = new ArrayList<>();
 
     protected AbstractDeliveryService(VehicleManager vehicleManager, Rater rater, Simulation simulation, SimulationConfig simulationConfig) {
@@ -64,6 +64,16 @@ public abstract class AbstractDeliveryService implements DeliveryService {
         }
     }
 
+    @Override
+    public void endSimulation() {
+        terminationRequested = true;
+    }
+
+    @Override
+    public SimulationConfig getSimulationConfig() {
+        return simulationConfig;
+    }
+
     public void runTick() {
         // Schedule new orders
         List<ConfirmedOrder> newOrders = Collections.emptyList();
@@ -79,14 +89,4 @@ public abstract class AbstractDeliveryService implements DeliveryService {
     }
 
     abstract void tick(List<ConfirmedOrder> newOrders);
-
-    @Override
-    public void endSimulation() {
-        terminationRequested = true;
-    }
-
-    @Override
-    public SimulationConfig getSimulationConfig() {
-        return simulationConfig;
-    }
 }

@@ -7,8 +7,6 @@ import java.time.LocalDateTime;
 
 public interface SpawnEvent extends Event {
 
-    Region.Node getNode();
-
     static SpawnEvent of(
         LocalDateTime time,
         Vehicle vehicle,
@@ -16,4 +14,6 @@ public interface SpawnEvent extends Event {
     ) {
         return new SpawnEventImpl(time, vehicle, node);
     }
+
+    Region.Node getNode();
 }

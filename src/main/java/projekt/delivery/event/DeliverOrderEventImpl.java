@@ -23,13 +23,13 @@ class DeliverOrderEventImpl extends EventImpl implements DeliverOrderEvent {
     }
 
     @Override
-    public Region.Neighborhood getNode() {
-        return node;
+    public ConfirmedOrder getOrder() {
+        return order;
     }
 
     @Override
-    public ConfirmedOrder getOrder() {
-        return order;
+    public Region.Neighborhood getNode() {
+        return node;
     }
 
     @Override

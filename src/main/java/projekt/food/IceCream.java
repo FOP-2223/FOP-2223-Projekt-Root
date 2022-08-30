@@ -10,6 +10,35 @@ import java.util.function.UnaryOperator;
  */
 public interface IceCream extends Food {
 
+    Variant VANILLA = new IceCreamImpl.Variant(
+        "Vanilla",
+        FoodTypes.ICE_CREAM,
+        BigDecimal.valueOf(1.5),
+        0.2,
+        "Vanilla"
+    );
+    Variant STRAWBERRY = new IceCreamImpl.Variant(
+        "Strawberry",
+        FoodTypes.ICE_CREAM,
+        BigDecimal.valueOf(1.5),
+        0.2,
+        "Strawberry"
+    );
+    Variant CHOCOLATE = new IceCreamImpl.Variant(
+        "Chocolate",
+        FoodTypes.ICE_CREAM,
+        BigDecimal.valueOf(1.5),
+        0.2,
+        "Chocolate"
+    );
+    Variant STRACCIATELLA = new IceCreamImpl.Variant(
+        "Stracciatella",
+        FoodTypes.ICE_CREAM,
+        BigDecimal.valueOf(1.5),
+        0.2,
+        "Stracciatella"
+    );
+
     /**
      * Returns the flavor name.
      *
@@ -49,36 +78,4 @@ public interface IceCream extends Food {
          */
         @Nullable String getBaseFlavor();
     }
-
-    Variant VANILLA = new IceCreamImpl.Variant(
-        "Vanilla",
-        FoodTypes.ICE_CREAM,
-        BigDecimal.valueOf(1.5),
-        0.2,
-        "Vanilla"
-    );
-
-    Variant STRAWBERRY = new IceCreamImpl.Variant(
-        "Strawberry",
-        FoodTypes.ICE_CREAM,
-        BigDecimal.valueOf(1.5),
-        0.2,
-        "Strawberry"
-    );
-
-    Variant CHOCOLATE = new IceCreamImpl.Variant(
-        "Chocolate",
-        FoodTypes.ICE_CREAM,
-        BigDecimal.valueOf(1.5),
-        0.2,
-        "Chocolate"
-    );
-
-    Variant STRACCIATELLA = new IceCreamImpl.Variant(
-        "Stracciatella",
-        FoodTypes.ICE_CREAM,
-        BigDecimal.valueOf(1.5),
-        0.2,
-        "Stracciatella"
-    );
 }

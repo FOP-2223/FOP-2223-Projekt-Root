@@ -10,9 +10,6 @@ import java.util.Map;
  */
 public final class Extras {
 
-    private Extras() {
-    }
-
     public static final Extra<Pizza.Config> EXTRA_HAM = new ExtraImpl<>(
         "Extra Ham",
         5,
@@ -21,7 +18,6 @@ public final class Extras {
             pizza.weight(w -> w + 0.1);
         }
     );
-
     public static final Extra<Pizza.Config> EXTRA_OLIVES = new ExtraImpl<>(
         "Extra Olives",
         5,
@@ -30,7 +26,6 @@ public final class Extras {
             pizza.weight(w -> w + 0.05);
         }
     );
-
     public static final Extra<Pasta.Config> EXTRA_THICK = new ExtraImpl<>(
         "Extra Thick",
         4,
@@ -40,7 +35,6 @@ public final class Extras {
             pasta.thickness(t -> t * 2);
         }
     );
-
     public static final Extra<Saucable.Config> SPICY_SAUCE = new ExtraImpl<>(
         "Spicy Sauce",
         3,
@@ -49,7 +43,6 @@ public final class Extras {
             saucable.sauce(s -> "Spicy " + s);
         }
     );
-
     public static final Extra<Saucable.Config> EXTRA_SAUCE = new ExtraImpl<>(
         "Extra Sauce",
         4,
@@ -59,7 +52,6 @@ public final class Extras {
             saucable.sauce(s -> "Extra " + s);
         }
     );
-
     public static final Extra<Saucable.Config> NO_SAUCE = new ExtraImpl<>(
         "No Sauce",
         5,
@@ -69,7 +61,6 @@ public final class Extras {
             saucable.sauce(s -> null);
         }
     );
-
     public static final Extra<IceCream.Config> RAINBOW_SPRINKLES = new ExtraImpl<>(
         "Rainbow Sprinkles",
         5,
@@ -78,7 +69,6 @@ public final class Extras {
             icecream.weight(w -> w + 0.03);
         }
     );
-
     public static final Extra<IceCream.Config> EXTRA_SCOOP = new ExtraImpl<>(
         "Extra Scoop",
         2,
@@ -87,18 +77,7 @@ public final class Extras {
             icecream.weight(w -> w + 0.1);
         }
     );
-
     public static final Map<String, Extra<?>> ALL;
-
-    /**
-     * Adds {@code extra} to {@code extras}.
-     *
-     * @param extras a map of an extra's name and the extra itself
-     * @param extra  the extra
-     */
-    private static void addExtra(Map<String, Extra<?>> extras, Extra<?> extra) {
-        extras.put(extra.getName(), extra);
-    }
 
     static {
         final Map<String, Extra<?>> extras = new HashMap<>();
@@ -111,5 +90,18 @@ public final class Extras {
         addExtra(extras, RAINBOW_SPRINKLES);
         addExtra(extras, EXTRA_SCOOP);
         ALL = Collections.unmodifiableMap(extras);
+    }
+
+    private Extras() {
+    }
+
+    /**
+     * Adds {@code extra} to {@code extras}.
+     *
+     * @param extras a map of an extra's name and the extra itself
+     * @param extra  the extra
+     */
+    private static void addExtra(Map<String, Extra<?>> extras, Extra<?> extra) {
+        extras.put(extra.getName(), extra);
     }
 }
