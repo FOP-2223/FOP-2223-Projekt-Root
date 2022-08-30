@@ -21,7 +21,7 @@ public class TimeInterval {
     public TimeInterval(LocalDateTime start, LocalDateTime end) {
         Objects.requireNonNull(start, "start");
         Objects.requireNonNull(end, "end");
-        if (start.isBefore(end)) {
+        if (start.isAfter(end)) {
             throw new IllegalArgumentException(String.format("Start %s is after end %s", start, end));
         }
         this.start = start;
