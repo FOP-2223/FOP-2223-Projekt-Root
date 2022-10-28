@@ -9,7 +9,7 @@ plugins {
 version = file("version").readLines().first()
 
 jagr {
-    assignmentId.set("h_id_")
+    assignmentId.set("projekt")
     submissions {
         val main by creating {
             studentId.set("ab12cdef")
@@ -19,15 +19,15 @@ jagr {
     }
     graders {
         val graderPublic by creating {
-            graderName.set("_name_-Public")
-            rubricProviderName.set("h_id_.H_id__RubricProvider")
+            graderName.set("FOP-2223-Projekt-Public")
+            rubricProviderName.set("projekt.Projekt_RubricProvider")
             configureDependencies {
                 implementation(libs.algoutils.tutor)
             }
         }
         val graderPrivate by creating {
             parent(graderPublic)
-            graderName.set("_name_-Private")
+            graderName.set("FOP-2223-Projekt-Private")
         }
     }
 }
@@ -35,11 +35,12 @@ jagr {
 dependencies {
     implementation(libs.annotations)
     implementation(libs.algoutils.student)
+    implementation(libs.flatlaf)
     testImplementation(libs.junit.core)
 }
 
 application {
-    mainClass.set("h_id_.Main")
+    mainClass.set("projekt.Main")
 }
 
 tasks {
