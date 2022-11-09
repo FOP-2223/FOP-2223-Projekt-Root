@@ -5,7 +5,6 @@ import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
-import projekt.food.Food;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -47,10 +46,7 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                 while (it.hasNext()) {
                     final ConfirmedOrder order = it.next();
                     if (order.getTotalWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()
-                        && order.getFoodList().stream()
-                        .map(Food::getFoodVariant)
-                        .map(Food.Variant::getFoodType)
-                        .allMatch(vehicle.getCompatibleFoodTypes()::contains)) {
+                        && vehicle.getCompatibleFoodTypes().containsAll(order.getFoodList())) {
                         loadedAtLeastOneOrderOnVehicle = true;
                         vehicleManager.getWarehouse().loadOrder(vehicle, order);
                         vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v ->

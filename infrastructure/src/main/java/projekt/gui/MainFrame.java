@@ -5,7 +5,6 @@ import projekt.delivery.DeliveryService;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
-import projekt.pizzeria.Pizzeria;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +14,6 @@ public class MainFrame extends JFrame {
     final Region region;
     final VehicleManager vehicleManager;
     final DeliveryService deliveryService;
-    final Pizzeria pizzeria;
 
     private ControlsPanel controlsPanel;
     private InfoPanel infoPanel;
@@ -24,11 +22,10 @@ public class MainFrame extends JFrame {
 
     private Vehicle selectedVehicle;
 
-    public MainFrame(Region region, VehicleManager vehicleManager, DeliveryService deliverService, Pizzeria pizzeria) {
+    public MainFrame(Region region, VehicleManager vehicleManager, DeliveryService deliverService) {
         this.region = region;
         this.vehicleManager = vehicleManager;
         this.deliveryService = deliverService;
-        this.pizzeria = pizzeria;
 
         initComponents();
     }
@@ -96,9 +93,5 @@ public class MainFrame extends JFrame {
 
     public DeliveryService getDeliveryService() {
         return deliveryService;
-    }
-
-    public Pizzeria getPizzeria() {
-        return pizzeria;
     }
 }

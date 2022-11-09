@@ -1,37 +1,25 @@
 package projekt.gui;
 
 import projekt.delivery.routing.ConfirmedOrder;
-import projekt.food.Extra;
-import projekt.food.Food;
-import projekt.food.FoodTypes;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 class OrdersDialog extends JDialog {
 
     private final JTextField textField1 = new JTextField();
     private final JSpinner deliveryTimeSelector;
-    private final JComboBox<String> foodTypeSelector = new JComboBox<>(FoodTypes.ALL.keySet().toArray(String[]::new));
-    private final DefaultComboBoxModel<String> foodVariantSelectorModel = new DefaultComboBoxModel<>();
-    private final JComboBox<String> foodVariantSelector = new JComboBox<>(foodVariantSelectorModel);
-    private final JPanel extrasPanel = new JPanel();
-    private final JScrollPane extrasPane = new JScrollPane(extrasPanel);
+    private final JTextField foodTextField = new JTextField();
     private final JButton addFoodButton = new JButton("Add food");
-    private final DefaultListModel<Food> foodListModel = new DefaultListModel<>();
-    private final JList<Food> foodList = new JList<>(foodListModel);
+    private final DefaultListModel<String> foodListModel = new DefaultListModel<>();
+    private final JList<String> foodList = new JList<>(foodListModel);
     private final JScrollPane foodListPane = new JScrollPane(foodList);
     private final JButton removeFoodButton = new JButton("Remove Food");
     private final JButton okButton = new JButton("Submit order");
@@ -39,6 +27,7 @@ class OrdersDialog extends JDialog {
 
     private final MainFrame mainFrame;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
+    /*
     private final Map<String, List<Pair<JCheckBox, Extra<?>>>> extraCheckboxes = FoodTypes.ALL
         .entrySet()
         .stream()
@@ -58,7 +47,7 @@ class OrdersDialog extends JDialog {
             Map.Entry::getKey,
             entry -> entry.getValue().getFoodVariants().stream().map(Food.Variant::getName).toList()
         ));
-
+*/
     OrdersDialog(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
 
@@ -101,51 +90,9 @@ class OrdersDialog extends JDialog {
             }
         });
 
-        extrasPane.getVerticalScrollBar().setUnitIncrement(10);
-        foodTypeSelector.addActionListener(actionEvent -> {
-            String selectedFoodType = (String) foodTypeSelector.getSelectedItem();
-
-            foodVariantSelectorModel.removeAllElements();
-            foodVariants.get(selectedFoodType).forEach(foodVariantSelectorModel::addElement);
-            foodVariantSelector.updateUI();
-
-            extrasPanel.removeAll();
-            List<Pair<JCheckBox, Extra<?>>> extraList = extraCheckboxes.get(selectedFoodType);
-            extrasPanel.setLayout(new GridLayout(extraList.size(), 1, 6, 6));
-            extraList.forEach(pair -> {
-                JCheckBox checkBox = pair.getFirst();
-                checkBox.setSelected(false);
-                extrasPanel.add(checkBox);
-            });
-            extrasPanel.updateUI();
-        });
         foodList.addListSelectionListener(listSelectionEvent -> removeFoodButton.setEnabled(foodList.getSelectedIndex() >= 0));
         addFoodButton.addActionListener(actionEvent -> {
-            String selectedFoodType = (String) foodTypeSelector.getSelectedItem();
-
-            List<Extra<?>> selectedExtras = Arrays
-                .stream(extrasPanel.getComponents())
-                .map(component ->
-                    component instanceof JCheckBox checkBox && checkBox.isSelected()
-                        ? extraCheckboxes
-                        .get(selectedFoodType)
-                        .stream()
-                        .filter(pair -> checkBox == pair.getFirst())
-                        .findAny()
-                        .orElse(new Pair<>(null, null))
-                        .getSecond()
-                        : null
-                )
-                .filter(Objects::nonNull)
-                .collect(Collectors.toUnmodifiableList());
-            Food food = FoodTypes.ALL
-                .get(selectedFoodType)
-                .getFoodVariants()
-                .stream()
-                .filter(variant -> variant.getName().equals(foodVariantSelector.getSelectedItem()))
-                .findAny()
-                .orElseThrow()
-                .create((List) selectedExtras);
+            String food = foodTextField.getText();
             foodListModel.addElement(food);
             resetFields();
         });
@@ -156,12 +103,14 @@ class OrdersDialog extends JDialog {
                 .map(String::trim)
                 .map(Integer::parseInt)
                 .toArray(Integer[]::new);
+
+            /* TODO Wie orders submitten ohne pizzeria?
             ConfirmedOrder order = mainFrame.pizzeria.submitOrder(
                 coordinates[0],
                 coordinates[1],
                 LocalDateTime.parse(((String) deliveryTimeSelector.getValue()).substring(0, 16), dateTimeFormatter).toInstant(ZoneOffset.UTC),
                 IntStream.range(0, foodListModel.getSize()).mapToObj(foodListModel::getElementAt).toList()
-            );
+            );*/
 //            ordersPanel.addOrder(textField1.getText());
             mainFrame.getControlsPanel().unpause();
             setVisible(false);
@@ -207,65 +156,40 @@ class OrdersDialog extends JDialog {
         constraints.gridy = 2;
         constraints.gridwidth = 1;
         constraints.weightx = 0;
-        add(new JLabel("Food type:", JLabel.LEFT), constraints);
+        add(new JLabel("Food", JLabel.LEFT), constraints);
 
         constraints.gridx = 1;
         constraints.gridy = 2;
         constraints.gridwidth = 3;
         constraints.weightx = 1;
-        add(foodTypeSelector, constraints);
+        add(foodTextField, constraints);
 
         constraints.gridx = 0;
         constraints.gridy = 3;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0;
-        add(new JLabel("Food variant:", JLabel.LEFT), constraints);
-
-        constraints.gridx = 1;
-        constraints.gridy = 3;
-        constraints.gridwidth = 3;
-        constraints.weightx = 1;
-        add(foodVariantSelector, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 4;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0;
-        add(new JLabel("Extras:", JLabel.LEFT), constraints);
-
-        constraints.gridx = 1;
-        constraints.gridy = 4;
-        constraints.gridwidth = 3;
-        constraints.gridheight = 2;
-        constraints.weightx = 1;
-        add(extrasPane, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 6;
         constraints.gridwidth = 2;
         constraints.gridheight = 2;
         add(foodListPane, constraints);
 
         constraints.gridx = 2;
-        constraints.gridy = 6;
+        constraints.gridy = 3;
         constraints.gridwidth = 2;
         constraints.gridheight = 1;
         add(addFoodButton, constraints);
 
         constraints.gridx = 2;
-        constraints.gridy = 7;
+        constraints.gridy = 4;
         constraints.gridwidth = 2;
         constraints.gridheight = 1;
         add(removeFoodButton, constraints);
 
         constraints.gridx = 0;
-        constraints.gridy = 8;
+        constraints.gridy = 5;
         constraints.gridwidth = 2;
         constraints.gridheight = 1;
         add(okButton, constraints);
 
         constraints.gridx = 2;
-        constraints.gridy = 8;
+        constraints.gridy = 5;
         constraints.gridwidth = 2;
         constraints.gridheight = 1;
         add(cancelButton, constraints);
@@ -301,6 +225,6 @@ class OrdersDialog extends JDialog {
     private void resetFields() {
         textField1.setText("(0, 0)");
         deliveryTimeSelector.setValue(mainFrame.vehicleManager.getCurrentTime().format(dateTimeFormatter));
-        foodTypeSelector.setSelectedIndex(0);
+        foodTextField.setText("");
     }
 }

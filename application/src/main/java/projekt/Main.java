@@ -11,7 +11,6 @@ import projekt.delivery.routing.DijkstraPathCalculator;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
 import projekt.gui.MainFrame;
-import projekt.pizzeria.Pizzeria;
 
 import javax.swing.*;
 import java.time.LocalDateTime;
@@ -97,13 +96,13 @@ public class Main {
 
         // layer 4
 
-        Pizzeria pizzeria = Pizzeria.LOS_FOPBOTS_HERMANOS.create(deliveryService);
+        //Pizzeria pizzeria = Pizzeria.LOS_FOPBOTS_HERMANOS.create(deliveryService);
 
         // the lasagna is complete
 
         // Gui Setup
         FlatDarkLaf.setup();
-        MainFrame mainFrame = new MainFrame(region, vehicleManager, deliveryService, pizzeria);
+        MainFrame mainFrame = new MainFrame(region, vehicleManager, deliveryService);
         simulation.setMainFrame(mainFrame);
         SwingUtilities.invokeLater(() -> {
 //            new MainFrame(null, null, null, null).setVisible(true); // -> starts GUI thread

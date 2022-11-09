@@ -2,34 +2,34 @@ package projekt.delivery.routing;
 
 import projekt.base.Location;
 import projekt.base.TimeInterval;
-import projekt.food.Extra;
-import projekt.food.Food;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ConfirmedOrder implements Serializable {
     private final Location location;
     private final int orderID;
     private final TimeInterval timeInterval;
-    private final List<Food> foodList;
+    private final List<String> foodList;
+    private final double weight;
     private LocalDateTime actualDeliveryTime;
 
-    public ConfirmedOrder(Location location, int orderID, TimeInterval timeInterval, List<Food> foodList) {
+    public ConfirmedOrder(Location location, int orderID, TimeInterval timeInterval, List<String> foodList, double weigth) {
         this.location = location;
         this.orderID = orderID;
         this.timeInterval = timeInterval;
         this.foodList = foodList;
+        this.weight = weigth;
     }
 
-    public ConfirmedOrder(int x, int y, int orderID, TimeInterval timeInterval, List<Food> foodList) {
+    public ConfirmedOrder(int x, int y, int orderID, TimeInterval timeInterval, List<String> foodList, double weight) {
         location = new Location(x, y);
         this.orderID = orderID;
         this.timeInterval = timeInterval;
         this.foodList = foodList;
+        this.weight = weight;
     }
 
     public Location getLocation() {
@@ -52,12 +52,12 @@ public class ConfirmedOrder implements Serializable {
         return timeInterval;
     }
 
-    public List<Food> getFoodList() {
+    public List<String> getFoodList() {
         return foodList;
     }
 
     public double getTotalWeight() {
-        return foodList.stream().mapToDouble(Food::getWeight).sum();
+        return weight;
     }
 
     public LocalDateTime getActualDeliveryTime() {
@@ -77,15 +77,7 @@ public class ConfirmedOrder implements Serializable {
             orderID,
             timeInterval.getStart().format(DateTimeFormatter.ISO_LOCAL_DATE),
             timeInterval.getEnd().format(DateTimeFormatter.ISO_LOCAL_DATE),
-            foodList
-                .stream()
-                .map(food -> String.format(
-                    "%s %s %s",
-                    food.getFoodVariant().getFoodType().getName(),
-                    food.getFoodVariant().getName(),
-                    food.getExtras().stream().map(Extra::getName).collect(Collectors.joining("|"))
-                ))
-                .collect(Collectors.joining(", "))
+            foodList.toString()
         );
     }
 }

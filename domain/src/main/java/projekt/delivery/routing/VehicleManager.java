@@ -3,7 +3,6 @@ package projekt.delivery.routing;
 import org.jetbrains.annotations.Nullable;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.EventBus;
-import projekt.food.FoodType;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -71,13 +70,13 @@ public interface VehicleManager {
 
         Builder addVehicle(
             double capacity,
-            Collection<FoodType<?, ?>> compatibleFoodTypes,
+            Collection<String> compatibleFoodTypes,
             @Nullable Predicate<? super Occupied<? extends Region.Node>> nodePredicate
         );
 
         Builder addVehicle(
             double capacity,
-            Collection<FoodType<?, ?>> compatibleFoodTypes
+            Collection<String> compatibleFoodTypes
         );
 
         VehicleManager build();

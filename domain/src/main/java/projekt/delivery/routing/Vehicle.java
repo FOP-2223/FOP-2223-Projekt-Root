@@ -1,7 +1,5 @@
 package projekt.delivery.routing;
 
-import projekt.food.FoodType;
-
 import java.util.Collection;
 import java.util.Deque;
 import java.util.function.Consumer;
@@ -62,7 +60,7 @@ public interface Vehicle extends Comparable<Vehicle> {
      */
     Collection<ConfirmedOrder> getOrders();
 
-    Collection<FoodType<?, ?>> getCompatibleFoodTypes();
+    Collection<String> getCompatibleFoodTypes();
 
     /**
      * @throws FoodNotSupportedException if the vehicle does not support a food type in the provided order

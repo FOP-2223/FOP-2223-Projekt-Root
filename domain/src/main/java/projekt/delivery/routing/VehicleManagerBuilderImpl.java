@@ -1,7 +1,6 @@
 package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
-import projekt.food.FoodType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     @Override
     public VehicleManager.Builder addVehicle(
         double capacity,
-        Collection<FoodType<?, ?>> compatibleFoodTypes,
+        Collection<String> compatibleFoodTypes,
         @Nullable Predicate<? super VehicleManager.Occupied<? extends Region.Node>> nodePredicate
     ) {
         if (capacity <= 0) {
@@ -56,7 +55,7 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     }
 
     @Override
-    public VehicleManager.Builder addVehicle(double capacity, Collection<FoodType<?, ?>> compatibleFoodTypes) {
+    public VehicleManager.Builder addVehicle(double capacity, Collection<String> compatibleFoodTypes) {
         return addVehicle(capacity, compatibleFoodTypes, null);
     }
 
@@ -78,12 +77,12 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
 
     private static class VehicleBuilder {
         private final double capacity;
-        private final Collection<FoodType<?, ?>> compatibleFoodTypes;
+        private final Collection<String> compatibleFoodTypes;
         private final @Nullable Predicate<? super VehicleManager.Occupied<? extends Region.Node>> nodePredicate;
 
         private VehicleBuilder(
             double capacity,
-            Collection<FoodType<?, ?>> compatibleFoodTypes,
+            Collection<String> compatibleFoodTypes,
             @Nullable Predicate<? super VehicleManager.Occupied<? extends Region.Node>> nodePredicate
         ) {
             this.capacity = capacity;

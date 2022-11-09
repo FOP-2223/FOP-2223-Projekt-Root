@@ -1,18 +1,8 @@
 package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
-import projekt.food.Food;
-import projekt.food.FoodType;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 class VehicleImpl implements Vehicle {
@@ -20,7 +10,7 @@ class VehicleImpl implements Vehicle {
     private final int id;
     private final double capacity;
     private final List<ConfirmedOrder> orders = new ArrayList<>();
-    private final Collection<FoodType<?, ?>> compatibleFoodTypes;
+    private final Collection<String> compatibleFoodTypes;
     private final VehicleManagerImpl vehicleManager;
     private final Deque<PathImpl> moveQueue = new LinkedList<>();
     private AbstractOccupied<?> occupied;
@@ -28,7 +18,7 @@ class VehicleImpl implements Vehicle {
     public VehicleImpl(
         int id,
         double capacity,
-        Collection<FoodType<?, ?>> compatibleFoodTypes,
+        Collection<String> compatibleFoodTypes,
         AbstractOccupied<?> occupied,
         VehicleManagerImpl vehicleManager
     ) {
@@ -113,7 +103,7 @@ class VehicleImpl implements Vehicle {
     }
 
     @Override
-    public Collection<FoodType<?, ?>> getCompatibleFoodTypes() {
+    public Collection<String> getCompatibleFoodTypes() {
         return compatibleFoodTypes;
     }
 
@@ -157,8 +147,8 @@ class VehicleImpl implements Vehicle {
             throw new VehicleOverloadedException(this, capacityNeeded);
         }
 
-        Optional<Food> incompatibleFood = order.getFoodList().stream().filter(f ->
-            !compatibleFoodTypes.contains(f.getFoodVariant().getFoodType())).findFirst();
+        Optional<String> incompatibleFood = order.getFoodList().stream().filter(f ->
+            !compatibleFoodTypes.contains(f)).findFirst();
         if (incompatibleFood.isPresent()) {
             throw new FoodNotSupportedException(this, incompatibleFood.get());
         }
