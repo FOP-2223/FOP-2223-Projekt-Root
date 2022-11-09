@@ -37,6 +37,7 @@ dependencies {
     implementation(libs.algoutils.student)
     implementation(libs.flatlaf)
     testImplementation(libs.junit.core)
+    runtimeOnly(project(":application"))
 }
 
 application {
@@ -63,4 +64,8 @@ tasks {
         sourceCompatibility = "17"
         targetCompatibility = "17"
     }
+}
+
+subprojects {
+    apply(plugin = "java")
 }

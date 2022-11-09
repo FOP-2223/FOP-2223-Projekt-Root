@@ -6,3 +6,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "FOP-2223-Projekt-Root"
+include("application")
+include("domain")
+include("infrastructure")

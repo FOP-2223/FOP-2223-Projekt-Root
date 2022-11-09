@@ -259,7 +259,7 @@ public class MapPanel extends JPanel {
         var circle = new Ellipse2D.Double(location.getX() - NODE_DIAMETER / 2f, location.getY() - NODE_DIAMETER / 2f,
             NODE_DIAMETER,
             NODE_DIAMETER);
-        var textPoint = Utils.toPoint(node);
+        var textPoint = toPoint(node);
         textPoint.setLocation(textPoint.getX() + .5, textPoint.getY() - .5);
         text(g, textPoint, TUColors.COLOR_0A, node.getName());
         g.fill(circle);
@@ -280,7 +280,7 @@ public class MapPanel extends JPanel {
         var oldStroke = g.getStroke();
         g.setColor(EDGE_COLOR);
         g.setStroke(STROKE);
-        var l = Utils.toPoint(edge);
+        var l = toPoint(edge);
         var l1 = edge.getNodeA().getLocation();
         var l2 = edge.getNodeB().getLocation();
         Line2D.Double line = new Line2D.Double(
