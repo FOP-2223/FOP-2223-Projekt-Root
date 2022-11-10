@@ -4,20 +4,18 @@ import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
-import java.time.LocalDateTime;
-
 class DeliverOrderEventImpl extends EventImpl implements DeliverOrderEvent {
 
     private final Region.Neighborhood node;
     private final ConfirmedOrder order;
 
     DeliverOrderEventImpl(
-        LocalDateTime time,
+        long tick,
         Vehicle vehicle,
         Region.Neighborhood node,
         ConfirmedOrder order
     ) {
-        super(time, vehicle);
+        super(tick, vehicle);
         this.node = node;
         this.order = order;
     }
@@ -35,7 +33,7 @@ class DeliverOrderEventImpl extends EventImpl implements DeliverOrderEvent {
     @Override
     public String toString() {
         return "DeliverOrderEvent("
-            + "time=" + getTime()
+            + "time=" + getTick()
             + ", vehicle=" + getVehicle().getId()
             + ", node=" + getNode()
             + ", order=" + getOrder()

@@ -3,16 +3,14 @@ package projekt.delivery.event;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
-import java.time.LocalDateTime;
-
 public interface ArrivedAtEdgeEvent extends Event {
     static ArrivedAtEdgeEvent of(
-        LocalDateTime time,
+        long tick,
         Vehicle vehicle,
         Region.Edge edge,
         Region.Node lastNode
     ) {
-        return new ArrivedAtEdgeEventImpl(time, vehicle, edge, lastNode);
+        return new ArrivedAtEdgeEventImpl(tick, vehicle, edge, lastNode);
     }
 
     Region.Edge getEdge();

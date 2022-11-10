@@ -54,41 +54,9 @@ class OrdersDialog extends JDialog {
         setMinimumSize(new Dimension(600, 500));
         setMaximumSize(new Dimension(600, 600)); // ignored for whatever reason... ask your favorite higher being as to why
 
-        deliveryTimeSelector = new JSpinner(new SpinnerModel() {
-            private final List<ChangeListener> changeListeners = new ArrayList<>();
-            private LocalDateTime savedLocalDateTime = LocalDateTime.now();
-
-            @Override
-            public Object getValue() {
-                return savedLocalDateTime.format(dateTimeFormatter);
-            }
-
-            @Override
-            public void setValue(Object o) {
-                savedLocalDateTime = LocalDateTime.parse((String) o, dateTimeFormatter);
-                changeListeners.forEach(changeListener -> changeListener.stateChanged(new ChangeEvent(this)));
-            }
-
-            @Override
-            public Object getNextValue() {
-                return savedLocalDateTime.plusMinutes(1).format(dateTimeFormatter);
-            }
-
-            @Override
-            public Object getPreviousValue() {
-                return savedLocalDateTime.minusMinutes(1).format(dateTimeFormatter);
-            }
-
-            @Override
-            public void addChangeListener(ChangeListener changeListener) {
-                changeListeners.add(changeListener);
-            }
-
-            @Override
-            public void removeChangeListener(ChangeListener changeListener) {
-                changeListeners.remove(changeListener);
-            }
-        });
+        //TODO in LocalDateTime umrechnen?
+        deliveryTimeSelector = new JSpinner(new SpinnerNumberModel(
+            mainFrame.getDeliveryService().getCurrentTick(), mainFrame.getDeliveryService().getCurrentTick(),Long.MAX_VALUE,1));
 
         foodList.addListSelectionListener(listSelectionEvent -> removeFoodButton.setEnabled(foodList.getSelectedIndex() >= 0));
         addFoodButton.addActionListener(actionEvent -> {
@@ -204,7 +172,7 @@ class OrdersDialog extends JDialog {
         // removeAll();
 
         textField1.setText("(0, 0)");
-        deliveryTimeSelector.setValue(mainFrame.vehicleManager.getCurrentTime().format(dateTimeFormatter));
+        deliveryTimeSelector.setValue(mainFrame.getDeliveryService().getCurrentTick());
 
         pack();
         setVisible(true);
@@ -215,7 +183,7 @@ class OrdersDialog extends JDialog {
 
         // TODO: make okButton update actual order
         textField1.setText(order.getLocation().toString());
-        deliveryTimeSelector.setValue(order.getTimeInterval().getStart().format(dateTimeFormatter));
+        deliveryTimeSelector.setValue(order.getTimeInterval().getStart());
         order.getFoodList().forEach(foodListModel::addElement);
 
         pack();
@@ -224,7 +192,7 @@ class OrdersDialog extends JDialog {
 
     private void resetFields() {
         textField1.setText("(0, 0)");
-        deliveryTimeSelector.setValue(mainFrame.vehicleManager.getCurrentTime().format(dateTimeFormatter));
+        deliveryTimeSelector.setValue(mainFrame.getDeliveryService().getCurrentTick());
         foodTextField.setText("");
     }
 }

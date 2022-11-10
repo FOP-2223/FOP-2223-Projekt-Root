@@ -2,21 +2,19 @@ package projekt.delivery.event;
 
 import projekt.delivery.routing.Vehicle;
 
-import java.time.LocalDateTime;
-
 class EventImpl implements Event {
 
-    private final LocalDateTime time;
+    private final long tick;
     private final Vehicle vehicle;
 
-    EventImpl(LocalDateTime time, Vehicle vehicle) {
-        this.time = time;
+    EventImpl(long tick, Vehicle vehicle) {
+        this.tick = tick;
         this.vehicle = vehicle;
     }
 
     @Override
-    public LocalDateTime getTime() {
-        return time;
+    public long getTick() {
+        return tick;
     }
 
     @Override
@@ -27,7 +25,7 @@ class EventImpl implements Event {
     @Override
     public String toString() {
         return "Event("
-            + "time=" + getTime()
+            + "time=" + getTick()
             + ", vehicle=" + getVehicle().getId()
             + ')';
     }

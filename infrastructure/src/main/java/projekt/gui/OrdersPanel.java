@@ -70,7 +70,7 @@ public class OrdersPanel extends JPanel {
             addRow(new Object[]{0, LocalDateTime.now().format(dateTimeFormatter)});
             orders.values().forEach(order -> addRow(new Object[]{
                 order.getOrderID(),
-                order.getActualDeliveryTime().format(dateTimeFormatter)
+                order.getActualDeliveryTick()
             }));
         }
 

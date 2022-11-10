@@ -3,7 +3,6 @@ package projekt.delivery.routing;
 import org.jetbrains.annotations.Nullable;
 import projekt.base.Location;
 
-import java.time.Duration;
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -16,14 +15,14 @@ class EdgeImpl implements Region.Edge {
     private final String name;
     private final Location locationA;
     private final Location locationB;
-    private final Duration duration;
+    private final long duration;
 
     EdgeImpl(
         Region region,
         String name,
         Location locationA,
         Location locationB,
-        Duration duration
+        long duration
     ) {
         this.region = region;
         this.name = name;
@@ -63,7 +62,7 @@ class EdgeImpl implements Region.Edge {
     }
 
     @Override
-    public Duration getDuration() {
+    public long getDuration() {
         return duration;
     }
 

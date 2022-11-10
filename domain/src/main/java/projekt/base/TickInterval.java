@@ -1,32 +1,30 @@
 package projekt.base;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Objects;
-
 /**
  * A closed interval of a start time and an end time.
  */
-public class TimeInterval {
-    private final LocalDateTime start;
-    private final LocalDateTime end;
-    private final Duration duration;
+public class TickInterval {
+    private final long start;
+    private final long end;
 
     /**
-     * Constructs a new {@link TimeInterval} with start time {@code start} and end time {@code end}.
+     * Constructs a new {@link TickInterval} with start time {@code start} and end time {@code end}.
      *
      * @param start the start time
      * @param end   the end time
      */
-    public TimeInterval(LocalDateTime start, LocalDateTime end) {
-        Objects.requireNonNull(start, "start");
-        Objects.requireNonNull(end, "end");
-        if (start.isAfter(end)) {
+    public TickInterval(long start, long end) {
+        if (start < 0) {
+            throw new IllegalArgumentException(String.format("Start tick is negative: %d", start));
+        }
+        if (end < 0) {
+            throw new IllegalArgumentException(String.format("End tick is negative: %d", end));
+        }
+        if (start > end) {
             throw new IllegalArgumentException(String.format("Start %s is after end %s", start, end));
         }
         this.start = start;
         this.end = end;
-        duration = Duration.between(start, end);
     }
 
     /**
@@ -34,7 +32,7 @@ public class TimeInterval {
      *
      * @return the start time
      */
-    public LocalDateTime getStart() {
+    public long getStart() {
         return start;
     }
 
@@ -43,16 +41,17 @@ public class TimeInterval {
      *
      * @return the end time
      */
-    public LocalDateTime getEnd() {
+    public long getEnd() {
         return end;
     }
 
     /**
      * Returns the duration between {@link #start} and {@link #end}.
+     * The duration is represented as the amount of ticks between the start and end tick.
      *
      * @return the duration between start and end time
      */
-    public Duration getDuration() {
-        return duration;
+    public long getDuration() {
+        return end - start;
     }
 }

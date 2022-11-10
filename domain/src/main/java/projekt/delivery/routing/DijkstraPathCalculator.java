@@ -3,13 +3,7 @@ package projekt.delivery.routing;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Duration;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * A class that calculates the shortest path between from a start and end point using Dijkstra.
@@ -25,9 +19,9 @@ public class DijkstraPathCalculator implements PathCalculator {
      * @return {@code true} if the edge was relaxed, {@code false} otherwise
      */
     private boolean relax(DijkstraNode u, DijkstraNode v, Region.Edge w) {
-        Duration weight = w.getDuration();
+        Long weight = w.getDuration();
         if (u.duration != null) {
-            weight = u.duration.plus(weight);
+            weight = u.duration + weight;
         }
         // Relax the edge if the new duration is shorter
         // New weight must be smaller than the old weight (new weight can be infinity)
@@ -50,7 +44,7 @@ public class DijkstraPathCalculator implements PathCalculator {
         for (Region.Node node : start.getRegion().getNodes()) {
             DijkstraNode dijkstraNode;
             if (node.equals(start)) {
-                dijkstraNode = new DijkstraNode(node, Duration.ZERO);
+                dijkstraNode = new DijkstraNode(node, 0L);
                 // Starting node in queue only contains the starting node since new relaxed node will be added to the queue anyway
                 queue.add(dijkstraNode);
             } else {
@@ -128,7 +122,7 @@ public class DijkstraPathCalculator implements PathCalculator {
          * The duration (weight) of the shortest path from the start node to this node. If the duration is {@code null}, it means
          * that the duration is infinite.
          */
-        public @Nullable Duration duration;
+        public @Nullable Long duration;
         /**
          * The previous node in the shortest path from the start node to this node.
          */
@@ -147,7 +141,7 @@ public class DijkstraPathCalculator implements PathCalculator {
          * @param previous the previous node in the shortest path from the start node to this node
          * @param visited  whether this node has been visited
          */
-        private DijkstraNode(@NotNull Region.Node node, @Nullable Duration duration, @Nullable DijkstraNode previous,
+        private DijkstraNode(@NotNull Region.Node node, @Nullable Long duration, @Nullable DijkstraNode previous,
                              boolean visited) {
             this.node = node;
             this.duration = duration;
@@ -161,7 +155,7 @@ public class DijkstraPathCalculator implements PathCalculator {
          * @param node     the wrapped region node
          * @param distance the distance (weight) of the shortest path from the start node to this node
          */
-        public DijkstraNode(Region.Node node, Duration distance) {
+        public DijkstraNode(Region.Node node, Long distance) {
             this(node, distance, null, false);
         }
 

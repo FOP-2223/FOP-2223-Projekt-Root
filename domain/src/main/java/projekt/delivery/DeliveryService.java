@@ -27,6 +27,8 @@ public interface DeliveryService {
 
     SimulationConfig getSimulationConfig();
 
+    long getCurrentTick();
+
     void runTick();
 
     interface Factory {

@@ -55,7 +55,7 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
             @Override
             public void onStateUpdated() {
                 updateCallback.run();
-                List<ConfirmedOrder> newOrders = orderGenerator.generateOrders(vehicleManager.getCurrentTime());
+                List<ConfirmedOrder> newOrders = orderGenerator.generateOrders(deliveryService.getCurrentTick());
                 if (newOrders == null
                     && vehicleManager.getVehicles().stream().map(Vehicle::getOrders).allMatch(Collection::isEmpty)
                     // TODO: && warehouse does not have any pending orders

@@ -5,7 +5,6 @@ import projekt.delivery.event.Event;
 import projekt.delivery.event.EventBus;
 import projekt.delivery.event.SpawnEvent;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -23,15 +22,15 @@ class VehicleManagerImpl implements VehicleManager {
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
     private final Set<AbstractOccupied<?>> allOccupied;
     private final EventBus eventBus = new EventBus();
-    private LocalDateTime currentTime;
+    private long currentTick;
 
     VehicleManagerImpl(
-        LocalDateTime currentTime,
+        long currentTick,
         Region region,
         PathCalculator pathCalculator,
         Region.Node warehouse
     ) {
-        this.currentTime = currentTime;
+        this.currentTick = currentTick;
         this.region = region;
         this.pathCalculator = pathCalculator;
         this.warehouse = new OccupiedWarehouseImpl(warehouse, this);
@@ -140,27 +139,26 @@ class VehicleManagerImpl implements VehicleManager {
         return eventBus;
     }
 
-    @Override
-    public LocalDateTime getCurrentTime() {
-        return currentTime;
-    }
+    /*@Override
+    public long getCurrentTick() {
+        return currentTick;
+    }*/
 
     @Override
-    public List<Event> tick() {
+    public List<Event> tick(long currentTick) {
         for (VehicleImpl vehicle : vehiclesToSpawn) {
-            spawnVehicle(vehicle);
+            spawnVehicle(vehicle, currentTick);
         }
         vehiclesToSpawn.clear();
-        currentTime = currentTime.plusMinutes(1);
         // It is important that nodes are ticked before edges
         // This only works because edge ticking is idempotent
         // Otherwise, there may be two state changes in a single tick.
         // For example, a node tick may move a vehicle onto an edge.
         // Ticking this edge afterwards does not move the vehicle further along the edge
         // compared to a vehicle already on the edge.
-        occupiedNodes.values().forEach(AbstractOccupied::tick);
-        occupiedEdges.values().forEach(AbstractOccupied::tick);
-        return eventBus.popEvents(currentTime);
+        occupiedNodes.values().forEach(occupiedNode -> occupiedNode.tick(currentTick));
+        occupiedEdges.values().forEach(occupiedEdge -> occupiedEdge.tick(currentTick));
+        return eventBus.popEvents(currentTick);
     }
 
     Vehicle addVehicle(
@@ -186,10 +184,10 @@ class VehicleManagerImpl implements VehicleManager {
         return vehicle;
     }
 
-    private void spawnVehicle(VehicleImpl vehicle) {
+    private void spawnVehicle(VehicleImpl vehicle, long currentTick) {
         vehicles.add(vehicle);
         OccupiedWarehouseImpl warehouse = (OccupiedWarehouseImpl) vehicle.getOccupied();
-        warehouse.vehicles.put(vehicle, new AbstractOccupied.VehicleStats(currentTime, null));
-        getEventBus().queuePost(SpawnEvent.of(currentTime, vehicle, warehouse.getComponent()));
+        warehouse.vehicles.put(vehicle, new AbstractOccupied.VehicleStats(currentTick, null));
+        getEventBus().queuePost(SpawnEvent.of(currentTick, vehicle, warehouse.getComponent()));
     }
 }

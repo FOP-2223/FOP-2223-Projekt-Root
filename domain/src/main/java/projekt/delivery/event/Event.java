@@ -2,15 +2,13 @@ package projekt.delivery.event;
 
 import projekt.delivery.routing.Vehicle;
 
-import java.time.LocalDateTime;
-
 public interface Event {
 
-    static Event of(LocalDateTime time, Vehicle vehicle) {
-        return new EventImpl(time, vehicle);
+    static Event of(long tick, Vehicle vehicle) {
+        return new EventImpl(tick, vehicle);
     }
 
-    LocalDateTime getTime();
+    long getTick();
 
     Vehicle getVehicle();
 }

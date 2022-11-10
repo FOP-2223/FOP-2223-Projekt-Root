@@ -16,6 +16,7 @@ public abstract class AbstractDeliveryService implements DeliveryService {
     private final Object lock = new Object();
     private volatile boolean terminationRequested = false;
     private List<ConfirmedOrder> unprocessedOrders = new ArrayList<>();
+    private long currentTick = 0;
 
     protected AbstractDeliveryService(VehicleManager vehicleManager, Rater rater, Simulation simulation, SimulationConfig simulationConfig) {
         this.vehicleManager = vehicleManager;
@@ -74,7 +75,13 @@ public abstract class AbstractDeliveryService implements DeliveryService {
         return simulationConfig;
     }
 
+    @Override
+    public long getCurrentTick() {
+        return currentTick;
+    }
+
     public void runTick() {
+        currentTick++;
         // Schedule new orders
         List<ConfirmedOrder> newOrders = Collections.emptyList();
         synchronized (lock) {

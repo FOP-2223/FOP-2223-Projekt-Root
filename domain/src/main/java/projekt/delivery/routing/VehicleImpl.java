@@ -113,7 +113,7 @@ class VehicleImpl implements Vehicle {
         }
     }
 
-    void move() {
+    void move(long currentTick) {
         final Region region = vehicleManager.getRegion();
         if (moveQueue.isEmpty()) {
             return;
@@ -123,16 +123,16 @@ class VehicleImpl implements Vehicle {
             moveQueue.pop();
             final @Nullable Consumer<? super Vehicle> action = path.getArrivalAction();
             if (action == null) {
-                move();
+                move(currentTick);
             } else {
                 action.accept(this);
             }
         } else {
             Region.Node next = path.getNodes().peek();
             if (occupied instanceof OccupiedNodeImpl) {
-                vehicleManager.getOccupied(region.getEdge(((OccupiedNodeImpl<?>) occupied).getComponent(), next)).addVehicle(this);
+                vehicleManager.getOccupied(region.getEdge(((OccupiedNodeImpl<?>) occupied).getComponent(), next)).addVehicle(this, currentTick);
             } else if (occupied instanceof OccupiedEdgeImpl) {
-                vehicleManager.getOccupied(next).addVehicle(this);
+                vehicleManager.getOccupied(next).addVehicle(this, currentTick);
                 path.getNodes().pop();
             } else {
                 throw new AssertionError("Component must be either node or component");

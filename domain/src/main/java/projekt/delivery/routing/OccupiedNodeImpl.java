@@ -2,7 +2,6 @@ package projekt.delivery.routing;
 
 import projekt.delivery.event.ArrivedAtNodeEvent;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -12,16 +11,16 @@ class OccupiedNodeImpl<C extends Region.Node> extends AbstractOccupied<C> {
     }
 
     @Override
-    void tick() {
+    void tick(long currentTick) {
         // it is important to create a copy here. The move method in vehicle will probably modify this map
         // TODO: Only move things that can be moved
         for (Map.Entry<VehicleImpl, VehicleStats> entry : List.copyOf(vehicles.entrySet())) {
-            entry.getKey().move();
+            entry.getKey().move(currentTick);
         }
     }
 
     @Override
-    void addVehicle(VehicleImpl vehicle) {
+    void addVehicle(VehicleImpl vehicle, long currentTick) {
         if (vehicles.containsKey(vehicle)) {
             return;
         }
@@ -33,15 +32,14 @@ class OccupiedNodeImpl<C extends Region.Node> extends AbstractOccupied<C> {
         if (previousEdge.vehicles.remove(vehicle) == null) {
             throw new AssertionError("Vehicle " + vehicle.getId() + " was not found in previous edge");
         }
-        final LocalDateTime currentTime = vehicleManager.getCurrentTime();
-        vehicles.put(vehicle, new VehicleStats(currentTime, previous));
+        vehicles.put(vehicle, new VehicleStats(currentTick, previous));
         vehicle.setOccupied(this);
-        emitArrivedEvent(vehicle, previousEdge);
+        emitArrivedEvent(vehicle, previousEdge, currentTick);
     }
 
-    protected void emitArrivedEvent(VehicleImpl vehicle, OccupiedEdgeImpl previousEdge) {
+    protected void emitArrivedEvent(VehicleImpl vehicle, OccupiedEdgeImpl previousEdge, long tick) {
         vehicleManager.getEventBus().queuePost(ArrivedAtNodeEvent.of(
-                vehicleManager.getCurrentTime(),
+                tick,
                 vehicle,
                 component,
                 previousEdge.getComponent()

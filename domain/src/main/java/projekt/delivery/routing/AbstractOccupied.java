@@ -2,7 +2,6 @@ package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,15 +35,15 @@ abstract class AbstractOccupied<C extends Region.Component<? super C>> implement
         return unmodifiableVehicles;
     }
 
-    abstract void tick();
+    abstract void tick(long currentTick);
 
-    abstract void addVehicle(VehicleImpl vehicle);
+    abstract void addVehicle(VehicleImpl vehicle, long currentTick);
 
     protected static class VehicleStats {
-        final LocalDateTime arrived;
+        final long arrived;
         final @Nullable VehicleManager.Occupied<?> previous;
 
-        public VehicleStats(LocalDateTime arrived, @Nullable VehicleManager.Occupied<?> previous) {
+        public VehicleStats(long arrived, @Nullable VehicleManager.Occupied<?> previous) {
             this.arrived = arrived;
             this.previous = previous;
         }

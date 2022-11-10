@@ -13,7 +13,6 @@ import projekt.delivery.routing.VehicleManager;
 import projekt.gui.MainFrame;
 
 import javax.swing.*;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class Main {
@@ -58,7 +57,7 @@ public class Main {
         // layer 2
 
         VehicleManager vehicleManager = VehicleManager.builder()
-            .time(LocalDateTime.now())
+            .time(0)
             .region(region)
             .pathCalculator(new DijkstraPathCalculator())
             .warehouse(region.getNode(new Location(0, 5)))

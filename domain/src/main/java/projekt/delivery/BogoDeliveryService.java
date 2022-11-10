@@ -1,10 +1,6 @@
 package projekt.delivery;
 
-import projekt.delivery.event.ArrivedAtNeighborhoodEvent;
-import projekt.delivery.event.ArrivedAtNodeEvent;
-import projekt.delivery.event.ArrivedAtWarehouseEvent;
-import projekt.delivery.event.Event;
-import projekt.delivery.event.SpawnEvent;
+import projekt.delivery.event.*;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
@@ -38,7 +34,7 @@ public class BogoDeliveryService extends AbstractDeliveryService {
 
     @Override
     void tick(List<ConfirmedOrder> newOrders) {
-        List<Event> events = vehicleManager.tick();
+        List<Event> events = vehicleManager.tick(getCurrentTick());
         pendingOrders.addAll(newOrders);
 
         // this is probably not a good solution, but it could theoretically be the best solution
@@ -53,7 +49,7 @@ public class BogoDeliveryService extends AbstractDeliveryService {
                 final Vehicle vehicle = e.getVehicle();
                 if (!pendingOrders.isEmpty()) {
                     final ConfirmedOrder next = pendingOrders.remove(0);
-                    vehicleManager.getWarehouse().loadOrder(vehicle, next);
+                    vehicleManager.getWarehouse().loadOrder(vehicle, next, getCurrentTick());
                 }
                 moveToRandomNode(vehicle);
             });
@@ -65,7 +61,7 @@ public class BogoDeliveryService extends AbstractDeliveryService {
                 final Vehicle vehicle = e.getVehicle();
                 final VehicleManager.OccupiedNeighborhood neighborhood = vehicleManager.getOccupiedNeighborhood(e.getNode());
                 for (ConfirmedOrder order : vehicle.getOrders()) {
-                    neighborhood.deliverOrder(vehicle, order);
+                    neighborhood.deliverOrder(vehicle, order, getCurrentTick());
                 }
                 moveToRandomNode(e.getVehicle());
             });

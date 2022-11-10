@@ -3,15 +3,7 @@ package projekt.delivery.routing;
 import projekt.base.DistanceCalculator;
 import projekt.base.Location;
 
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 class RegionBuilderImpl implements Region.Builder {
     private final Map<Location, NodeBuilder> nodes = new HashMap<>();
@@ -134,7 +126,7 @@ class RegionBuilderImpl implements Region.Builder {
 
         EdgeImpl build(Region region, DistanceCalculator distanceCalculator) {
             double distance = distanceCalculator.calculateDistance(locationA, locationB);
-            Duration duration = Duration.ofMinutes((long) Math.ceil(distance));
+            long duration = (long) Math.ceil(distance);
             return new EdgeImpl(region, name, locationA, locationB, duration);
         }
 

@@ -9,14 +9,14 @@ class OccupiedNeighborhoodImpl extends OccupiedNodeImpl<Region.Neighborhood> imp
     }
 
     @Override
-    public void deliverOrder(Vehicle vehicle, ConfirmedOrder order) {
+    public void deliverOrder(Vehicle vehicle, ConfirmedOrder order, long tick) {
         if (vehicle.getOccupied() != this) {
             throw new IllegalArgumentException("The specified vehicle is not located on this node!");
         }
 
         ((VehicleImpl) vehicle).unloadOrder(order);
         vehicleManager.getEventBus().queuePost(DeliverOrderEvent.of(
-                vehicleManager.getCurrentTime(),
+                tick,
                 vehicle,
                 component,
                 order
@@ -25,9 +25,9 @@ class OccupiedNeighborhoodImpl extends OccupiedNodeImpl<Region.Neighborhood> imp
     }
 
     @Override
-    protected void emitArrivedEvent(VehicleImpl vehicle, OccupiedEdgeImpl previousEdge) {
+    protected void emitArrivedEvent(VehicleImpl vehicle, OccupiedEdgeImpl previousEdge, long tick) {
         vehicleManager.getEventBus().queuePost(ArrivedAtNeighborhoodEvent.of(
-                vehicleManager.getCurrentTime(),
+                tick,
                 vehicle,
                 component,
                 previousEdge.getComponent()

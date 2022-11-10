@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 import projekt.base.DistanceCalculator;
 import projekt.base.Location;
 
-import java.time.Duration;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -54,7 +53,7 @@ public interface Region {
 
     interface Edge extends Component<Edge> {
 
-        Duration getDuration();
+        long getDuration();
 
         Node getNodeA();
 

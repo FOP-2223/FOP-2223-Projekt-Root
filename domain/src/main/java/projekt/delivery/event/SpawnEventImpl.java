@@ -3,18 +3,16 @@ package projekt.delivery.event;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
-import java.time.LocalDateTime;
-
 class SpawnEventImpl extends EventImpl implements SpawnEvent {
 
     private final Region.Node node;
 
     SpawnEventImpl(
-        LocalDateTime time,
+        long tick,
         Vehicle vehicle,
         Region.Node node
     ) {
-        super(time, vehicle);
+        super(tick, vehicle);
         this.node = node;
     }
 
@@ -26,7 +24,7 @@ class SpawnEventImpl extends EventImpl implements SpawnEvent {
     @Override
     public String toString() {
         return "SpawnEvent("
-            + "time=" + getTime()
+            + "time=" + getTick()
             + ", vehicle=" + getVehicle().getId()
             + ", node=" + getNode()
             + ')';

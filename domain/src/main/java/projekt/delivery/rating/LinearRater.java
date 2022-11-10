@@ -2,7 +2,6 @@ package projekt.delivery.rating;
 
 import projekt.delivery.routing.ConfirmedOrder;
 
-import java.time.Duration;
 import java.util.List;
 
 public class LinearRater implements Rater {
@@ -11,11 +10,7 @@ public class LinearRater implements Rater {
     public double rate(List<ConfirmedOrder> confirmedOrders) {
         return confirmedOrders.stream()
             .mapToDouble(order ->
-                Duration
-                    .between(
-                        order.getTimeInterval().getStart(),
-                        order.getActualDeliveryTime()
-                    ).getSeconds())
+                Math.max(0, order.getActualDeliveryTick() - order.getTimeInterval().getStart()))
             .sum();
     }
 }

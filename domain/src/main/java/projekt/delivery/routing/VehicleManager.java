@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.EventBus;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
@@ -34,9 +33,9 @@ public interface VehicleManager {
 
     EventBus getEventBus();
 
-    LocalDateTime getCurrentTime();
+    //long getCurrentTick();
 
-    List<Event> tick();
+    List<Event> tick(long currentTick);
 
     interface Occupied<C extends Region.Component<? super C>> {
 
@@ -52,15 +51,15 @@ public interface VehicleManager {
     }
 
     interface Warehouse extends Occupied<Region.Node> {
-        void loadOrder(Vehicle vehicle, ConfirmedOrder order);
+        void loadOrder(Vehicle vehicle, ConfirmedOrder order, long tick);
     }
 
     interface OccupiedNeighborhood extends Occupied<Region.Neighborhood> {
-        void deliverOrder(Vehicle vehicle, ConfirmedOrder order);
+        void deliverOrder(Vehicle vehicle, ConfirmedOrder order, long tick);
     }
 
     interface Builder {
-        Builder time(LocalDateTime time);
+        Builder time(long time);
 
         Builder region(Region region);
 

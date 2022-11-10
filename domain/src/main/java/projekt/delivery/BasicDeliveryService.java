@@ -30,7 +30,7 @@ public class BasicDeliveryService extends AbstractDeliveryService {
     @Override
     void tick(List<ConfirmedOrder> newOrders) {
         // Move vehicles forward.
-        List<Event> events = vehicleManager.tick();
+        List<Event> events = vehicleManager.tick(getCurrentTick());
 
         // Add all newly arrived orders to the list of pending orders.
         pendingOrders.addAll(newOrders);
@@ -48,9 +48,9 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                     if (order.getTotalWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()
                         && vehicle.getCompatibleFoodTypes().containsAll(order.getFoodList())) {
                         loadedAtLeastOneOrderOnVehicle = true;
-                        vehicleManager.getWarehouse().loadOrder(vehicle, order);
+                        vehicleManager.getWarehouse().loadOrder(vehicle, order, getCurrentTick());
                         vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v ->
-                            vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied()).deliverOrder(v, order));
+                            vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied()).deliverOrder(v, order, getCurrentTick()));
                         it.remove();
                     }
                 }

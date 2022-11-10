@@ -1,33 +1,31 @@
 package projekt.delivery.routing;
 
 import projekt.base.Location;
-import projekt.base.TimeInterval;
+import projekt.base.TickInterval;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ConfirmedOrder implements Serializable {
     private final Location location;
     private final int orderID;
-    private final TimeInterval timeInterval;
+    private final TickInterval tickInterval;
     private final List<String> foodList;
     private final double weight;
-    private LocalDateTime actualDeliveryTime;
+    private long actualDeliveryTick;
 
-    public ConfirmedOrder(Location location, int orderID, TimeInterval timeInterval, List<String> foodList, double weigth) {
+    public ConfirmedOrder(Location location, int orderID, TickInterval tickInterval, List<String> foodList, double weigth) {
         this.location = location;
         this.orderID = orderID;
-        this.timeInterval = timeInterval;
+        this.tickInterval = tickInterval;
         this.foodList = foodList;
         this.weight = weigth;
     }
 
-    public ConfirmedOrder(int x, int y, int orderID, TimeInterval timeInterval, List<String> foodList, double weight) {
+    public ConfirmedOrder(int x, int y, int orderID, TickInterval tickInterval, List<String> foodList, double weight) {
         location = new Location(x, y);
         this.orderID = orderID;
-        this.timeInterval = timeInterval;
+        this.tickInterval = tickInterval;
         this.foodList = foodList;
         this.weight = weight;
     }
@@ -48,8 +46,8 @@ public class ConfirmedOrder implements Serializable {
         return orderID;
     }
 
-    public TimeInterval getTimeInterval() {
-        return timeInterval;
+    public TickInterval getTimeInterval() {
+        return tickInterval;
     }
 
     public List<String> getFoodList() {
@@ -60,12 +58,12 @@ public class ConfirmedOrder implements Serializable {
         return weight;
     }
 
-    public LocalDateTime getActualDeliveryTime() {
-        return actualDeliveryTime;
+    public long getActualDeliveryTick() {
+        return actualDeliveryTick;
     }
 
-    public void setActualDeliveryTime(LocalDateTime actualDeliveryTime) {
-        this.actualDeliveryTime = actualDeliveryTime;
+    public void setActualDeliveryTick(long actualDeliveryTick) {
+        this.actualDeliveryTick = actualDeliveryTick;
     }
 
     @Override
@@ -75,8 +73,8 @@ public class ConfirmedOrder implements Serializable {
             getX(),
             getY(),
             orderID,
-            timeInterval.getStart().format(DateTimeFormatter.ISO_LOCAL_DATE),
-            timeInterval.getEnd().format(DateTimeFormatter.ISO_LOCAL_DATE),
+            tickInterval,
+            tickInterval,
             foodList.toString()
         );
     }

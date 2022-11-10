@@ -4,17 +4,15 @@ import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
-import java.time.LocalDateTime;
-
 public interface DeliverOrderEvent extends Event {
 
     static DeliverOrderEvent of(
-        LocalDateTime time,
+        long tick,
         Vehicle vehicle,
         Region.Neighborhood node,
         ConfirmedOrder order
     ) {
-        return new DeliverOrderEventImpl(time, vehicle, node, order);
+        return new DeliverOrderEventImpl(tick, vehicle, node, order);
     }
 
     ConfirmedOrder getOrder();

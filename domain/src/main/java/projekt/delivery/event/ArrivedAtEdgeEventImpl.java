@@ -3,20 +3,18 @@ package projekt.delivery.event;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
-import java.time.LocalDateTime;
-
 class ArrivedAtEdgeEventImpl extends EventImpl implements ArrivedAtEdgeEvent {
 
     private final Region.Edge edge;
     private final Region.Node lastNode;
 
     ArrivedAtEdgeEventImpl(
-        LocalDateTime time,
+        long tick,
         Vehicle vehicle,
         Region.Edge edge,
         Region.Node lastNode
     ) {
-        super(time, vehicle);
+        super(tick, vehicle);
         this.edge = edge;
         this.lastNode = lastNode;
     }
@@ -34,7 +32,7 @@ class ArrivedAtEdgeEventImpl extends EventImpl implements ArrivedAtEdgeEvent {
     @Override
     public String toString() {
         return "ArrivedAtEdgeEvent("
-            + "time=" + getTime()
+            + "time=" + getTick()
             + ", vehicle=" + getVehicle().getId()
             + ", edge=" + getEdge()
             + ", lastNode=" + getLastNode()
