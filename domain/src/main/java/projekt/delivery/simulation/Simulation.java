@@ -1,5 +1,9 @@
 package projekt.delivery.simulation;
 
+import projekt.delivery.event.Event;
+
+import java.util.List;
+
 public interface Simulation {
     void onStateUpdated();
 
@@ -18,6 +22,8 @@ public interface Simulation {
     SimulationConfig getSimulationConfig();
 
     long getCurrentTick();
+
+    List<Event> getCurrentEvents();
 
     void runTick();
 

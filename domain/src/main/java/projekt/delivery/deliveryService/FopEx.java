@@ -21,8 +21,9 @@ public class FopEx extends AbstractDeliveryService {
     }
 
     @Override
-    void tick(long currentTick, List<ConfirmedOrder> newOrders) {
+    List<Event> tick(long currentTick, List<ConfirmedOrder> newOrders) {
         List<Event> events = vehicleManager.tick(currentTick);
         // TODO: H9
+        return events;
     }
 }

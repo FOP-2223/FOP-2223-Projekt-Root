@@ -31,7 +31,7 @@ public class BogoDeliveryService extends AbstractDeliveryService {
     }
 
     @Override
-    void tick(long currentTick, List<ConfirmedOrder> newOrders) {
+    List<Event> tick(long currentTick, List<ConfirmedOrder> newOrders) {
         List<Event> events = vehicleManager.tick(currentTick);
         pendingOrders.addAll(newOrders);
 
@@ -63,6 +63,8 @@ public class BogoDeliveryService extends AbstractDeliveryService {
                 }
                 moveToRandomNode(e.getVehicle());
             });
+
+        return events;
     }
 
     private void scheduleRandomMove(

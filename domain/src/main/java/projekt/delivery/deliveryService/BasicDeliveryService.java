@@ -26,7 +26,7 @@ public class BasicDeliveryService extends AbstractDeliveryService {
     }
 
     @Override
-    void tick(long currentTick, List<ConfirmedOrder> newOrders) {
+    List<Event> tick(long currentTick, List<ConfirmedOrder> newOrders) {
         // Move vehicles forward.
         List<Event> events = vehicleManager.tick(currentTick);
 
@@ -58,5 +58,7 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                     vehicle.moveQueued(vehicleManager.getWarehouse().getComponent());
                 }
             });
+
+        return events;
     }
 }

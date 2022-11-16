@@ -1,5 +1,6 @@
 package projekt.delivery.deliveryService;
 
+import projekt.delivery.event.Event;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.VehicleManager;
@@ -28,7 +29,7 @@ public abstract class AbstractDeliveryService implements DeliveryService {
         }
     }
 
-    public void tick(long currentTick) {
+    public List<Event> tick(long currentTick) {
         // Schedule new orders
         List<ConfirmedOrder> newOrders = Collections.emptyList();
         synchronized (lock) {
@@ -38,8 +39,13 @@ public abstract class AbstractDeliveryService implements DeliveryService {
             }
         }
 
-        tick(currentTick, newOrders);
+        return tick(currentTick, newOrders);
     }
 
-    abstract void tick(long currentTick, List<ConfirmedOrder> newOrders);
+    @Override
+    public VehicleManager getVehicleManager() {
+        return vehicleManager;
+    }
+
+    abstract List<Event> tick(long currentTick, List<ConfirmedOrder> newOrders);
 }

@@ -1,11 +1,17 @@
 package projekt.delivery.simulation;
 
+import projekt.delivery.event.Event;
+
+import java.util.Collections;
+import java.util.List;
+
 public abstract class AbstractSimulation implements Simulation {
 
     private final SimulationConfig simulationConfig;
     private volatile boolean terminationRequested = false;
 
     private long currentTick = 0;
+    private List<Event> currentEvents;
 
     public AbstractSimulation(SimulationConfig simulationConfig) {
         this.simulationConfig = simulationConfig;
@@ -60,11 +66,16 @@ public abstract class AbstractSimulation implements Simulation {
     }
 
     @Override
+    public List<Event> getCurrentEvents() {
+        return currentEvents;
+    }
+
+    @Override
     public void runTick() {
         currentTick++;
-        tick();
+        currentEvents = Collections.unmodifiableList(tick());
         onStateUpdated();
     }
 
-    abstract void tick();
+    abstract List<Event> tick();
 }

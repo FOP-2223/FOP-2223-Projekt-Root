@@ -1,6 +1,7 @@
 package projekt.delivery.simulation;
 
 import projekt.delivery.deliveryService.DeliveryService;
+import projekt.delivery.event.Event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +17,8 @@ public class BasicDeliverySimulation extends AbstractSimulation {
     }
 
     @Override
-    void tick() {
-        deliveryService.tick(getCurrentTick());
+    List<Event> tick() {
+        return deliveryService.tick(getCurrentTick());
     }
 
     @Override

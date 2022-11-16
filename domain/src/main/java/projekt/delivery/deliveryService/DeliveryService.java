@@ -1,7 +1,9 @@
 package projekt.delivery.deliveryService;
 
+import projekt.delivery.event.Event;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
+import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
 
 import java.util.List;
@@ -13,7 +15,9 @@ public interface DeliveryService {
 
     void deliver(List<ConfirmedOrder> confirmedOrders);
 
-    void tick(long currentTick);
+    List<Event> tick(long currentTick);
+
+    VehicleManager getVehicleManager();
 
     interface Factory {
 
