@@ -1,73 +1,92 @@
 package projekt.delivery.archetype;
 
 import projekt.delivery.deliveryService.DeliveryService;
+import projekt.delivery.event.DeliverOrderEvent;
+import projekt.delivery.routing.ConfirmedOrder;
+import projekt.delivery.routing.Vehicle;
+import projekt.delivery.simulation.BasicDeliverySimulation;
 import projekt.delivery.simulation.SimulationConfig;
-import projekt.delivery.rating.Rater;
-import projekt.delivery.routing.Region;
-import projekt.delivery.routing.VehicleManager;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class ProblemArchetypeImpl implements ProblemArchetype {
-    private final Region region;
-    private final VehicleManager vehicleManager;
-    private final OrderGenerator orderGenerator;
-    private final Rater rater;
-    private final Runnable updateCallback;
-    private final SimulationConfig simulationConfig = new SimulationConfig(1000);
 
-    public ProblemArchetypeImpl(Region region, VehicleManager vehicleManager, OrderGenerator orderGenerator, Rater rater, Runnable updateCallback) {
-        this.region = region;
-        this.vehicleManager = vehicleManager;
-        this.orderGenerator = orderGenerator;
-        this.rater = rater;
-        this.updateCallback = updateCallback;
+    private final BasicDeliverySimulation simulation;
+    private List<List<ConfirmedOrder>> deliveredOrders = new ArrayList<>();
+    public ProblemArchetypeImpl(DeliveryService deliveryService, OrderGenerator orderGenerator) {
+        this(deliveryService, orderGenerator, new SimulationConfig(0));
     }
 
-    @Override
-    public Region getRegion() {
-        return region;
-    }
+    public ProblemArchetypeImpl(DeliveryService deliveryService, OrderGenerator orderGenerator, SimulationConfig simulationConfig) {
+        this.simulation = new BasicDeliverySimulation(simulationConfig, deliveryService);
 
-    @Override
-    public VehicleManager getVehicleManager() {
-        return vehicleManager;
-    }
+        //add starting orders
+        simulation.getDeliveryService().deliver(orderGenerator.generateOrders(0));
 
-    @Override
-    public SimulationConfig getSimulationConfig() {
-        return simulationConfig;
-    }
-
-    @Override
-    public void runSimulation(DeliveryService.Factory deliveryServiceFactory) {
-        /*
-        final var simulation = new Simulation() {
-            private DeliveryService deliveryService;
-
-            public void setDeliveryService(DeliveryService deliveryService) {
-                this.deliveryService = deliveryService;
+        //Listener to add new orders after each tick
+        simulation.addListener(() -> {
+            List<ConfirmedOrder> newOrders = orderGenerator.generateOrders(simulation.getCurrentTick());
+            if (newOrders == null
+                && simulation.getDeliveryService().getVehicleManager().getVehicles().stream().map(Vehicle::getOrders).allMatch(Collection::isEmpty)
+                // TODO: && warehouse does not have any pending orders
+            ) {
+                simulation.endSimulation();
+            } else {
+                simulation.getDeliveryService().deliver(newOrders);
             }
+        });
 
-            @Override
-            public void onStateUpdated() {
-                updateCallback.run();
-                List<ConfirmedOrder> newOrders = orderGenerator.generateOrders(deliveryService.getCurrentTick());
-                if (newOrders == null
-                    && vehicleManager.getVehicles().stream().map(Vehicle::getOrders).allMatch(Collection::isEmpty)
-                    // TODO: && warehouse does not have any pending orders
-                ) {
-                    deliveryService.endSimulation();
-                } else {
-                    deliveryService.deliver(newOrders);
-                }
+        //Listener to save the current state of the simulation after each tick
+        simulation.addListener(() -> {
+            if (deliveredOrders.size() == Integer.MAX_VALUE) {
+                System.err.println("Maximum length of stored event timeline reached.");
+                return;
             }
-        };
-        DeliveryService deliveryService = deliveryServiceFactory.create(vehicleManager,
-            rater,
-            simulation,
-            simulationConfig);
-        simulation.setDeliveryService(deliveryService);
-        deliveryService.runSimulation();
-
-         */
+            deliveredOrders.add(simulation.getCurrentEvents().stream()
+                .filter(DeliverOrderEvent.class::isInstance)
+                .map(DeliverOrderEvent.class::cast)
+                .map(DeliverOrderEvent::getOrder)
+                .toList());
+        });
     }
+
+    @Override
+    public void start() {
+        new Thread(simulation::runSimulation).start();
+    }
+
+    @Override
+    public void start(long maxTickCount) {
+        simulation.addListener(() -> {
+            if (simulation.getCurrentTick() == maxTickCount) simulation.endSimulation();
+        });
+        new Thread(simulation::runSimulation).start();
+    }
+
+    @Override
+    public void end() {
+        simulation.endSimulation();
+    }
+
+    @Override
+    public List<List<ConfirmedOrder>> getAllOrders() {
+        return Collections.unmodifiableList(deliveredOrders);
+    }
+
+    @Override
+    public List<ConfirmedOrder> getOrdersForTick(long tick) {
+
+        if (tick > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("requested tick too large");
+        }
+        if (tick < 0) {
+            throw new IllegalArgumentException("negative tick requested");
+        }
+
+        return deliveredOrders.get((int) tick);
+    }
+
 }

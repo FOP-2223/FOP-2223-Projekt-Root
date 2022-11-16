@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface OrderGenerator {
 
-    List<ConfirmedOrder> generateOrders(long time);
+    List<ConfirmedOrder> generateOrders(long tick);
 }

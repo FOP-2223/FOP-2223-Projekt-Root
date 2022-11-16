@@ -1,17 +1,18 @@
 package projekt.delivery.archetype;
 
-import projekt.delivery.deliveryService.DeliveryService;
-import projekt.delivery.simulation.SimulationConfig;
-import projekt.delivery.routing.Region;
-import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.routing.ConfirmedOrder;
+
+import java.util.List;
 
 public interface ProblemArchetype {
 
-    Region getRegion();
+    void start();
 
-    VehicleManager getVehicleManager();
+    void start(long maxTickCount);
 
-    SimulationConfig getSimulationConfig();
+    void end();
 
-    void runSimulation(DeliveryService.Factory deliveryServiceFactory);
+    List<List<ConfirmedOrder>> getAllOrders();
+
+    List<ConfirmedOrder> getOrdersForTick(long tick);
 }
