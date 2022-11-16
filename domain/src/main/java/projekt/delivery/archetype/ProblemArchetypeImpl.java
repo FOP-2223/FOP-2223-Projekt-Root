@@ -1,8 +1,8 @@
 package projekt.delivery.archetype;
 
 import projekt.delivery.DeliveryService;
-import projekt.delivery.Simulation;
-import projekt.delivery.SimulationConfig;
+import projekt.delivery.simulation.Simulation;
+import projekt.delivery.simulation.SimulationConfig;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
@@ -45,6 +45,7 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
 
     @Override
     public void runSimulation(DeliveryService.Factory deliveryServiceFactory) {
+        /*
         final var simulation = new Simulation() {
             private DeliveryService deliveryService;
 
@@ -72,5 +73,7 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
             simulationConfig);
         simulation.setDeliveryService(deliveryService);
         deliveryService.runSimulation();
+
+         */
     }
 }

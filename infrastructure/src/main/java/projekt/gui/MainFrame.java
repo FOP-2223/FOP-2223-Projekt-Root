@@ -5,6 +5,7 @@ import projekt.delivery.DeliveryService;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.simulation.Simulation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +15,7 @@ public class MainFrame extends JFrame {
     final Region region;
     final VehicleManager vehicleManager;
     final DeliveryService deliveryService;
+    final Simulation simulation;
 
     private ControlsPanel controlsPanel;
     private InfoPanel infoPanel;
@@ -22,10 +24,11 @@ public class MainFrame extends JFrame {
 
     private Vehicle selectedVehicle;
 
-    public MainFrame(Region region, VehicleManager vehicleManager, DeliveryService deliverService) {
+    public MainFrame(Region region, VehicleManager vehicleManager, DeliveryService deliverService, Simulation simulation) {
         this.region = region;
         this.vehicleManager = vehicleManager;
         this.deliveryService = deliverService;
+        this.simulation = simulation;
 
         initComponents();
     }
@@ -36,7 +39,7 @@ public class MainFrame extends JFrame {
     private void initComponents() {
         infoPanel = new InfoPanel(this);
         mapPanel = new MapPanel(this);
-        controlsPanel = new ControlsPanel(this, deliveryService.getSimulationConfig());
+        controlsPanel = new ControlsPanel(this, simulation.getSimulationConfig());
         menuBar = new MenuBar(this);
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -93,5 +96,9 @@ public class MainFrame extends JFrame {
 
     public DeliveryService getDeliveryService() {
         return deliveryService;
+    }
+
+    public Simulation getSimulation() {
+        return simulation;
     }
 }

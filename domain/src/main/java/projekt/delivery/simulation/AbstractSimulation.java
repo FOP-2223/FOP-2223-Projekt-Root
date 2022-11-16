@@ -1,0 +1,70 @@
+package projekt.delivery.simulation;
+
+public abstract class AbstractSimulation implements Simulation {
+
+    private final SimulationConfig simulationConfig;
+    private volatile boolean terminationRequested = false;
+
+    private long currentTick = 0;
+
+    public AbstractSimulation(SimulationConfig simulationConfig) {
+        this.simulationConfig = simulationConfig;
+    }
+
+    @Override
+    public void runSimulation() {
+        while (!terminationRequested) {
+            if (simulationConfig.isPaused()) {
+                try {
+                    //noinspection BusyWait
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                continue;
+            }
+            long tickStartTime = System.currentTimeMillis();
+
+            runTick();
+
+            // Wait till next tick is due.
+            long executionTime = System.currentTimeMillis() - tickStartTime;
+            long millisTillNextTick = simulationConfig.getMillisecondsPerTick() - executionTime;
+            if (millisTillNextTick < 0) {
+                // TODO: Make text yellow.
+                System.out.println("WARNING: Can't keep up! Did the system time change, or is the server overloaded?");
+            } else {
+                try {
+                    //noinspection BusyWait
+                    Thread.sleep(millisTillNextTick);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void endSimulation() {
+        terminationRequested = true;
+    }
+
+    @Override
+    public SimulationConfig getSimulationConfig() {
+        return simulationConfig;
+    }
+
+    @Override
+    public long getCurrentTick() {
+        return currentTick;
+    }
+
+    @Override
+    public void runTick() {
+        currentTick++;
+        tick();
+        onStateUpdated();
+    }
+
+    abstract void tick();
+}

@@ -56,7 +56,7 @@ class OrdersDialog extends JDialog {
 
         //TODO in LocalDateTime umrechnen?
         deliveryTimeSelector = new JSpinner(new SpinnerNumberModel(
-            mainFrame.getDeliveryService().getCurrentTick(), mainFrame.getDeliveryService().getCurrentTick(),Long.MAX_VALUE,1));
+            mainFrame.getSimulation().getCurrentTick(), mainFrame.getSimulation().getCurrentTick(),Long.MAX_VALUE,1));
 
         foodList.addListSelectionListener(listSelectionEvent -> removeFoodButton.setEnabled(foodList.getSelectedIndex() >= 0));
         addFoodButton.addActionListener(actionEvent -> {
@@ -172,7 +172,7 @@ class OrdersDialog extends JDialog {
         // removeAll();
 
         textField1.setText("(0, 0)");
-        deliveryTimeSelector.setValue(mainFrame.getDeliveryService().getCurrentTick());
+        deliveryTimeSelector.setValue(mainFrame.getSimulation().getCurrentTick());
 
         pack();
         setVisible(true);
@@ -192,7 +192,7 @@ class OrdersDialog extends JDialog {
 
     private void resetFields() {
         textField1.setText("(0, 0)");
-        deliveryTimeSelector.setValue(mainFrame.getDeliveryService().getCurrentTick());
+        deliveryTimeSelector.setValue(mainFrame.getSimulation().getCurrentTick());
         foodTextField.setText("");
     }
 }

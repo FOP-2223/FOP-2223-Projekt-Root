@@ -6,6 +6,8 @@ import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.simulation.Simulation;
+import projekt.delivery.simulation.SimulationConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,17 +26,15 @@ public class BogoDeliveryService extends AbstractDeliveryService {
 
     protected BogoDeliveryService(
         VehicleManager vehicleManager,
-        Rater rater,
-        Simulation simulation,
-        SimulationConfig simulationConfig
+        Rater rater
     ) {
-        super(vehicleManager, rater, simulation, simulationConfig);
+        super(vehicleManager, rater);
         nodes = vehicleManager.getRegion().getNodes().stream().toList();
     }
 
     @Override
-    void tick(List<ConfirmedOrder> newOrders) {
-        List<Event> events = vehicleManager.tick(getCurrentTick());
+    void tick(long currentTick, List<ConfirmedOrder> newOrders) {
+        List<Event> events = vehicleManager.tick(currentTick);
         pendingOrders.addAll(newOrders);
 
         // this is probably not a good solution, but it could theoretically be the best solution
@@ -49,7 +49,7 @@ public class BogoDeliveryService extends AbstractDeliveryService {
                 final Vehicle vehicle = e.getVehicle();
                 if (!pendingOrders.isEmpty()) {
                     final ConfirmedOrder next = pendingOrders.remove(0);
-                    vehicleManager.getWarehouse().loadOrder(vehicle, next, getCurrentTick());
+                    vehicleManager.getWarehouse().loadOrder(vehicle, next, currentTick);
                 }
                 moveToRandomNode(vehicle);
             });
@@ -61,7 +61,7 @@ public class BogoDeliveryService extends AbstractDeliveryService {
                 final Vehicle vehicle = e.getVehicle();
                 final VehicleManager.OccupiedNeighborhood neighborhood = vehicleManager.getOccupiedNeighborhood(e.getNode());
                 for (ConfirmedOrder order : vehicle.getOrders()) {
-                    neighborhood.deliverOrder(vehicle, order, getCurrentTick());
+                    neighborhood.deliverOrder(vehicle, order, currentTick);
                 }
                 moveToRandomNode(e.getVehicle());
             });

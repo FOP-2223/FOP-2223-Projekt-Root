@@ -1,6 +1,6 @@
 package projekt.gui;
 
-import projekt.delivery.SimulationConfig;
+import projekt.delivery.simulation.SimulationConfig;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -61,7 +61,7 @@ public class ControlsPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 // TODO: advance one step - make AbstractDeliverService#runTick() public?
-                mainFrame.deliveryService.runTick();
+                mainFrame.getSimulation().runTick();
             }
         });
 

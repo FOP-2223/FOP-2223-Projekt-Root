@@ -4,8 +4,9 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
 import projekt.delivery.DeliveryService;
-import projekt.delivery.Simulation;
-import projekt.delivery.SimulationConfig;
+import projekt.delivery.simulation.BasicDeliverySimulation;
+import projekt.delivery.simulation.Simulation;
+import projekt.delivery.simulation.SimulationConfig;
 import projekt.delivery.rating.LinearRater;
 import projekt.delivery.routing.DijkstraPathCalculator;
 import projekt.delivery.routing.Region;
@@ -75,25 +76,10 @@ public class Main {
             .build();
 
         // layer 3
-
-        final var simulation = new Simulation() {
-            private MainFrame mainFrame;
-
-            @Override
-            public void onStateUpdated() {
-                SwingUtilities.invokeLater(mainFrame::onModelUpdate);
-            }
-
-            public void setMainFrame(MainFrame mainFrame) {
-                this.mainFrame = mainFrame;
-            }
-        };
-        DeliveryService deliveryService = DeliveryService.BOGO.create(vehicleManager,
-            new LinearRater(),
-            simulation,
-            new SimulationConfig(1000));
+        DeliveryService deliveryService = DeliveryService.BOGO.create(vehicleManager, new LinearRater());
 
         // layer 4
+        Simulation simulation = new BasicDeliverySimulation(new SimulationConfig(1000), deliveryService);
 
         //Pizzeria pizzeria = Pizzeria.LOS_FOPBOTS_HERMANOS.create(deliveryService);
 
@@ -101,13 +87,13 @@ public class Main {
 
         // Gui Setup
         FlatDarkLaf.setup();
-        MainFrame mainFrame = new MainFrame(region, vehicleManager, deliveryService);
-        simulation.setMainFrame(mainFrame);
+        MainFrame mainFrame = new MainFrame(region, vehicleManager, deliveryService, simulation);
+        //TODO simulation.setMainFrame(mainFrame);
         SwingUtilities.invokeLater(() -> {
 //            new MainFrame(null, null, null, null).setVisible(true); // -> starts GUI thread
             mainFrame.setVisible(true); // -> starts GUI thread
         });
 
-        deliveryService.runSimulation(); // -> blocks the thread until the simulation is finished.
+        simulation.runSimulation(); // -> blocks the thread until the simulation is finished.
     }
 }

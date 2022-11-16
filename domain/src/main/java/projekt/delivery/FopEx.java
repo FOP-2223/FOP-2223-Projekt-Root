@@ -4,6 +4,8 @@ import projekt.delivery.event.Event;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.simulation.Simulation;
+import projekt.delivery.simulation.SimulationConfig;
 
 import java.util.List;
 
@@ -15,12 +17,12 @@ public class FopEx extends AbstractDeliveryService {
         Simulation simulation,
         SimulationConfig simulationConfig
     ) {
-        super(vehicleManager, rater, simulation, simulationConfig);
+        super(vehicleManager, rater);
     }
 
     @Override
-    void tick(List<ConfirmedOrder> newOrders) {
-        List<Event> events = vehicleManager.tick(getCurrentTick());
+    void tick(long currentTick, List<ConfirmedOrder> newOrders) {
+        List<Event> events = vehicleManager.tick(currentTick);
         // TODO: H9
     }
 }

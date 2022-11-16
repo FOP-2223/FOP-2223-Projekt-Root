@@ -5,6 +5,8 @@ import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.simulation.Simulation;
+import projekt.delivery.simulation.SimulationConfig;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,17 +22,15 @@ public class BasicDeliveryService extends AbstractDeliveryService {
 
     protected BasicDeliveryService(
         VehicleManager vehicleManager,
-        Rater rater,
-        Simulation simulation,
-        SimulationConfig simulationConfig
+        Rater rater
     ) {
-        super(vehicleManager, rater, simulation, simulationConfig);
+        super(vehicleManager, rater);
     }
 
     @Override
-    void tick(List<ConfirmedOrder> newOrders) {
+    void tick(long currentTick, List<ConfirmedOrder> newOrders) {
         // Move vehicles forward.
-        List<Event> events = vehicleManager.tick(getCurrentTick());
+        List<Event> events = vehicleManager.tick(currentTick);
 
         // Add all newly arrived orders to the list of pending orders.
         pendingOrders.addAll(newOrders);
@@ -48,9 +48,9 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                     if (order.getTotalWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()
                         && vehicle.getCompatibleFoodTypes().containsAll(order.getFoodList())) {
                         loadedAtLeastOneOrderOnVehicle = true;
-                        vehicleManager.getWarehouse().loadOrder(vehicle, order, getCurrentTick());
+                        vehicleManager.getWarehouse().loadOrder(vehicle, order, currentTick);
                         vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v ->
-                            vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied()).deliverOrder(v, order, getCurrentTick()));
+                            vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied()).deliverOrder(v, order, currentTick));
                         it.remove();
                     }
                 }
