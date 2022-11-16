@@ -31,7 +31,7 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
             List<ConfirmedOrder> newOrders = orderGenerator.generateOrders(simulation.getCurrentTick());
             if (newOrders == null
                 && simulation.getDeliveryService().getVehicleManager().getVehicles().stream().map(Vehicle::getOrders).allMatch(Collection::isEmpty)
-                // TODO: && warehouse does not have any pending orders
+                && simulation.getDeliveryService().getPendingOrders().size() == 0
             ) {
                 simulation.endSimulation();
             } else {

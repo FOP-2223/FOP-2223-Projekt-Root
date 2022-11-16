@@ -15,8 +15,9 @@ import java.util.ListIterator;
  * A very simple delivery service that distributes orders to compatible vehicles in a FIFO manner.
  */
 public class BasicDeliveryService extends AbstractDeliveryService {
+
     // List of orders that have not yet been loaded onto delivery vehicles
-    private final List<ConfirmedOrder> pendingOrders = new ArrayList<>();
+    protected final List<ConfirmedOrder> pendingOrders = new ArrayList<>();
 
     protected BasicDeliveryService(
         VehicleManager vehicleManager,
@@ -60,5 +61,10 @@ public class BasicDeliveryService extends AbstractDeliveryService {
             });
 
         return events;
+    }
+
+    @Override
+    public List<ConfirmedOrder> getPendingOrders() {
+        return pendingOrders;
     }
 }

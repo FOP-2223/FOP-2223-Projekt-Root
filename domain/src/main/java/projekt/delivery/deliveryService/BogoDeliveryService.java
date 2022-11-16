@@ -14,7 +14,8 @@ import java.util.Random;
 public class BogoDeliveryService extends AbstractDeliveryService {
 
     // List of orders that have not yet been loaded onto delivery vehicles
-    private final List<ConfirmedOrder> pendingOrders = new ArrayList<>();
+    protected final List<ConfirmedOrder> pendingOrders = new ArrayList<>();
+    // List of orders that have not yet been loaded onto delivery vehicles
     private final Random random = new Random(42);
     private final List<? extends Region.Node> nodes;
     private final List<Class<? extends Event>> skipInFirstStep = List.of(
@@ -84,5 +85,10 @@ public class BogoDeliveryService extends AbstractDeliveryService {
             node = nodes.get(random.nextInt(nodes.size()));
         } while (vehicle.getOccupied().getComponent().equals(node));
         vehicle.moveDirect(node);
+    }
+
+    @Override
+    public List<ConfirmedOrder> getPendingOrders() {
+        return pendingOrders;
     }
 }

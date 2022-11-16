@@ -19,6 +19,8 @@ public interface DeliveryService {
 
     VehicleManager getVehicleManager();
 
+    List<ConfirmedOrder> getPendingOrders();
+
     interface Factory {
 
         DeliveryService create(VehicleManager vehicleManager, Rater rater);
