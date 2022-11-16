@@ -1,6 +1,6 @@
 package projekt.delivery.simulation;
 
-import projekt.delivery.DeliveryService;
+import projekt.delivery.deliveryService.DeliveryService;
 
 public class BasicDeliverySimulation extends AbstractSimulation {
 

@@ -1,12 +1,10 @@
-package projekt.delivery;
+package projekt.delivery.deliveryService;
 
 import projekt.delivery.event.Event;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
-import projekt.delivery.simulation.Simulation;
-import projekt.delivery.simulation.SimulationConfig;
 
 import java.util.ArrayList;
 import java.util.Comparator;

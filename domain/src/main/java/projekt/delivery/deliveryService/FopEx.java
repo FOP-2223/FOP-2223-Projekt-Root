@@ -1,4 +1,4 @@
-package projekt.delivery;
+package projekt.delivery.deliveryService;
 
 import projekt.delivery.event.Event;
 import projekt.delivery.rating.Rater;

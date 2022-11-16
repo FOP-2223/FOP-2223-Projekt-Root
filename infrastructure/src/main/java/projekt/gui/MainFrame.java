@@ -1,7 +1,7 @@
 package projekt.gui;
 
 import org.jetbrains.annotations.Nullable;
-import projekt.delivery.DeliveryService;
+import projekt.delivery.deliveryService.DeliveryService;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;

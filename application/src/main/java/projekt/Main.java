@@ -3,7 +3,7 @@ package projekt;
 import com.formdev.flatlaf.FlatDarkLaf;
 import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
-import projekt.delivery.DeliveryService;
+import projekt.delivery.deliveryService.DeliveryService;
 import projekt.delivery.simulation.BasicDeliverySimulation;
 import projekt.delivery.simulation.Simulation;
 import projekt.delivery.simulation.SimulationConfig;
