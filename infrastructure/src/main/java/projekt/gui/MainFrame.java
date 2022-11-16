@@ -5,12 +5,13 @@ import projekt.delivery.deliveryService.DeliveryService;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.simulation.BasicDeliverySimulation;
 import projekt.delivery.simulation.Simulation;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame implements BasicDeliverySimulation.Listener {
 
     final Region region;
     final VehicleManager vehicleManager;
@@ -76,7 +77,7 @@ public class MainFrame extends JFrame {
         onUpdate();
     }
 
-    public void onModelUpdate() {
+    public void onStateUpdated() {
         infoPanel.onUpdate();
         onUpdate();
     }

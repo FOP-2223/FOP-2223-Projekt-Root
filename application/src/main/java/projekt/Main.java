@@ -79,7 +79,7 @@ public class Main {
         DeliveryService deliveryService = DeliveryService.BOGO.create(vehicleManager, new LinearRater());
 
         // layer 4
-        Simulation simulation = new BasicDeliverySimulation(new SimulationConfig(1000), deliveryService);
+        BasicDeliverySimulation simulation = new BasicDeliverySimulation(new SimulationConfig(1000), deliveryService);
 
         //Pizzeria pizzeria = Pizzeria.LOS_FOPBOTS_HERMANOS.create(deliveryService);
 
@@ -88,7 +88,7 @@ public class Main {
         // Gui Setup
         FlatDarkLaf.setup();
         MainFrame mainFrame = new MainFrame(region, vehicleManager, deliveryService, simulation);
-        //TODO simulation.setMainFrame(mainFrame);
+        simulation.addListener(mainFrame);
         SwingUtilities.invokeLater(() -> {
 //            new MainFrame(null, null, null, null).setVisible(true); // -> starts GUI thread
             mainFrame.setVisible(true); // -> starts GUI thread
