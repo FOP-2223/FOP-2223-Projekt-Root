@@ -20,6 +20,8 @@ public interface VehicleManager {
 
     Collection<Vehicle> getVehicles();
 
+    Collection<Vehicle> getAllVehicles();
+
     Warehouse getWarehouse();
 
     // O(1)

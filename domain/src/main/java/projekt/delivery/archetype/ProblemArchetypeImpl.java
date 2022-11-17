@@ -25,7 +25,7 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
             vehicleManager,
             new BasicProblemSolver(
                 orderGenerator,
-                new ArrayList<>(vehicleManager.getVehicles()),
+                new ArrayList<>(vehicleManager.getAllVehicles()),
                 vehicleManager.getWarehouse().getComponent().getLocation()
             )
         );

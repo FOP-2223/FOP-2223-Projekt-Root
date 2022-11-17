@@ -89,6 +89,13 @@ class VehicleManagerImpl implements VehicleManager {
     }
 
     @Override
+    public Collection<Vehicle> getAllVehicles() {
+        Collection<Vehicle> allVehicles = new ArrayList<>(getVehicles());
+        allVehicles.addAll(vehiclesToSpawn);
+        return allVehicles;
+    }
+
+    @Override
     public OccupiedWarehouseImpl getWarehouse() {
         return warehouse;
     }
