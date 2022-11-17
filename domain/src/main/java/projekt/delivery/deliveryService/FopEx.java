@@ -16,12 +16,9 @@ public class FopEx extends AbstractDeliveryService {
     protected final List<ConfirmedOrder> pendingOrders = new ArrayList<>();
 
     public FopEx(
-        VehicleManager vehicleManager,
-        Rater rater,
-        Simulation simulation,
-        SimulationConfig simulationConfig
+        VehicleManager vehicleManager
     ) {
-        super(vehicleManager, rater);
+        super(vehicleManager);
     }
 
     @Override

@@ -23,6 +23,6 @@ public interface DeliveryService {
 
     interface Factory {
 
-        DeliveryService create(VehicleManager vehicleManager, Rater rater);
+        DeliveryService create(VehicleManager vehicleManager);
     }
 }

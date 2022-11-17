@@ -17,10 +17,9 @@ public class ProblemSolverDeliveryService extends AbstractDeliveryService {
 
     public ProblemSolverDeliveryService(
         VehicleManager vehicleManager,
-        Rater rater,
         ProblemSolver problemSolver
     ) {
-        super(vehicleManager, rater);
+        super(vehicleManager);
         this.solution = problemSolver.solve();
     }
 

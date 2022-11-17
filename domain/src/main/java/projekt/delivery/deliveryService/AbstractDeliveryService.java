@@ -11,15 +11,13 @@ import java.util.List;
 
 public abstract class AbstractDeliveryService implements DeliveryService {
     protected final VehicleManager vehicleManager;
-    protected final Rater rater;
     private final Object lock = new Object();
 
     private List<ConfirmedOrder> unprocessedOrders = new ArrayList<>();
 
 
-    protected AbstractDeliveryService(VehicleManager vehicleManager, Rater rater) {
+    protected AbstractDeliveryService(VehicleManager vehicleManager) {
         this.vehicleManager = vehicleManager;
-        this.rater = rater;
     }
 
     @Override

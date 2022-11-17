@@ -24,10 +24,9 @@ public class BogoDeliveryService extends AbstractDeliveryService {
     );
 
     protected BogoDeliveryService(
-        VehicleManager vehicleManager,
-        Rater rater
+        VehicleManager vehicleManager
     ) {
-        super(vehicleManager, rater);
+        super(vehicleManager);
         nodes = vehicleManager.getRegion().getNodes().stream().toList();
     }
 

@@ -20,10 +20,9 @@ public class BasicDeliveryService extends AbstractDeliveryService {
     protected final List<ConfirmedOrder> pendingOrders = new ArrayList<>();
 
     protected BasicDeliveryService(
-        VehicleManager vehicleManager,
-        Rater rater
+        VehicleManager vehicleManager
     ) {
-        super(vehicleManager, rater);
+        super(vehicleManager);
     }
 
     @Override
