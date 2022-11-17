@@ -53,6 +53,15 @@ public abstract class AbstractSimulation implements Simulation {
     }
 
     @Override
+    public void runSimulation(int maxTicks) {
+        addListener(() -> {
+            if (getCurrentTick() == maxTicks) endSimulation();
+        });
+
+        runSimulation();
+    }
+
+    @Override
     public void endSimulation() {
         terminationRequested = true;
     }

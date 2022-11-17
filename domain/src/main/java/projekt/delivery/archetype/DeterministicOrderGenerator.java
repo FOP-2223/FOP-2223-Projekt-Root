@@ -14,7 +14,7 @@ public abstract class DeterministicOrderGenerator implements OrderGenerator {
      * @param tick the tick to generate orders for
      * @return the generated orders
      */
-    abstract List<ConfirmedOrder> generateOrders(long tick);
+    public abstract List<ConfirmedOrder> generateOrders(long tick);
 
     @Override
     public List<ConfirmedOrder> generateNextOrders() {

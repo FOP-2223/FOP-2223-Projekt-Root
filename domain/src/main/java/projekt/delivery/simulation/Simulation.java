@@ -15,6 +15,17 @@ public interface Simulation {
     void runSimulation();
 
     /**
+     * Start the simulation of the food delivery.
+     * This method blocks the current thread and only returns when the simulation is terminated.
+     * The simulation will automatically be terminated after maxTicks ticks.
+     * To terminate the simulation, you can also call {@link #endSimulation()} from a separate thread.
+     *
+     * @param maxTicks The maximum amount of ticks the simulation will run.
+     *                 When the maximum amount of ticks is reached the simulation will be stopped automatically.
+     */
+    void runSimulation(int maxTicks);
+
+    /**
      * Stops the currently running simulation of the food delivery service.
      */
     void endSimulation();
