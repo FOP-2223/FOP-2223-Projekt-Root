@@ -2,6 +2,7 @@ package projekt.delivery.routing;
 
 import java.util.Collection;
 import java.util.Deque;
+import java.util.List;
 import java.util.function.Consumer;
 
 public interface Vehicle extends Comparable<Vehicle> {
@@ -60,7 +61,9 @@ public interface Vehicle extends Comparable<Vehicle> {
      */
     Collection<ConfirmedOrder> getOrders();
 
-    Collection<String> getCompatibleFoodTypes();
+    boolean checkCompatibility(String food);
+
+    boolean checkCompatibility(List<String> foods);
 
     /**
      * @throws FoodNotSupportedException if the vehicle does not support a food type in the provided order

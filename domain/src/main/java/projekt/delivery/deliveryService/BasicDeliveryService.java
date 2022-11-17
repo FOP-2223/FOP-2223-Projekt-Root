@@ -44,7 +44,7 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                 while (it.hasNext()) {
                     final ConfirmedOrder order = it.next();
                     if (order.getTotalWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()
-                        && vehicle.getCompatibleFoodTypes().containsAll(order.getFoodList())) {
+                        && vehicle.checkCompatibility(order.getFoodList())) {
                         loadedAtLeastOneOrderOnVehicle = true;
                         vehicleManager.getWarehouse().loadOrder(vehicle, order, currentTick);
                         vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v ->

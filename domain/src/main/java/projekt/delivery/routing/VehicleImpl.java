@@ -103,8 +103,15 @@ class VehicleImpl implements Vehicle {
     }
 
     @Override
-    public Collection<String> getCompatibleFoodTypes() {
-        return compatibleFoodTypes;
+    public boolean checkCompatibility(String food) {
+        return true;
+    }
+
+    public boolean checkCompatibility(List<String> foods) {
+        for (String food : foods) {
+            if (!checkCompatibility(food)) return false;
+        }
+        return true;
     }
 
     private void checkMoveToNode(Region.Node node) {
@@ -148,7 +155,7 @@ class VehicleImpl implements Vehicle {
         }
 
         Optional<String> incompatibleFood = order.getFoodList().stream().filter(f ->
-            !compatibleFoodTypes.contains(f)).findFirst();
+            !checkCompatibility(f)).findFirst();
         if (incompatibleFood.isPresent()) {
             throw new FoodNotSupportedException(this, incompatibleFood.get());
         }
