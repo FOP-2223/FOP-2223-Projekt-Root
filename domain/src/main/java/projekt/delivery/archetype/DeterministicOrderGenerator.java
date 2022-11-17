@@ -2,6 +2,7 @@ package projekt.delivery.archetype;
 
 import projekt.delivery.routing.ConfirmedOrder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class DeterministicOrderGenerator implements OrderGenerator {
@@ -23,5 +24,19 @@ public abstract class DeterministicOrderGenerator implements OrderGenerator {
     @Override
     public long lastTick() {
         return Long.MAX_VALUE;
+    }
+
+    public List<ConfirmedOrder> getAllOrders() {
+        List<ConfirmedOrder> allOrders = new ArrayList<>();
+
+        for (int i = 0; i < lastTick(); i++) {
+            if (((long) i) + ((long) allOrders.size()) > Integer.MAX_VALUE) {
+                throw new IndexOutOfBoundsException("Too many orders to store");
+            }
+
+            allOrders.addAll(generateOrders(i));
+        }
+
+        return allOrders;
     }
 }
