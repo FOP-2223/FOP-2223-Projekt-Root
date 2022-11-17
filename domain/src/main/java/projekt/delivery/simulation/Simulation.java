@@ -27,4 +27,6 @@ public interface Simulation {
 
     void runTick();
 
+    double getRating();
+
 }

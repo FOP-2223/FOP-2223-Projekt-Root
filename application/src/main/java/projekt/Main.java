@@ -76,10 +76,10 @@ public class Main {
             .build();
 
         // layer 3
-        DeliveryService deliveryService = DeliveryService.BOGO.create(vehicleManager, new LinearRater());
+        DeliveryService deliveryService = DeliveryService.BOGO.create(vehicleManager);
 
         // layer 4
-        BasicDeliverySimulation simulation = new BasicDeliverySimulation(new SimulationConfig(1000), deliveryService);
+        BasicDeliverySimulation simulation = new BasicDeliverySimulation(new SimulationConfig(1000), new LinearRater(), deliveryService);
 
         //Pizzeria pizzeria = Pizzeria.LOS_FOPBOTS_HERMANOS.create(deliveryService);
 
