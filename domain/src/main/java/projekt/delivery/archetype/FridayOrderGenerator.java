@@ -10,7 +10,7 @@ import java.util.*;
  * Represents the incoming orders on an average friday evening starting at 4.00pm (tick = 0) until 12:00pm (tick = 480)
  * with one tick representing one minute. The incoming orders follow a normal distribution.
  */
-public class FridayOrderGenerator implements OrderGenerator {
+public class FridayOrderGenerator extends DeterministicOrderGenerator {
 
     private static final long LAST_TICK = 480;
 
