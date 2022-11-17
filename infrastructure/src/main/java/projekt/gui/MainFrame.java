@@ -1,7 +1,6 @@
 package projekt.gui;
 
 import org.jetbrains.annotations.Nullable;
-import projekt.delivery.deliveryService.DeliveryService;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
@@ -14,7 +13,6 @@ public class MainFrame extends JFrame implements Simulation.Listener {
 
     final Region region;
     final VehicleManager vehicleManager;
-    final DeliveryService deliveryService;
     final Simulation simulation;
 
     private ControlsPanel controlsPanel;
@@ -24,10 +22,9 @@ public class MainFrame extends JFrame implements Simulation.Listener {
 
     private Vehicle selectedVehicle;
 
-    public MainFrame(Region region, VehicleManager vehicleManager, DeliveryService deliverService, Simulation simulation) {
+    public MainFrame(Region region, VehicleManager vehicleManager, Simulation simulation) {
         this.region = region;
         this.vehicleManager = vehicleManager;
-        this.deliveryService = deliverService;
         this.simulation = simulation;
 
         initComponents();
