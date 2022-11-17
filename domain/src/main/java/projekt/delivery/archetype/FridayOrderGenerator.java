@@ -18,14 +18,14 @@ public class FridayOrderGenerator extends DeterministicOrderGenerator {
     private final Random random = new Random();
     private final int deliveryInterval;
     private final List<Region.Node> nodes;
-    private final int maxWeight;
+    private final double maxWeight;
     private int orderID = 0;
 
-    public FridayOrderGenerator(int orderCount, List<Region.Node> nodes, int deliveryInterval, int maxWeight) {
+    public FridayOrderGenerator(int orderCount, List<Region.Node> nodes, int deliveryInterval, double maxWeight) {
         this(orderCount, nodes, deliveryInterval, maxWeight, 0.5);
     }
 
-    public FridayOrderGenerator(int orderCount, List<Region.Node> nodes, int deliveryInterval, int maxWeight, double variance) {
+    public FridayOrderGenerator(int orderCount, List<Region.Node> nodes, int deliveryInterval, double maxWeight, double variance) {
         this.nodes = nodes;
         this.deliveryInterval = deliveryInterval;
         this.maxWeight = maxWeight;
