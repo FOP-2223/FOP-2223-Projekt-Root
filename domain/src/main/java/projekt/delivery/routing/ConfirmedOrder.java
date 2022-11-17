@@ -12,22 +12,25 @@ public class ConfirmedOrder implements Serializable {
     private final TickInterval tickInterval;
     private final List<String> foodList;
     private final double weight;
+    private final long readyToDeliverAt;
     private long actualDeliveryTick;
 
-    public ConfirmedOrder(Location location, int orderID, TickInterval tickInterval, List<String> foodList, double weigth) {
+    public ConfirmedOrder(Location location, int orderID, TickInterval tickInterval, List<String> foodList, double weigth, long readyToDeliverAt) {
         this.location = location;
         this.orderID = orderID;
         this.tickInterval = tickInterval;
         this.foodList = foodList;
         this.weight = weigth;
+        this.readyToDeliverAt = readyToDeliverAt;
     }
 
-    public ConfirmedOrder(int x, int y, int orderID, TickInterval tickInterval, List<String> foodList, double weight) {
+    public ConfirmedOrder(int x, int y, int orderID, TickInterval tickInterval, List<String> foodList, double weight, long readyToDeliverAt) {
         location = new Location(x, y);
         this.orderID = orderID;
         this.tickInterval = tickInterval;
         this.foodList = foodList;
         this.weight = weight;
+        this.readyToDeliverAt = readyToDeliverAt;
     }
 
     public Location getLocation() {
@@ -56,6 +59,10 @@ public class ConfirmedOrder implements Serializable {
 
     public double getTotalWeight() {
         return weight;
+    }
+
+    public long getReadyToDeliverAt() {
+        return readyToDeliverAt;
     }
 
     public long getActualDeliveryTick() {
