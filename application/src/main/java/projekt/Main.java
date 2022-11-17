@@ -3,17 +3,21 @@ package projekt;
 import com.formdev.flatlaf.FlatDarkLaf;
 import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
-import projekt.delivery.deliveryService.DeliveryService;
-import projekt.delivery.simulation.BasicDeliverySimulation;
-import projekt.delivery.simulation.Simulation;
-import projekt.delivery.simulation.SimulationConfig;
+import projekt.delivery.archetype.DeterministicOrderGenerator;
+import projekt.delivery.archetype.FridayOrderGenerator;
+import projekt.delivery.archetype.ProblemArchetype;
+import projekt.delivery.archetype.ProblemArchetypeImpl;
 import projekt.delivery.rating.LinearRater;
 import projekt.delivery.routing.DijkstraPathCalculator;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.simulation.Simulation;
+import projekt.delivery.simulation.SimulationConfig;
+import projekt.delivery.simulation.SimulationFactory;
 import projekt.gui.MainFrame;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -75,23 +79,24 @@ public class Main {
             .addVehicle(2, List.of())
             .build();
 
-        // layer 3
-        DeliveryService deliveryService = DeliveryService.BOGO.create(vehicleManager);
+        //OrderGenerator
+        DeterministicOrderGenerator orderGenerator = new FridayOrderGenerator(10000, new ArrayList<>(region.getNodes()), 15, 0.5);
+
+        //ProblemArchetype
+        ProblemArchetype problemArchetype = new ProblemArchetypeImpl(orderGenerator, vehicleManager);
 
         // layer 4
-        BasicDeliverySimulation simulation = new BasicDeliverySimulation(new SimulationConfig(1000), new LinearRater(), deliveryService);
-
-        //Pizzeria pizzeria = Pizzeria.LOS_FOPBOTS_HERMANOS.create(deliveryService);
+        Simulation simulation = new SimulationFactory().createSimulation(problemArchetype, new LinearRater(), new SimulationConfig(1000));
 
         // the lasagna is complete
 
         // Gui Setup
         FlatDarkLaf.setup();
-        MainFrame mainFrame = new MainFrame(region, vehicleManager, deliveryService, simulation);
+        MainFrame mainFrame = new MainFrame(region, vehicleManager, simulation);
         simulation.addListener(mainFrame);
         SwingUtilities.invokeLater(() -> {
 //            new MainFrame(null, null, null, null).setVisible(true); // -> starts GUI thread
-            mainFrame.setVisible(true); // -> starts GUI thread
+       //     mainFrame.setVisible(true); // -> starts GUI thread
         });
 
         simulation.runSimulation(); // -> blocks the thread until the simulation is finished.
