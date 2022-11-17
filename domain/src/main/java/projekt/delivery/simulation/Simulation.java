@@ -40,4 +40,13 @@ public interface Simulation {
 
     double getRating();
 
+    void addListener(Listener listener);
+
+    boolean removeListener(Listener listener);
+
+    interface Listener {
+
+        void onStateUpdated();
+    }
+
 }

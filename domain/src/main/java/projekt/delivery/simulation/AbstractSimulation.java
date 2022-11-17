@@ -105,8 +105,4 @@ public abstract class AbstractSimulation implements Simulation {
         return listeners.remove(listener);
     }
 
-    public interface Listener {
-
-        void onStateUpdated();
-    }
 }
