@@ -5,13 +5,13 @@ import projekt.delivery.deliveryService.DeliveryService;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
-import projekt.delivery.simulation.BasicDeliverySimulation;
+import projekt.delivery.simulation.AbstractSimulation;
 import projekt.delivery.simulation.Simulation;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class MainFrame extends JFrame implements BasicDeliverySimulation.Listener {
+public class MainFrame extends JFrame implements AbstractSimulation.Listener {
 
     final Region region;
     final VehicleManager vehicleManager;

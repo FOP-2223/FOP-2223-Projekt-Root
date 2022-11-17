@@ -2,12 +2,14 @@ package projekt.delivery.simulation;
 
 import projekt.delivery.event.Event;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractSimulation implements Simulation {
 
     private final SimulationConfig simulationConfig;
+    List<Listener> listeners = new ArrayList<>();
     private volatile boolean terminationRequested = false;
 
     private long currentTick = 0;
@@ -78,4 +80,24 @@ public abstract class AbstractSimulation implements Simulation {
     }
 
     abstract List<Event> tick();
+
+    @Override
+    public void onStateUpdated() {
+        for (Listener listener : listeners) {
+            listener.onStateUpdated();
+        }
+    }
+
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+
+    public boolean removeListener(Listener listener) {
+        return listeners.remove(listener);
+    }
+
+    public interface Listener {
+
+        void onStateUpdated();
+    }
 }
