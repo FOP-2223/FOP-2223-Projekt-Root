@@ -58,7 +58,7 @@ public class ProblemSolverDeliveryService extends AbstractDeliveryService {
                         loadedAtLeastOneOrderOnVehicle = true;
                         vehicleManager.getWarehouse().loadOrder(vehicle, order, currentTick);
                         vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v ->
-                            vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied()).deliverOrder(v, order, currentTick));
+                            vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied().getComponent()).deliverOrder(v, order, currentTick));
                         pendingOrders.remove(order);
                     }
                 }

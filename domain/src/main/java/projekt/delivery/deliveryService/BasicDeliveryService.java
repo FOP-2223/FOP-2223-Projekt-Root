@@ -19,7 +19,7 @@ public class BasicDeliveryService extends AbstractDeliveryService {
     // List of orders that have not yet been loaded onto delivery vehicles
     protected final List<ConfirmedOrder> pendingOrders = new ArrayList<>();
 
-    protected BasicDeliveryService(
+    public BasicDeliveryService(
         VehicleManager vehicleManager
     ) {
         super(vehicleManager);
@@ -48,7 +48,7 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                         loadedAtLeastOneOrderOnVehicle = true;
                         vehicleManager.getWarehouse().loadOrder(vehicle, order, currentTick);
                         vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v ->
-                            vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied()).deliverOrder(v, order, currentTick));
+                            vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied().getComponent()).deliverOrder(v, order, currentTick));
                         it.remove();
                     }
                 }
