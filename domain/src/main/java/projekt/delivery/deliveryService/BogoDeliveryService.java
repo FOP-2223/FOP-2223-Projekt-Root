@@ -23,7 +23,7 @@ public class BogoDeliveryService extends AbstractDeliveryService {
         ArrivedAtNeighborhoodEvent.class
     );
 
-    protected BogoDeliveryService(
+    public BogoDeliveryService(
         VehicleManager vehicleManager
     ) {
         super(vehicleManager);
@@ -58,7 +58,7 @@ public class BogoDeliveryService extends AbstractDeliveryService {
             .forEach(e -> {
                 final Vehicle vehicle = e.getVehicle();
                 final VehicleManager.OccupiedNeighborhood neighborhood = vehicleManager.getOccupiedNeighborhood(e.getNode());
-                for (ConfirmedOrder order : vehicle.getOrders()) {
+                for (ConfirmedOrder order : new ArrayList<>(vehicle.getOrders())) {
                     neighborhood.deliverOrder(vehicle, order, currentTick);
                 }
                 moveToRandomNode(e.getVehicle());
