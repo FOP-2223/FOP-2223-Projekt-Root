@@ -80,7 +80,15 @@ public class Main {
             .build();
 
         //OrderGenerator
-        DeterministicOrderGenerator orderGenerator = new FridayOrderGenerator(10000, new ArrayList<>(region.getNodes()), 15, 0.5);
+        DeterministicOrderGenerator orderGenerator = new FridayOrderGenerator(
+            10000,
+            vehicleManager.getOccupiedNodes().stream()
+                .filter(VehicleManager.OccupiedNeighborhood.class::isInstance)
+                .map(VehicleManager.OccupiedNeighborhood.class::cast)
+                .toList(),
+            15,
+            0.5
+        );
 
         //ProblemArchetype
         ProblemArchetype problemArchetype = new ProblemArchetypeImpl(orderGenerator, vehicleManager);

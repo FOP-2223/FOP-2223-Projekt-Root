@@ -2,7 +2,7 @@ package projekt.delivery.archetype;
 
 import projekt.base.TickInterval;
 import projekt.delivery.routing.ConfirmedOrder;
-import projekt.delivery.routing.Region;
+import projekt.delivery.routing.VehicleManager;
 
 import java.util.*;
 
@@ -13,19 +13,18 @@ import java.util.*;
 public class FridayOrderGenerator extends DeterministicOrderGenerator {
 
     private static final long LAST_TICK = 480;
-
-    Map<Long, List<ConfirmedOrder>> orders = new HashMap<>();
+    private final Map<Long, List<ConfirmedOrder>> orders = new HashMap<>();
     private final Random random = new Random();
     private final int deliveryInterval;
-    private final List<Region.Node> nodes;
+    private final List<VehicleManager.OccupiedNeighborhood> nodes;
     private final double maxWeight;
     private int orderID = 0;
 
-    public FridayOrderGenerator(int orderCount, List<Region.Node> nodes, int deliveryInterval, double maxWeight) {
+    public FridayOrderGenerator(int orderCount, List<VehicleManager.OccupiedNeighborhood> nodes, int deliveryInterval, double maxWeight) {
         this(orderCount, nodes, deliveryInterval, maxWeight, 0.5);
     }
 
-    public FridayOrderGenerator(int orderCount, List<Region.Node> nodes, int deliveryInterval, double maxWeight, double variance) {
+    public FridayOrderGenerator(int orderCount, List<VehicleManager.OccupiedNeighborhood> nodes, int deliveryInterval, double maxWeight, double variance) {
         this.nodes = nodes;
         this.deliveryInterval = deliveryInterval;
         this.maxWeight = maxWeight;
@@ -50,8 +49,8 @@ public class FridayOrderGenerator extends DeterministicOrderGenerator {
     }
 
     private ConfirmedOrder createRandomOrder(long deliveryTime) {
-        return new ConfirmedOrder(nodes.get(
-            random.nextInt(nodes.size())).getLocation(),
+        return new ConfirmedOrder(
+            nodes.get(random.nextInt(nodes.size())).getComponent().getLocation(),
             orderID++,
             new TickInterval(deliveryTime + deliveryInterval, deliveryTime + 2L * deliveryInterval),
             List.of("food" + orderID),
