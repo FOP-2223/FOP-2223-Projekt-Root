@@ -115,7 +115,7 @@ class VehicleImpl implements Vehicle {
     }
 
     private void checkMoveToNode(Region.Node node) {
-        if (occupied.component.equals(node)) {
+        if (occupied.component.equals(node) && moveQueue.isEmpty()) {
             throw new IllegalArgumentException("Vehicle " + getId() + " cannot move to own node " + node);
         }
     }
