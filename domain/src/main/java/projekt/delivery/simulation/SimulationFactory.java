@@ -17,11 +17,11 @@ public class SimulationFactory {
         BasicDeliverySimulation simulation = new BasicDeliverySimulation(simulationConfig, rater, problemArchetype.createProblemSolverDeliverySolver());
 
         //add starting orders
-        simulation.getDeliveryService().deliver(problemArchetype.getOrderGenerator().generateOrders(0));
+        simulation.getDeliveryService().deliver(problemArchetype.getOrderGenerator().generateOrdersForTick(0));
 
         //Listener to add new orders after each tick
         simulation.addListener(() -> {
-            List<ConfirmedOrder> newOrders = problemArchetype.getOrderGenerator().generateOrders(simulation.getCurrentTick());
+            List<ConfirmedOrder> newOrders = problemArchetype.getOrderGenerator().generateOrdersForTick(simulation.getCurrentTick());
             if (newOrders == null
                 && simulation.getDeliveryService().getVehicleManager().getVehicles().stream().map(Vehicle::getOrders).allMatch(Collection::isEmpty)
                 && simulation.getDeliveryService().getPendingOrders().size() == 0
