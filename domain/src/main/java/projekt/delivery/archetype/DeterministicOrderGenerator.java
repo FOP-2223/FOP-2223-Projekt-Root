@@ -14,11 +14,11 @@ public abstract class DeterministicOrderGenerator implements OrderGenerator {
      * @param tick the tick to generate orders for
      * @return the generated orders
      */
-    public abstract List<ConfirmedOrder> generateOrders(long tick);
+    public abstract List<ConfirmedOrder> generateOrdersForTick(long tick);
 
     @Override
     public List<ConfirmedOrder> generateNextOrders() {
-        return generateOrders(currentTick++);
+        return generateOrdersForTick(currentTick++);
     }
 
     @Override
@@ -34,7 +34,7 @@ public abstract class DeterministicOrderGenerator implements OrderGenerator {
                 throw new IndexOutOfBoundsException("Too many orders to store");
             }
 
-            allOrders.addAll(generateOrders(i));
+            allOrders.addAll(generateOrdersForTick(i));
         }
 
         return allOrders;

@@ -44,7 +44,7 @@ public class FridayOrderGenerator extends DeterministicOrderGenerator {
     }
 
     @Override
-    public List<ConfirmedOrder> generateOrders(long tick) {
+    public List<ConfirmedOrder> generateOrdersForTick(long tick) {
         if (tick < 0) {
             throw new IndexOutOfBoundsException(tick);
         }
