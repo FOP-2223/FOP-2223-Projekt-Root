@@ -45,7 +45,10 @@ public class FridayOrderGenerator extends DeterministicOrderGenerator {
 
     @Override
     public List<ConfirmedOrder> generateOrders(long tick) {
-        return orders.getOrDefault(tick, List.of());
+        if (tick < 0) {
+            throw new IndexOutOfBoundsException(tick);
+        }
+        return orders.getOrDefault(tick, null);
     }
 
     private ConfirmedOrder createRandomOrder(long deliveryTime) {
