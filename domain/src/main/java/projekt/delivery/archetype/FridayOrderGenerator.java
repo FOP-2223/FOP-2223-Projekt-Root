@@ -13,12 +13,13 @@ import java.util.*;
  */
 public class FridayOrderGenerator extends DeterministicOrderGenerator {
 
-    private final long lastTick;
-    private final Map<Long, List<ConfirmedOrder>> orders = new HashMap<>();
     private final Random random = new Random();
-    private final int deliveryInterval;
+    private final Map<Long, List<ConfirmedOrder>> orders = new HashMap<>();
     private final List<Location> possibleLocations;
+    private final int deliveryInterval;
     private final double maxWeight;
+    private final long lastTick;
+
     private int orderID = 0;
 
     public FridayOrderGenerator(int orderCount, List<VehicleManager.OccupiedNeighborhood> nodes, int deliveryInterval, double maxWeight) {
@@ -65,7 +66,7 @@ public class FridayOrderGenerator extends DeterministicOrderGenerator {
         return new ConfirmedOrder(
             possibleLocations.get(random.nextInt(possibleLocations.size())),
             new TickInterval(deliveryTime + deliveryInterval, deliveryTime + 2L * deliveryInterval),
-            List.of("food" + orderID),
+            List.of("food" + orderID++),
             random.nextDouble(maxWeight),
             deliveryTime);
     }
