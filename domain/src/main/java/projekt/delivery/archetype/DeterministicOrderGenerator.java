@@ -30,11 +30,13 @@ public abstract class DeterministicOrderGenerator implements OrderGenerator {
         List<ConfirmedOrder> allOrders = new ArrayList<>();
 
         for (int i = 0; i < lastTick(); i++) {
-            if (((long) i) + ((long) allOrders.size()) > Integer.MAX_VALUE) {
+            List<ConfirmedOrder> ordersForTick = generateOrdersForTick(i);
+
+            if (((long) ordersForTick.size()) + ((long) allOrders.size()) > Integer.MAX_VALUE) {
                 throw new IndexOutOfBoundsException("Too many orders to store");
             }
 
-            allOrders.addAll(generateOrdersForTick(i));
+            allOrders.addAll(ordersForTick);
         }
 
         return allOrders;
