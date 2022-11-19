@@ -1,5 +1,6 @@
 package projekt.delivery.archetype;
 
+import projekt.base.Location;
 import projekt.base.TickInterval;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.VehicleManager;
@@ -16,7 +17,7 @@ public class FridayOrderGenerator extends DeterministicOrderGenerator {
     private final Map<Long, List<ConfirmedOrder>> orders = new HashMap<>();
     private final Random random = new Random();
     private final int deliveryInterval;
-    private final List<VehicleManager.OccupiedNeighborhood> nodes;
+    private final List<Location> possibleLocations;
     private final double maxWeight;
     private int orderID = 0;
 
@@ -28,7 +29,7 @@ public class FridayOrderGenerator extends DeterministicOrderGenerator {
     }
 
     public FridayOrderGenerator(int orderCount, List<VehicleManager.OccupiedNeighborhood> nodes, int deliveryInterval, double maxWeight, double variance, int lastTick) {
-        this.nodes = nodes;
+        this.possibleLocations = nodes.stream().map(n -> n.getComponent().getLocation()).toList();
         this.deliveryInterval = deliveryInterval;
         this.maxWeight = maxWeight;
         this.lastTick = lastTick;
@@ -62,7 +63,7 @@ public class FridayOrderGenerator extends DeterministicOrderGenerator {
 
     private ConfirmedOrder createRandomOrder(long deliveryTime) {
         return new ConfirmedOrder(
-            nodes.get(random.nextInt(nodes.size())).getComponent().getLocation(),
+            possibleLocations.get(random.nextInt(possibleLocations.size())),
             orderID++,
             new TickInterval(deliveryTime + deliveryInterval, deliveryTime + 2L * deliveryInterval),
             List.of("food" + orderID),
