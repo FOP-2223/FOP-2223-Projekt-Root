@@ -12,7 +12,7 @@ import java.util.*;
  */
 public class FridayOrderGenerator extends DeterministicOrderGenerator {
 
-    private static final long LAST_TICK = 480;
+    private final long lastTick;
     private final Map<Long, List<ConfirmedOrder>> orders = new HashMap<>();
     private final Random random = new Random();
     private final int deliveryInterval;
@@ -21,19 +21,23 @@ public class FridayOrderGenerator extends DeterministicOrderGenerator {
     private int orderID = 0;
 
     public FridayOrderGenerator(int orderCount, List<VehicleManager.OccupiedNeighborhood> nodes, int deliveryInterval, double maxWeight) {
-        this(orderCount, nodes, deliveryInterval, maxWeight, 0.5);
+        this(orderCount, nodes, deliveryInterval, maxWeight, 0.5, 480);
+    }
+    public FridayOrderGenerator(int orderCount, List<VehicleManager.OccupiedNeighborhood> nodes, int deliveryInterval, double maxWeight, int lastTick) {
+        this(orderCount, nodes, deliveryInterval, maxWeight, 0.5, lastTick);
     }
 
-    public FridayOrderGenerator(int orderCount, List<VehicleManager.OccupiedNeighborhood> nodes, int deliveryInterval, double maxWeight, double variance) {
+    public FridayOrderGenerator(int orderCount, List<VehicleManager.OccupiedNeighborhood> nodes, int deliveryInterval, double maxWeight, double variance, int lastTick) {
         this.nodes = nodes;
         this.deliveryInterval = deliveryInterval;
         this.maxWeight = maxWeight;
+        this.lastTick = lastTick;
 
         for (int i = 0; i < orderCount; i++) {
             long key;
             do {
-                key = (long) ((random.nextGaussian(0.5, variance)) * LAST_TICK);
-            } while (key < 0.0 || key > LAST_TICK);
+                key = (long) ((random.nextGaussian(0.5, variance)) * lastTick);
+            } while (key < 0.0 || key > lastTick);
 
             if (orders.containsKey(key)) {
                 orders.get(key).add(createRandomOrder(key));
@@ -63,6 +67,6 @@ public class FridayOrderGenerator extends DeterministicOrderGenerator {
 
     @Override
     public long lastTick() {
-        return LAST_TICK;
+        return lastTick;
     }
 }
