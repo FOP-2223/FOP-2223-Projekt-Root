@@ -15,22 +15,19 @@ public class ConfirmedOrder implements Serializable {
     private final long readyToDeliverAt;
     private long actualDeliveryTick;
 
-    public ConfirmedOrder(Location location, int orderID, TickInterval tickInterval, List<String> foodList, double weigth, long readyToDeliverAt) {
-        this.location = location;
-        this.orderID = orderID;
-        this.tickInterval = tickInterval;
-        this.foodList = foodList;
-        this.weight = weigth;
-        this.readyToDeliverAt = readyToDeliverAt;
-    }
+    private static int nextOrderID;
 
-    public ConfirmedOrder(int x, int y, int orderID, TickInterval tickInterval, List<String> foodList, double weight, long readyToDeliverAt) {
-        location = new Location(x, y);
-        this.orderID = orderID;
+    public ConfirmedOrder(Location location, TickInterval tickInterval, List<String> foodList, double weight, long readyToDeliverAt) {
+        this.location = location;
         this.tickInterval = tickInterval;
         this.foodList = foodList;
         this.weight = weight;
         this.readyToDeliverAt = readyToDeliverAt;
+        orderID = nextOrderID++;
+    }
+
+    public ConfirmedOrder(int x, int y, TickInterval tickInterval, List<String> foodList, double weight, long readyToDeliverAt) {
+        this(new Location(x,y), tickInterval, foodList, weight, readyToDeliverAt);
     }
 
     public Location getLocation() {

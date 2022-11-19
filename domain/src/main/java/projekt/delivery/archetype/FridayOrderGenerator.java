@@ -64,7 +64,6 @@ public class FridayOrderGenerator extends DeterministicOrderGenerator {
     private ConfirmedOrder createRandomOrder(long deliveryTime) {
         return new ConfirmedOrder(
             possibleLocations.get(random.nextInt(possibleLocations.size())),
-            orderID++,
             new TickInterval(deliveryTime + deliveryInterval, deliveryTime + 2L * deliveryInterval),
             List.of("food" + orderID),
             random.nextDouble(maxWeight),
