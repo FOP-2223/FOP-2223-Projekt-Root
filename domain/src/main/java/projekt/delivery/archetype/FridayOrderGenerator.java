@@ -52,7 +52,12 @@ public class FridayOrderGenerator extends DeterministicOrderGenerator {
         if (tick < 0) {
             throw new IndexOutOfBoundsException(tick);
         }
-        return orders.getOrDefault(tick, null);
+
+        if (tick > lastTick()) {
+            return null;
+        }
+
+        return orders.getOrDefault(tick, List.of());
     }
 
     private ConfirmedOrder createRandomOrder(long deliveryTime) {
