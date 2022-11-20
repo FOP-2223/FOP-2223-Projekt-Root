@@ -19,14 +19,10 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
     }
 
     @Override
-    public ProblemSolverDeliveryService createProblemSolverDeliverySolver() {
+    public ProblemSolverDeliveryService createProblemSolverDeliveryService() {
         return new ProblemSolverDeliveryService(
             vehicleManager,
-            new BasicDeliveryProblemSolver(
-                orderGenerator,
-                new ArrayList<>(vehicleManager.getAllVehicles()),
-                vehicleManager.getWarehouse().getComponent().getLocation()
-            )
+            new BasicDeliveryProblemSolver().solve(this)
         );
     }
 

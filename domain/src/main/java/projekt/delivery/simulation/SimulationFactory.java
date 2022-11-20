@@ -1,8 +1,6 @@
 package projekt.delivery.simulation;
 
-import projekt.delivery.archetype.DeterministicOrderGenerator;
 import projekt.delivery.archetype.ProblemArchetype;
-import projekt.delivery.deliveryService.DeliveryService;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Vehicle;
@@ -14,7 +12,7 @@ public class SimulationFactory {
 
     public Simulation createSimulation(ProblemArchetype problemArchetype, Rater rater, SimulationConfig simulationConfig) {
 
-        BasicDeliverySimulation simulation = new BasicDeliverySimulation(simulationConfig, rater, problemArchetype.createProblemSolverDeliverySolver());
+        BasicDeliverySimulation simulation = new BasicDeliverySimulation(simulationConfig, rater, problemArchetype.createProblemSolverDeliveryService());
 
         //add starting orders
         simulation.getDeliveryService().deliver(problemArchetype.getOrderGenerator().generateOrdersForTick(0));

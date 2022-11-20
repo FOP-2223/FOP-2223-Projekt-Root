@@ -5,9 +5,11 @@ import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
-import projekt.delivery.solver.DeliveryProblemSolver;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 public class ProblemSolverDeliveryService extends AbstractDeliveryService {
 
@@ -16,10 +18,10 @@ public class ProblemSolverDeliveryService extends AbstractDeliveryService {
 
     public ProblemSolverDeliveryService(
         VehicleManager vehicleManager,
-        DeliveryProblemSolver problemSolver
+        Map<Vehicle, Map<Long, List<ConfirmedOrder>>> solution
     ) {
         super(vehicleManager);
-        this.solution = problemSolver.solve();
+        this.solution = solution;
     }
 
     @Override
