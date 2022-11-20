@@ -12,7 +12,6 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
 
     private final VehicleManager vehicleManager;
     private final DeterministicOrderGenerator orderGenerator;
-    private final List<List<ConfirmedOrder>> deliveredOrders = new ArrayList<>();
 
     public ProblemArchetypeImpl(DeterministicOrderGenerator orderGenerator, VehicleManager vehicleManager) {
         this.vehicleManager = vehicleManager;
@@ -34,5 +33,10 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
     @Override
     public DeterministicOrderGenerator getOrderGenerator() {
         return orderGenerator;
+    }
+
+    @Override
+    public VehicleManager getVehicleManager() {
+        return vehicleManager;
     }
 }
