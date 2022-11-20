@@ -4,6 +4,7 @@ import projekt.delivery.deliveryService.ProblemSolverDeliveryService;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.VehicleManager;
 import projekt.delivery.solver.BasicDeliveryProblemSolver;
+import projekt.delivery.solver.DeliveryProblemSolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,10 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
     }
 
     @Override
-    public ProblemSolverDeliveryService createProblemSolverDeliveryService() {
+    public ProblemSolverDeliveryService createProblemSolverDeliveryService(DeliveryProblemSolver deliveryProblemSolver) {
         return new ProblemSolverDeliveryService(
             vehicleManager,
-            new BasicDeliveryProblemSolver().solve(this)
+            deliveryProblemSolver.solve(this)
         );
     }
 
