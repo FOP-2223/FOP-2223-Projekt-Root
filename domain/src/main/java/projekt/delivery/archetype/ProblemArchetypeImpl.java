@@ -3,7 +3,7 @@ package projekt.delivery.archetype;
 import projekt.delivery.deliveryService.ProblemSolverDeliveryService;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.VehicleManager;
-import projekt.delivery.solver.BasicProblemSolver;
+import projekt.delivery.solver.BasicDeliveryProblemSolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
     public ProblemSolverDeliveryService createProblemSolverDeliverySolver() {
         return new ProblemSolverDeliveryService(
             vehicleManager,
-            new BasicProblemSolver(
+            new BasicDeliveryProblemSolver(
                 orderGenerator,
                 new ArrayList<>(vehicleManager.getAllVehicles()),
                 vehicleManager.getWarehouse().getComponent().getLocation()

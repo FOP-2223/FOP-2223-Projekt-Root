@@ -9,13 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BasicProblemSolver implements ProblemSolver {
+public class BasicDeliveryProblemSolver implements DeliveryProblemSolver {
 
     private final DeterministicOrderGenerator orderGenerator;
     private final List<Vehicle> vehicles;
     private final Location warehouseLocation;
 
-    public BasicProblemSolver(DeterministicOrderGenerator orderGenerator, List<Vehicle> vehicles, Location warehouseLocation) {
+    public BasicDeliveryProblemSolver(DeterministicOrderGenerator orderGenerator, List<Vehicle> vehicles, Location warehouseLocation) {
         this.orderGenerator = orderGenerator;
         this.vehicles = vehicles;
         this.warehouseLocation = warehouseLocation;

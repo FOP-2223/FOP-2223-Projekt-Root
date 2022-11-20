@@ -7,7 +7,7 @@ import projekt.delivery.routing.Vehicle;
 import java.util.List;
 import java.util.Map;
 
-public interface ProblemSolver {
+public interface DeliveryProblemSolver {
 
     Map<Vehicle, Map<Long, List<ConfirmedOrder>>> solve();
 

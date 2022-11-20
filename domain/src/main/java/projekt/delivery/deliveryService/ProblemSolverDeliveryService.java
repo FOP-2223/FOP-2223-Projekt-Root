@@ -1,12 +1,11 @@
 package projekt.delivery.deliveryService;
 
 import projekt.delivery.event.Event;
-import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
-import projekt.delivery.solver.ProblemSolver;
+import projekt.delivery.solver.DeliveryProblemSolver;
 
 import java.util.*;
 
@@ -17,7 +16,7 @@ public class ProblemSolverDeliveryService extends AbstractDeliveryService {
 
     public ProblemSolverDeliveryService(
         VehicleManager vehicleManager,
-        ProblemSolver problemSolver
+        DeliveryProblemSolver problemSolver
     ) {
         super(vehicleManager);
         this.solution = problemSolver.solve();
