@@ -27,7 +27,7 @@ public class BasicDeliveryProblemSolver implements DeliveryProblemSolver {
         Map<Vehicle, List<ConfirmedOrder>> partitions = destinationPartitioner.partition();
 
         for (Map.Entry<Vehicle, List<ConfirmedOrder>> partition : partitions.entrySet()) {
-            DeliveryRoutePlanner routePlanner = new SimpleDeliveryRoutePlaner(partition.getValue());
+            DeliveryRoutePlanner routePlanner = new SimpleDeliveryRoutePlaner(partition.getValue(), warehouseLocation);
             solution.put(partition.getKey(), routePlanner.route());
         }
 
