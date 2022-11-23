@@ -1,8 +1,10 @@
 package projekt.delivery.simulation;
 
+import projekt.delivery.archetype.OrderGenerator;
 import projekt.delivery.event.Event;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.rating.RatingCriteria;
+import projekt.delivery.routing.ConfirmedOrder;
 
 import java.util.*;
 
@@ -15,19 +17,22 @@ public abstract class AbstractSimulation implements Simulation {
     protected List<Event> lastEvents;
     protected final Map<RatingCriteria, Rater.Factory> raterFactoryMap;
     protected final Map<RatingCriteria, Rater> currentRaterMap = new HashMap<>();
+    private final OrderGenerator.Factory orderGeneratorFactory;
+    private OrderGenerator currentOrderGenerator;
     protected boolean isRunning = false;
 
-    public AbstractSimulation(SimulationConfig simulationConfig, Map<RatingCriteria, Rater.Factory> raterFactoryMap) {
+    public AbstractSimulation(SimulationConfig simulationConfig,
+                              Map<RatingCriteria, Rater.Factory> raterFactoryMap,
+                              OrderGenerator.Factory orderGeneratorFactory) {
         this.simulationConfig = simulationConfig;
         this.raterFactoryMap = raterFactoryMap;
+        this.orderGeneratorFactory = orderGeneratorFactory;
     }
 
     @Override
     public void runSimulation() {
-
+        setupNewSimulation();
         isRunning = true;
-        currentTick = 0;
-        setupRaters();
 
         while (!terminationRequested) {
             if (simulationConfig.isPaused()) {
@@ -109,6 +114,7 @@ public abstract class AbstractSimulation implements Simulation {
 
     @Override
     public void runCurrentTick() {
+        getDeliveryService().deliver(currentOrderGenerator.generateOrders(getCurrentTick()));
         lastEvents = Collections.unmodifiableList(tick());
         onTick();
         currentTick++;
@@ -131,6 +137,11 @@ public abstract class AbstractSimulation implements Simulation {
         return listeners.remove(listener);
     }
 
+    private void setupNewSimulation() {
+        currentTick = 0;
+        setupRaters();
+        setupOrderGenerator();
+    }
     private void setupRaters() {
         for (Rater rater : currentRaterMap.values()) {
             removeListener(rater);
@@ -143,6 +154,10 @@ public abstract class AbstractSimulation implements Simulation {
             addListener(rater);
             currentRaterMap.put(criterion, rater);
         }
+    }
+
+    private void setupOrderGenerator() {
+        currentOrderGenerator = orderGeneratorFactory.create();
     }
 
 }

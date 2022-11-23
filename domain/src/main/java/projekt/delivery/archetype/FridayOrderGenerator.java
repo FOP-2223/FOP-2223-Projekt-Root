@@ -11,68 +11,121 @@ import java.util.*;
  * Represents the incoming orders on an average friday evening starting at 4.00pm (tick = 0) until 12:00pm (tick = 480)
  * with one tick representing one minute. The incoming orders follow a normal distribution.
  */
-public class FridayOrderGenerator extends DeterministicOrderGenerator {
+public class FridayOrderGenerator implements OrderGenerator {
 
     private final Random random = new Random();
     private final Map<Long, List<ConfirmedOrder>> orders = new HashMap<>();
-    private final List<Location> possibleLocations;
-    private final int deliveryInterval;
-    private final double maxWeight;
-    private final long lastTick;
 
     private int orderID = 0;
 
-    public FridayOrderGenerator(int orderCount, List<VehicleManager.OccupiedNeighborhood> nodes, int deliveryInterval, double maxWeight) {
-        this(orderCount, nodes, deliveryInterval, maxWeight, 0.5, 480);
-    }
-    public FridayOrderGenerator(int orderCount, List<VehicleManager.OccupiedNeighborhood> nodes, int deliveryInterval, double maxWeight, int lastTick) {
-        this(orderCount, nodes, deliveryInterval, maxWeight, 0.5, lastTick);
-    }
-
-    public FridayOrderGenerator(int orderCount, List<VehicleManager.OccupiedNeighborhood> nodes, int deliveryInterval, double maxWeight, double variance, int lastTick) {
-        this.possibleLocations = nodes.stream().map(n -> n.getComponent().getLocation()).toList();
-        this.deliveryInterval = deliveryInterval;
-        this.maxWeight = maxWeight;
-        this.lastTick = lastTick;
+    FridayOrderGenerator(int orderCount, VehicleManager vehicleManager, int deliveryInterval, double maxWeight, double variance, int lastTick) {
+        List<Location> possibleLocations = vehicleManager.getOccupiedNodes().stream()
+            .filter(VehicleManager.OccupiedNeighborhood.class::isInstance)
+            .map(VehicleManager.OccupiedNeighborhood.class::cast)
+            .map(n -> n.getComponent().getLocation())
+            .toList();
 
         for (int i = 0; i < orderCount; i++) {
-            long key;
+            long deliveryTime;
             do {
-                key = (long) ((random.nextGaussian(0.5, variance)) * lastTick);
-            } while (key < 0.0 || key > lastTick);
+                deliveryTime = (long) ((random.nextGaussian(0.5, variance)) * lastTick);
+            } while (deliveryTime < 0.0 || deliveryTime > lastTick);
 
-            if (orders.containsKey(key)) {
-                orders.get(key).add(createRandomOrder(key));
+            if (orders.containsKey(deliveryTime)) {
+                orders.get(deliveryTime).add(createRandomOrder(deliveryTime, deliveryInterval, possibleLocations, maxWeight));
             } else {
-                orders.put(key, new ArrayList<>(List.of(createRandomOrder(key))));
+                orders.put(deliveryTime, new ArrayList<>(List.of(createRandomOrder(deliveryTime, deliveryInterval, possibleLocations, maxWeight))));
             }
         }
     }
 
     @Override
-    public List<ConfirmedOrder> generateOrdersForTick(long tick) {
+    public List<ConfirmedOrder> generateOrders(long tick) {
         if (tick < 0) {
             throw new IndexOutOfBoundsException(tick);
-        }
-
-        if (tick > lastTick()) {
-            return null;
         }
 
         return orders.getOrDefault(tick, List.of());
     }
 
-    private ConfirmedOrder createRandomOrder(long deliveryTime) {
+    private ConfirmedOrder createRandomOrder(long deliveryTime, long deliveryInterval,List<Location> possibleLocations, double maxWeight) {
         return new ConfirmedOrder(
             possibleLocations.get(random.nextInt(possibleLocations.size())),
-            new TickInterval(deliveryTime + deliveryInterval, deliveryTime + 2L * deliveryInterval),
+            new TickInterval(deliveryTime , deliveryTime + deliveryInterval),
             List.of("food" + orderID++),
-            random.nextDouble(maxWeight),
-            deliveryTime);
+            random.nextDouble(maxWeight));
     }
 
-    @Override
-    public long lastTick() {
-        return lastTick;
+    private static class FridayOrderGeneratorFactory implements Factory {
+
+        public final int orderCount;
+        public final VehicleManager vehicleManager;
+        public final int deliveryInterval;
+        public final double maxWeight;
+        public final double variance;
+        public final int lastTick;
+
+
+
+        public FridayOrderGeneratorFactory(int orderCount, VehicleManager vehicleManager, int deliveryInterval, double maxWeight, double variance, int lastTick) {
+            this.orderCount = orderCount;
+            this.vehicleManager = vehicleManager;
+            this.deliveryInterval = deliveryInterval;
+            this.maxWeight = maxWeight;
+            this.variance = variance;
+            this.lastTick = lastTick;
+        }
+
+        @Override
+        public OrderGenerator create() {
+            return new FridayOrderGenerator(orderCount, vehicleManager, deliveryInterval, maxWeight, variance, lastTick);
+        }
+    }
+
+
+    public static class FridayOrderGeneratorFactoryBuilder implements FactoryBuilder {
+
+        public int orderCount = 1000;
+        public VehicleManager vehicleManager = null;
+        public int deliveryInterval = 15;
+        public double maxWeight = 0.5;
+        public double variance = 0.5;
+        public int lastTick = 480;
+
+        public FridayOrderGeneratorFactoryBuilder setOrderCount(int orderCount) {
+            this.orderCount = orderCount;
+            return this;
+        }
+
+        public FridayOrderGeneratorFactoryBuilder setVehicleManager(VehicleManager vehicleManager) {
+            this.vehicleManager = vehicleManager;
+            return this;
+        }
+
+        public FridayOrderGeneratorFactoryBuilder setDeliveryInterval(int deliveryInterval) {
+            this.deliveryInterval = deliveryInterval;
+            return this;
+        }
+
+        public FridayOrderGeneratorFactoryBuilder setMaxWeight(double maxWeight) {
+            this.maxWeight = maxWeight;
+            return this;
+        }
+
+        public FridayOrderGeneratorFactoryBuilder setVariance(double variance) {
+            this.variance = variance;
+            return this;
+        }
+
+        public FridayOrderGeneratorFactoryBuilder setLastTick(int lastTick) {
+            this.lastTick = lastTick;
+            return this;
+        }
+
+        @Override
+        public Factory build() {
+            Objects.requireNonNull(vehicleManager);
+            return new FridayOrderGeneratorFactory(orderCount, vehicleManager, deliveryInterval, maxWeight, variance, lastTick);
+        }
     }
 }

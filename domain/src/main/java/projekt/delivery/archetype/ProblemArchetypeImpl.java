@@ -6,19 +6,20 @@ import projekt.delivery.routing.VehicleManager;
 public class ProblemArchetypeImpl implements ProblemArchetype {
 
     private final VehicleManager vehicleManager;
-    private final OrderGenerator orderGenerator;
-
+    private final OrderGenerator.Factory orderGeneratorFactory;
     private final RatingCriteria ratingCriteria;
+    private final long simulationLength;
 
-    public ProblemArchetypeImpl(OrderGenerator orderGenerator, VehicleManager vehicleManager, RatingCriteria ratingCriteria) {
+    public ProblemArchetypeImpl(OrderGenerator.Factory orderGeneratorFactory, VehicleManager vehicleManager, RatingCriteria ratingCriteria, long simulationLength) {
         this.vehicleManager = vehicleManager;
-        this.orderGenerator = orderGenerator;
+        this.orderGeneratorFactory = orderGeneratorFactory;
         this.ratingCriteria = ratingCriteria;
+        this.simulationLength = simulationLength;
     }
 
     @Override
     public OrderGenerator getOrderGenerator() {
-        return orderGenerator;
+        return orderGeneratorFactory.create();
     }
 
     @Override
@@ -29,5 +30,10 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
     @Override
     public RatingCriteria getRatingCriteria() {
         return ratingCriteria;
+    }
+
+    @Override
+    public long getSimulationLength() {
+        return simulationLength;
     }
 }

@@ -1,5 +1,6 @@
 package projekt.delivery.rating;
 
+import projekt.delivery.archetype.OrderGenerator;
 import projekt.delivery.event.DeliverOrderEvent;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.OrderReceivedEvent;
@@ -45,5 +46,13 @@ public class InTimeRater implements Rater {
             .map(OrderReceivedEvent.class::cast)
             .map(OrderReceivedEvent::getOrder)
             .forEach(pendingOrders::add);
+    }
+
+    public static class InTimeRaterFactory implements Factory {
+
+        @Override
+        public Rater create() {
+            return new InTimeRater();
+        }
     }
 }

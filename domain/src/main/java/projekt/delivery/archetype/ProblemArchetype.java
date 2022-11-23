@@ -1,9 +1,7 @@
 package projekt.delivery.archetype;
 
-import projekt.delivery.deliveryService.ProblemSolverDeliveryService;
 import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.VehicleManager;
-import projekt.delivery.solver.DeliveryProblemSolver;
 
 public interface ProblemArchetype {
 
@@ -12,4 +10,6 @@ public interface ProblemArchetype {
     VehicleManager getVehicleManager();
 
     RatingCriteria getRatingCriteria();
+
+    long getSimulationLength();
 }

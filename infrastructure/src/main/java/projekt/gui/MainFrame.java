@@ -1,15 +1,18 @@
 package projekt.gui;
 
 import org.jetbrains.annotations.Nullable;
+import projekt.delivery.event.Event;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
 import projekt.delivery.simulation.Simulation;
+import projekt.delivery.simulation.SimulationListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
-public class MainFrame extends JFrame implements Simulation.Listener {
+public class MainFrame extends JFrame implements SimulationListener {
 
     final Region region;
     final VehicleManager vehicleManager;
@@ -73,7 +76,7 @@ public class MainFrame extends JFrame implements Simulation.Listener {
         onUpdate();
     }
 
-    public void onStateUpdated() {
+    public void onTick(List<Event> events, long tick) {
         infoPanel.onUpdate();
         onUpdate();
     }

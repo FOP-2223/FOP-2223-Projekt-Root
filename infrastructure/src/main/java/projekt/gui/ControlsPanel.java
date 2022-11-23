@@ -61,7 +61,7 @@ public class ControlsPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 // TODO: advance one step - make AbstractDeliverService#runTick() public?
-                mainFrame.getSimulation().runTick();
+                mainFrame.getSimulation().runCurrentTick();
             }
         });
 

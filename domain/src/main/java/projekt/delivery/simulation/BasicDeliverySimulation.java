@@ -1,5 +1,6 @@
 package projekt.delivery.simulation;
 
+import projekt.delivery.archetype.OrderGenerator;
 import projekt.delivery.deliveryService.DeliveryService;
 import projekt.delivery.event.Event;
 import projekt.delivery.rating.Rater;
@@ -13,8 +14,11 @@ public class BasicDeliverySimulation extends AbstractSimulation {
 
     private final DeliveryService deliveryService;
 
-    public BasicDeliverySimulation(SimulationConfig simulationConfig, Map<RatingCriteria, Rater.Factory> raterFactoryMap, DeliveryService deliveryService) {
-        super(simulationConfig, raterFactoryMap);
+    public BasicDeliverySimulation(SimulationConfig simulationConfig,
+                                   Map<RatingCriteria, Rater.Factory> raterFactoryMap,
+                                   DeliveryService deliveryService,
+                                   OrderGenerator.Factory orderGeneratorFactory) {
+        super(simulationConfig, raterFactoryMap, orderGeneratorFactory);
         this.deliveryService = deliveryService;
     }
 

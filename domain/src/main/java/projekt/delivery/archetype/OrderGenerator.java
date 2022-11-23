@@ -7,14 +7,19 @@ import java.util.List;
 public interface OrderGenerator {
 
     /**
-     * Generates orders for the next tick
+     * Generates orders for the given tick. Calling this method with the same parameter will always result in the same result
+     * @param tick the tick to generate orders for
      * @return the generated orders
      */
-    List<ConfirmedOrder> generateNextOrders();
+    List<ConfirmedOrder> generateOrders(long tick);
 
-    /**
-     * Returns the amount of ticks this orderGenerator will generate orders
-     * @return Returns the amount of tick this orderGenerator will generate orders or -1 if it always returns orders.
-     */
-    long lastTick();
+    interface Factory {
+
+        OrderGenerator create();
+    }
+
+    interface FactoryBuilder {
+
+        Factory build();
+    }
 }

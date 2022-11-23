@@ -3,29 +3,32 @@ package projekt;
 import com.formdev.flatlaf.FlatDarkLaf;
 import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
-import projekt.delivery.archetype.DeterministicOrderGenerator;
 import projekt.delivery.archetype.FridayOrderGenerator;
+import projekt.delivery.archetype.OrderGenerator;
 import projekt.delivery.archetype.ProblemArchetype;
 import projekt.delivery.archetype.ProblemArchetypeImpl;
-import projekt.delivery.rating.LinearRater;
+import projekt.delivery.deliveryService.DeliveryService;
+import projekt.delivery.deliveryService.ProblemSolverDeliveryService;
+import projekt.delivery.rating.InTimeRater;
+import projekt.delivery.rating.Rater;
+import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.DijkstraPathCalculator;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.simulation.BasicDeliverySimulation;
 import projekt.delivery.simulation.Simulation;
 import projekt.delivery.simulation.SimulationConfig;
-import projekt.delivery.simulation.SimulationFactory;
 import projekt.gui.MainFrame;
 
-import javax.swing.*;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        // layer 1
-
+        // layer 1 - Region
         Region region = Region.builder()
             .addNeighborhood("Wiesbaden", new Location(-9, -4), 0.75)
             .addNeighborhood("Mainz", new Location(-8, 0), 0.6)
@@ -59,8 +62,7 @@ public class Main {
             .distanceCalculator(new EuclideanDistanceCalculator())
             .build();
 
-        // layer 2
-
+        // layer 2 - VehicleManager
         VehicleManager vehicleManager = VehicleManager.builder()
             .time(0)
             .region(region)
@@ -80,21 +82,30 @@ public class Main {
             .build();
 
         //OrderGenerator
-        DeterministicOrderGenerator orderGenerator = new FridayOrderGenerator(
-            10000,
-            vehicleManager.getOccupiedNodes().stream()
-                .filter(VehicleManager.OccupiedNeighborhood.class::isInstance)
-                .map(VehicleManager.OccupiedNeighborhood.class::cast)
-                .toList(),
-            15,
-            0.5
-        );
+        OrderGenerator.Factory orderGeneratorFactory = new FridayOrderGenerator.FridayOrderGeneratorFactoryBuilder()
+            .setOrderCount(1000)
+            .setDeliveryInterval(15)
+            .setVariance(0.5)
+            .setMaxWeight(0.5)
+            .setVehicleManager(vehicleManager)
+            .setLastTick(480)
+            .build();
 
         //ProblemArchetype
-        ProblemArchetype problemArchetype = new ProblemArchetypeImpl(orderGenerator, vehicleManager);
+        ProblemArchetype problemArchetype = new ProblemArchetypeImpl(orderGeneratorFactory, vehicleManager, RatingCriteria.IN_TIME, 480);
 
-        // layer 4
-        Simulation simulation = new SimulationFactory().createSimulation(problemArchetype, new LinearRater(), new SimulationConfig(1000));
+        //layer 3 - DeliveryService
+        DeliveryService deliveryService = new ProblemSolverDeliveryService(problemArchetype);
+
+        //Rater
+        Map<RatingCriteria, Rater.Factory> raterFactoryMap = new HashMap<>();
+        raterFactoryMap.put(RatingCriteria.IN_TIME, new InTimeRater.InTimeRaterFactory());
+
+        // SimulationConfig
+        SimulationConfig simulationConfig = new SimulationConfig(1000);
+
+        // layer 4 - Simulation
+        Simulation simulation = new BasicDeliverySimulation(simulationConfig, raterFactoryMap, deliveryService, orderGeneratorFactory);
 
         // the lasagna is complete
 
@@ -102,11 +113,8 @@ public class Main {
         FlatDarkLaf.setup();
         MainFrame mainFrame = new MainFrame(region, vehicleManager, simulation);
         simulation.addListener(mainFrame);
-        SwingUtilities.invokeLater(() -> {
-//            new MainFrame(null, null, null, null).setVisible(true); // -> starts GUI thread
-       //     mainFrame.setVisible(true); // -> starts GUI thread
-        });
 
+        //start simulation
         simulation.runSimulation(); // -> blocks the thread until the simulation is finished.
     }
 }
