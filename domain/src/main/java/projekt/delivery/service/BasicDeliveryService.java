@@ -36,7 +36,7 @@ public class BasicDeliveryService extends AbstractDeliveryService {
         pendingOrders.sort(Comparator.comparing(order -> order.getTimeInterval().getStart()));
 
         // For each vehicle waiting in the pizzeria, load as many orders as possible on the vehicle and send it out.
-        for (VehicleManager.OccupiedRestaurant restaurant : vehicleManager.getRestaurants()) {
+        for (VehicleManager.OccupiedRestaurant restaurant : vehicleManager.getOccupiedRestaurants()) {
             restaurant.getVehicles().stream()
                 .filter(vehicle -> vehicle.getOrders().isEmpty()).forEach(vehicle -> {
                     boolean loadedAtLeastOneOrderOnVehicle = false;

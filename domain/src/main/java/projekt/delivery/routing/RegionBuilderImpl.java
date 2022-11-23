@@ -46,6 +46,23 @@ class RegionBuilderImpl implements Region.Builder {
     }
 
     @Override
+    public Region.Builder addRestaurant(String name, Location location, List<String> availableFood) {
+        addName(name);
+
+        if (nodes.putIfAbsent(location, new RestaurantBuilder(name, location, availableFood)) != null) {
+            allNames.remove(name);
+            throw new IllegalArgumentException("Duplicate node at location " + location);
+        }
+
+        return this;
+    }
+
+    @Override
+    public Region.Builder addRestaurant(Location location, Region.Restaurant.Preset restaurantPreset) {
+        return addRestaurant(restaurantPreset.name(), location, restaurantPreset.availableFoods());
+    }
+
+    @Override
     public Region.Builder addEdge(String name, Location locationA, Location locationB) {
         if (locationA.compareTo(locationB) < 0) {
             addSortedEdge(name, locationA, locationB);
@@ -110,6 +127,22 @@ class RegionBuilderImpl implements Region.Builder {
         NeighborhoodImpl build(Region region) {
             // may only be used once as the backing map for connections is not copied
             return new NeighborhoodImpl(region, name, location, Collections.unmodifiableSet(connections), distance);
+        }
+    }
+
+    private static class RestaurantBuilder extends NodeBuilder {
+
+        protected final List<String> availableFood;
+
+        public RestaurantBuilder(String name, Location location, List<String> availableFood) {
+            super(name, location);
+            this.availableFood = availableFood;
+        }
+
+        @Override
+        RestaurantImpl build(Region region) {
+            // may only be used once as the backing map for connections is not copied
+            return new RestaurantImpl(region, name, location, Collections.unmodifiableSet(connections), availableFood);
         }
     }
 

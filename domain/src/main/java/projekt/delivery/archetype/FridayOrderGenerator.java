@@ -16,8 +16,6 @@ public class FridayOrderGenerator implements OrderGenerator {
     private final Random random = new Random();
     private final Map<Long, List<ConfirmedOrder>> orders = new HashMap<>();
 
-    private int orderID = 0;
-
     FridayOrderGenerator(int orderCount, VehicleManager vehicleManager, int deliveryInterval, double maxWeight, double variance, int lastTick) {
         List<Location> possibleLocations = vehicleManager.getOccupiedNodes().stream()
             .filter(VehicleManager.OccupiedNeighborhood.class::isInstance)
@@ -49,13 +47,13 @@ public class FridayOrderGenerator implements OrderGenerator {
     }
 
     private ConfirmedOrder createRandomOrder(VehicleManager vehicleManager, long deliveryTime, long deliveryInterval,List<Location> possibleLocations, double maxWeight) {
-        VehicleManager.OccupiedRestaurant restaurant = vehicleManager.getRestaurants().get(random.nextInt(vehicleManager.getRestaurants().size()));
+        VehicleManager.OccupiedRestaurant restaurant = vehicleManager.getOccupiedRestaurants().get(random.nextInt(vehicleManager.getOccupiedRestaurants().size()));
         double actualMaxWeight = random.nextDouble(maxWeight);
-        int foodCount = random.nextInt(1, restaurant.getAvailableFood().size());
+        int foodCount = random.nextInt(1, restaurant.getComponent().getAvailableFood().size());
         List<String> foodList = new ArrayList<>();
 
         for (int i = 0; i < foodCount; i++) {
-            foodList.add(restaurant.getAvailableFood().get(random.nextInt(restaurant.getAvailableFood().size())));
+            foodList.add(restaurant.getComponent().getAvailableFood().get(random.nextInt(restaurant.getComponent().getAvailableFood().size())));
         }
 
         return new ConfirmedOrder(

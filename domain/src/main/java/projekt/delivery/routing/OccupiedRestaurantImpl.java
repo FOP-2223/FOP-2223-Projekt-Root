@@ -3,18 +3,10 @@ package projekt.delivery.routing;
 import projekt.delivery.event.ArrivedAtRestaurantEvent;
 import projekt.delivery.event.LoadOrderEvent;
 
-import java.util.Collections;
-import java.util.List;
+class OccupiedRestaurantImpl extends OccupiedNodeImpl<Region.Restaurant> implements VehicleManager.OccupiedRestaurant {
 
-class OccupiedRestaurantImpl extends OccupiedNodeImpl<Region.Node> implements VehicleManager.OccupiedRestaurant {
-
-    private final String name;
-    private final List<String> availableFood;
-
-    OccupiedRestaurantImpl(Region.Node component, VehicleManager vehicleManager, String name,  List<String> availableFood) {
+    OccupiedRestaurantImpl(Region.Restaurant component, VehicleManager vehicleManager) {
         super(component, vehicleManager);
-        this.name = name;
-        this.availableFood = availableFood;
     }
 
     @Override
@@ -31,16 +23,6 @@ class OccupiedRestaurantImpl extends OccupiedNodeImpl<Region.Node> implements Ve
                 this
             )
         );
-    }
-
-    @Override
-    public List<String> getAvailableFood() {
-        return Collections.unmodifiableList(availableFood);
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     @Override

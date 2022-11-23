@@ -38,6 +38,7 @@ public class Main {
             .addNeighborhood("Gross-Gerau", new Location(0, 5), 0.2)
             .addNeighborhood("Langen", new Location(6, 0), 0.25)
             .addNeighborhood("Offenbach", new Location(10, -7), 0.35)
+            .addRestaurant(new Location(3,-1), Region.Restaurant.LOS_FOPBOTS_HERMANOS)
             .addNode("Mainspitzdreieck", new Location(-5, 0))
             .addNode("Wiesbadener Kreuz", new Location(-4, -5))
             .addNode("Moenchhof-Dreieck", new Location(1, -2))
@@ -59,14 +60,14 @@ public class Main {
             .addEdge("A5_2", new Location(6, 0), new Location(6, 8))
             .addEdge("A67_1", new Location(0, 5), new Location(6, 8))
             .addEdge("A67_2", new Location(0, 5), new Location(-2, 0))
-            .distanceCalculator(new EuclideanDistanceCalculator())
+            .addEdge("Straße", new Location(3, -1), new Location(1, -2))
+            .distanceCalculator(new EuclideanDistanceCalculator()) //TODO braucht man das noch?
             .build();
 
         // layer 2 - VehicleManager
         VehicleManager vehicleManager = VehicleManager.builder()
             .region(region)
             .pathCalculator(new DijkstraPathCalculator())
-            .addRestaurant(region.getNode(new Location(0, 5)), VehicleManager.OccupiedRestaurant.LOS_FOPBOTS_HERMANOS)
             .addVehicle(2, List.of())
             .addVehicle(2, List.of())
             .addVehicle(2, List.of())
@@ -111,6 +112,7 @@ public class Main {
         // Gui Setup
         FlatDarkLaf.setup();
         MainFrame mainFrame = new MainFrame(region, vehicleManager, simulation);
+        mainFrame.setVisible(true);
         simulation.addListener(mainFrame);
 
         //start simulation

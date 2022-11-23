@@ -10,7 +10,6 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     private final List<VehicleBuilder> vehicles = new ArrayList<>();
     private Region region;
     private PathCalculator pathCalculator;
-    private final Map<Region.Node, VehicleManager.OccupiedRestaurant.Factory> restaurants = new HashMap<>();
 
     @Override
     public VehicleManager.Builder region(Region region) {
@@ -21,12 +20,6 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     @Override
     public VehicleManager.Builder pathCalculator(PathCalculator pathCalculator) {
         this.pathCalculator = pathCalculator;
-        return this;
-    }
-
-    @Override
-    public VehicleManager.Builder addRestaurant(Region.Node node, VehicleManager.OccupiedRestaurant.Factory restaurantFactory) {
-        restaurants.put(node, restaurantFactory);
         return this;
     }
 
@@ -52,8 +45,7 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     public VehicleManager build() {
         Objects.requireNonNull(region, "region");
         Objects.requireNonNull(pathCalculator, "pathCalculator");
-        Objects.requireNonNull(restaurants, "warehouse");
-        VehicleManagerImpl vehicleManager = new VehicleManagerImpl(region, pathCalculator, restaurants);
+        VehicleManagerImpl vehicleManager = new VehicleManagerImpl(region, pathCalculator);
         for (VehicleBuilder vehicleBuilder : vehicles) {
             vehicleManager.addVehicle(vehicleBuilder.capacity, vehicleBuilder.compatibleFoodTypes, vehicleBuilder.nodePredicate);
         }

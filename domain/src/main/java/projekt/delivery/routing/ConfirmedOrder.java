@@ -19,7 +19,7 @@ public class ConfirmedOrder implements Serializable {
 
     public ConfirmedOrder(Location location, VehicleManager.OccupiedRestaurant restaurant, TickInterval tickInterval, List<String> foodList, double weight) {
 
-        String invalidFood = foodList.stream().filter(food -> !restaurant.getAvailableFood().contains(food)).findFirst().orElse(null);
+        String invalidFood = foodList.stream().filter(food -> !restaurant.getComponent().getAvailableFood().contains(food)).findFirst().orElse(null);
 
         if (invalidFood != null) {
             throw new IllegalArgumentException("The given restaurant does not support the ordered food: %s".formatted(invalidFood));
