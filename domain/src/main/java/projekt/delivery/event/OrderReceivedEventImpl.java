@@ -6,18 +6,15 @@ import projekt.delivery.routing.Vehicle;
 
 class OrderReceivedEventImpl extends EventImpl implements OrderReceivedEvent {
 
-    private final Region.Node node;
     private final ConfirmedOrder order;
 
-    public OrderReceivedEventImpl(long tick, Region.Node node, ConfirmedOrder order) {
+    public OrderReceivedEventImpl(long tick, ConfirmedOrder order) {
         super(tick, null);
-        this.node = node;
         this.order = order;
     }
 
-    @Override
-    public Region.Node getNode() {
-        return node;
+    public Region.Restaurant getRestaurant() {
+        return order.getRestaurant().getComponent();
     }
 
     @Override
@@ -34,8 +31,8 @@ class OrderReceivedEventImpl extends EventImpl implements OrderReceivedEvent {
     public String toString() {
         return "OrderReceivedEventImpl{" +
             "time=" + getTick() +
-            ", node=" + getNode() +
-            ", order=" + getOrder() +
+            ", node=" + this.getOrder() +
+            ", order=" + this.getOrder() +
             '}';
     }
 }

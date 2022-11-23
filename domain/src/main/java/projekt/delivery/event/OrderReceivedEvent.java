@@ -7,14 +7,13 @@ public interface OrderReceivedEvent extends Event{
 
     static OrderReceivedEvent of(
         long tick,
-        Region.Node node,
         ConfirmedOrder order
     ) {
-        return new OrderReceivedEventImpl(tick, node, order);
+        return new OrderReceivedEventImpl(tick, order);
     }
 
     ConfirmedOrder getOrder();
 
-    Region.Node getNode();
+    Region.Node getRestaurant();
 
 }
