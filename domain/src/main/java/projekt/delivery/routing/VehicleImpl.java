@@ -104,7 +104,7 @@ class VehicleImpl implements Vehicle {
 
     @Override
     public boolean checkCompatibility(String food) {
-        return true;
+        return true; //TODO drinnenlassen?
     }
 
     public boolean checkCompatibility(List<String> foods) {

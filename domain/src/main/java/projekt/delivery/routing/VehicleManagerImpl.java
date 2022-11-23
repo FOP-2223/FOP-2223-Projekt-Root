@@ -103,7 +103,7 @@ class VehicleManagerImpl implements VehicleManager {
     @Override
     @SuppressWarnings("unchecked")
     public <C extends Region.Component<C>> AbstractOccupied<C> getOccupied(C component) {
-        Objects.requireNonNull(component, "component");
+        Objects.requireNonNull(component, "component is null!");
         if (component instanceof Region.Node) {
             final @Nullable AbstractOccupied<C> result = (AbstractOccupied<C>) occupiedNodes.get(component);
             if (result == null) {
@@ -122,7 +122,7 @@ class VehicleManagerImpl implements VehicleManager {
 
     @Override
     public OccupiedNeighborhood getOccupiedNeighborhood(Region.Node component) {
-        Objects.requireNonNull(component, "component");
+        Objects.requireNonNull(component, "component is null!");
         final @Nullable OccupiedNodeImpl<?> node = occupiedNodes.get(component);
         if (node instanceof OccupiedNeighborhood) {
             return (OccupiedNeighborhood) node;
