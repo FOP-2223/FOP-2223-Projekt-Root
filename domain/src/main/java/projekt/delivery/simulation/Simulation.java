@@ -44,9 +44,9 @@ public interface Simulation {
 
     long getCurrentTick();
 
-    List<Event> getCurrentEvents();
+    List<Event> getLastEvents();
 
-    void runTick();
+    void runCurrentTick();
 
     void addListener(SimulationListener listener);
 

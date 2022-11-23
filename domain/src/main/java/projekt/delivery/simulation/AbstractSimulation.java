@@ -12,7 +12,7 @@ public abstract class AbstractSimulation implements Simulation {
     List<SimulationListener> listeners = new ArrayList<>();
     private volatile boolean terminationRequested = false;
     protected long currentTick = 0;
-    protected List<Event> currentEvents;
+    protected List<Event> lastEvents;
     protected final Map<RatingCriteria, Rater.Factory> raterFactoryMap;
     protected final Map<RatingCriteria, Rater> currentRaterMap = new HashMap<>();
     protected boolean isRunning = false;
@@ -26,6 +26,7 @@ public abstract class AbstractSimulation implements Simulation {
     public void runSimulation() {
 
         isRunning = true;
+        currentTick = 0;
         setupRaters();
 
         while (!terminationRequested) {
@@ -40,7 +41,7 @@ public abstract class AbstractSimulation implements Simulation {
             }
             long tickStartTime = System.currentTimeMillis();
 
-            runTick();
+            runCurrentTick();
 
             // Wait till next tick is due.
             long executionTime = System.currentTimeMillis() - tickStartTime;
@@ -102,15 +103,15 @@ public abstract class AbstractSimulation implements Simulation {
     }
 
     @Override
-    public List<Event> getCurrentEvents() {
-        return currentEvents;
+    public List<Event> getLastEvents() {
+        return lastEvents;
     }
 
     @Override
-    public void runTick() {
-        currentTick++;
-        currentEvents = Collections.unmodifiableList(tick());
+    public void runCurrentTick() {
+        lastEvents = Collections.unmodifiableList(tick());
         onTick();
+        currentTick++;
     }
 
     abstract List<Event> tick();
@@ -118,7 +119,7 @@ public abstract class AbstractSimulation implements Simulation {
     @Override
     public void onTick() {
         for (SimulationListener listener : listeners) {
-            listener.onTick(getCurrentEvents(), getCurrentTick());
+            listener.onTick(getLastEvents(), getCurrentTick());
         }
     }
 
