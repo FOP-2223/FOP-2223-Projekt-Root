@@ -1,34 +1,28 @@
 package projekt.delivery.simulation;
 
-import projekt.delivery.archetype.ProblemArchetype;
+import projekt.delivery.archetype.OrderGenerator;
+import projekt.delivery.deliveryService.DeliveryService;
 import projekt.delivery.rating.Rater;
+import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.ConfirmedOrder;
-import projekt.delivery.routing.Vehicle;
-import projekt.delivery.solver.BasicDeliveryProblemSolver;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class SimulationFactory {
 
-    public Simulation createSimulation(ProblemArchetype problemArchetype, Rater rater, SimulationConfig simulationConfig) {
+    public Simulation createSimulation(
+        DeliveryService deliveryService,
+        OrderGenerator orderGenerator,
+        Map<RatingCriteria, Rater.Factory> raterFactoryMap,
+        SimulationConfig simulationConfig) {
 
-        BasicDeliverySimulation simulation = new BasicDeliverySimulation(simulationConfig, rater, problemArchetype.createProblemSolverDeliveryService(new BasicDeliveryProblemSolver()));
-
-        //add starting orders
-        simulation.getDeliveryService().deliver(problemArchetype.getOrderGenerator().generateOrdersForTick(0));
+        BasicDeliverySimulation simulation = new BasicDeliverySimulation(simulationConfig, raterFactoryMap, deliveryService);
 
         //Listener to add new orders after each tick
-        simulation.addListener(() -> {
-            List<ConfirmedOrder> newOrders = problemArchetype.getOrderGenerator().generateOrdersForTick(simulation.getCurrentTick());
-            if (newOrders == null
-                && simulation.getDeliveryService().getVehicleManager().getVehicles().stream().map(Vehicle::getOrders).allMatch(Collection::isEmpty)
-                && simulation.getDeliveryService().getPendingOrders().size() == 0
-            ) {
-                simulation.endSimulation();
-            } else {
-                simulation.getDeliveryService().deliver(newOrders);
-            }
+        simulation.addListener((events, tick) -> {
+            List<ConfirmedOrder> newOrders = orderGenerator.generateOrders(tick);
+            simulation.getDeliveryService().deliver(newOrders);
         });
 
         return simulation;
