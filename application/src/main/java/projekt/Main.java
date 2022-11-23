@@ -7,14 +7,14 @@ import projekt.delivery.archetype.FridayOrderGenerator;
 import projekt.delivery.archetype.OrderGenerator;
 import projekt.delivery.archetype.ProblemArchetype;
 import projekt.delivery.archetype.ProblemArchetypeImpl;
-import projekt.delivery.service.DeliveryService;
-import projekt.delivery.service.ProblemSolverDeliveryService;
 import projekt.delivery.rating.InTimeRater;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.DijkstraPathCalculator;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.service.DeliveryService;
+import projekt.delivery.service.ProblemSolverDeliveryService;
 import projekt.delivery.simulation.BasicDeliverySimulation;
 import projekt.delivery.simulation.Simulation;
 import projekt.delivery.simulation.SimulationConfig;
@@ -64,10 +64,9 @@ public class Main {
 
         // layer 2 - VehicleManager
         VehicleManager vehicleManager = VehicleManager.builder()
-            .time(0)
             .region(region)
             .pathCalculator(new DijkstraPathCalculator())
-            .warehouse(region.getNode(new Location(0, 5)))
+            .addRestaurant(region.getNode(new Location(0, 5)), VehicleManager.OccupiedRestaurant.LOS_FOPBOTS_HERMANOS)
             .addVehicle(2, List.of())
             .addVehicle(2, List.of())
             .addVehicle(2, List.of())
@@ -115,6 +114,8 @@ public class Main {
         simulation.addListener(mainFrame);
 
         //start simulation
-        simulation.runSimulation(); // -> blocks the thread until the simulation is finished.
+        simulation.runSimulation(problemArchetype.getSimulationLength()); // -> blocks the thread until the simulation is finished.
+
+        System.out.println(simulation.getRatingForCriterion(RatingCriteria.IN_TIME));
     }
 }

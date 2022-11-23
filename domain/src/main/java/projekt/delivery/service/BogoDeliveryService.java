@@ -18,7 +18,7 @@ public class BogoDeliveryService extends AbstractDeliveryService {
     private final Random random = new Random(42);
     private final List<? extends Region.Node> nodes;
     private final List<Class<? extends Event>> skipInFirstStep = List.of(
-        ArrivedAtWarehouseEvent.class,
+        ArrivedAtRestaurantEvent.class,
         ArrivedAtNeighborhoodEvent.class
     );
 
@@ -40,13 +40,13 @@ public class BogoDeliveryService extends AbstractDeliveryService {
         scheduleRandomMove(events, ArrivedAtNodeEvent.class);
 
         events.stream()
-            .filter(ArrivedAtWarehouseEvent.class::isInstance)
-            .map(ArrivedAtWarehouseEvent.class::cast)
+            .filter(ArrivedAtRestaurantEvent.class::isInstance)
+            .map(ArrivedAtRestaurantEvent.class::cast)
             .forEach(e -> {
                 final Vehicle vehicle = e.getVehicle();
                 if (!pendingOrders.isEmpty()) {
                     final ConfirmedOrder next = pendingOrders.remove(0);
-                    vehicleManager.getWarehouse().loadOrder(vehicle, next, currentTick);
+                    e.getRestaurant().loadOrder(vehicle, next, currentTick);
                 }
                 moveToRandomNode(vehicle);
             });

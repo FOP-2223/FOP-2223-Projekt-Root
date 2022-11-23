@@ -32,9 +32,9 @@ public class FridayOrderGenerator implements OrderGenerator {
             } while (deliveryTime < 0.0 || deliveryTime > lastTick);
 
             if (orders.containsKey(deliveryTime)) {
-                orders.get(deliveryTime).add(createRandomOrder(deliveryTime, deliveryInterval, possibleLocations, maxWeight));
+                orders.get(deliveryTime).add(createRandomOrder(vehicleManager, deliveryTime, deliveryInterval, possibleLocations, maxWeight));
             } else {
-                orders.put(deliveryTime, new ArrayList<>(List.of(createRandomOrder(deliveryTime, deliveryInterval, possibleLocations, maxWeight))));
+                orders.put(deliveryTime, new ArrayList<>(List.of(createRandomOrder(vehicleManager, deliveryTime, deliveryInterval, possibleLocations, maxWeight))));
             }
         }
     }
@@ -48,12 +48,22 @@ public class FridayOrderGenerator implements OrderGenerator {
         return orders.getOrDefault(tick, List.of());
     }
 
-    private ConfirmedOrder createRandomOrder(long deliveryTime, long deliveryInterval,List<Location> possibleLocations, double maxWeight) {
+    private ConfirmedOrder createRandomOrder(VehicleManager vehicleManager, long deliveryTime, long deliveryInterval,List<Location> possibleLocations, double maxWeight) {
+        VehicleManager.OccupiedRestaurant restaurant = vehicleManager.getRestaurants().get(random.nextInt(vehicleManager.getRestaurants().size()));
+        double actualMaxWeight = random.nextDouble(maxWeight);
+        int foodCount = random.nextInt(1, restaurant.getAvailableFood().size());
+        List<String> foodList = new ArrayList<>();
+
+        for (int i = 0; i < foodCount; i++) {
+            foodList.add(restaurant.getAvailableFood().get(random.nextInt(restaurant.getAvailableFood().size())));
+        }
+
         return new ConfirmedOrder(
             possibleLocations.get(random.nextInt(possibleLocations.size())),
+            restaurant,
             new TickInterval(deliveryTime , deliveryTime + deliveryInterval),
-            List.of("food" + orderID++),
-            random.nextDouble(maxWeight));
+            foodList,
+            actualMaxWeight);
     }
 
     private static class FridayOrderGeneratorFactory implements Factory {
@@ -64,8 +74,6 @@ public class FridayOrderGenerator implements OrderGenerator {
         public final double maxWeight;
         public final double variance;
         public final int lastTick;
-
-
 
         public FridayOrderGeneratorFactory(int orderCount, VehicleManager vehicleManager, int deliveryInterval, double maxWeight, double variance, int lastTick) {
             this.orderCount = orderCount;

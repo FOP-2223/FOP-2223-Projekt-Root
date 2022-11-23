@@ -23,7 +23,7 @@ public interface VehicleManager extends Tickable {
 
     Collection<Vehicle> getAllVehicles();
 
-    Warehouse getWarehouse();
+    List<OccupiedRestaurant> getRestaurants();
 
     // O(1)
     <C extends Region.Component<C>> Occupied<C> getOccupied(C component);
@@ -35,8 +35,6 @@ public interface VehicleManager extends Tickable {
     Collection<Occupied<? extends Region.Edge>> getOccupiedEdges();
 
     EventBus getEventBus();
-
-    //long getCurrentTick();
 
     List<Event> tick(long currentTick);
 
@@ -53,12 +51,60 @@ public interface VehicleManager extends Tickable {
         Collection<Vehicle> getVehicles();
     }
 
-    interface Warehouse extends Occupied<Region.Node> {
-        void loadOrder(Vehicle vehicle, ConfirmedOrder order, long tick);
-    }
-
     interface OccupiedNeighborhood extends Occupied<Region.Neighborhood> {
         void deliverOrder(Vehicle vehicle, ConfirmedOrder order, long tick);
+    }
+
+    @SuppressWarnings("unused")
+    interface OccupiedRestaurant extends Occupied<Region.Node> {
+
+        //TODO kreativeres Essen
+        Factory LOS_FOPBOTS_HERMANOS = (node, vehicleManager) ->
+            new OccupiedRestaurantImpl(node, vehicleManager, "Los Fopbots Hermanos", List.of(
+                "Pizza Margherita", "Spaghetti Bolognese", "Rigatoni"
+            ));
+
+        Factory JAVA_HUT = (node, vehicleManager) ->
+            new OccupiedRestaurantImpl(node, vehicleManager, "Java Hut", List.of(
+                "Pizza Margherita", "Spaghetti Bolognese", "Rigatoni"
+            ));
+
+        Factory PASTAFAR = (node, vehicleManager) ->
+            new OccupiedRestaurantImpl(node, vehicleManager, "Pastafar", List.of(
+                "Pizza Margherita", "Spaghetti Bolognese", "Rigatoni"
+            ));
+
+        Factory PALPAPIZZA = (node, vehicleManager) ->
+            new OccupiedRestaurantImpl(node, vehicleManager, "Palpapizza", List.of(
+                "Pizza Margherita", "Spaghetti Bolognese", "Rigatoni"
+            ));
+
+        Factory ISENJAR = (node, vehicleManager) ->
+            new OccupiedRestaurantImpl(node, vehicleManager, "Isenjar", List.of(
+                "Pizza Margherita", "Spaghetti Bolognese", "Rigatoni"
+            ));
+
+        Factory MIDDLE_FOP = (node, vehicleManager) ->
+            new OccupiedRestaurantImpl(node, vehicleManager, "Middle Fop", List.of(
+                "Pizza Margherita", "Spaghetti Bolognese", "Rigatoni"
+            ));
+
+        Factory MOUNT_DOOM_PIZZA = (node, vehicleManager) ->
+            new OccupiedRestaurantImpl(node, vehicleManager, "Mount Doom Pizza", List.of(
+                "Pizza Margherita", "Spaghetti Bolognese", "Rigatoni"
+            ));
+
+
+        void loadOrder(Vehicle vehicle, ConfirmedOrder order, long tick);
+
+        List<String> getAvailableFood();
+
+        String getName();
+
+        interface Factory {
+
+            OccupiedRestaurant create(Region.Node node, VehicleManager vehicleManager);
+        }
     }
 
     interface Builder {
@@ -67,7 +113,7 @@ public interface VehicleManager extends Tickable {
 
         Builder pathCalculator(PathCalculator pathCalculator);
 
-        Builder warehouse(Region.Node warehouse);
+        Builder addRestaurant(Region.Node node, OccupiedRestaurant.Factory restaurantFactory);
 
         Builder addVehicle(
             double capacity,
@@ -79,7 +125,6 @@ public interface VehicleManager extends Tickable {
             double capacity,
             Collection<String> compatibleFoodTypes
         );
-
         VehicleManager build();
     }
 }

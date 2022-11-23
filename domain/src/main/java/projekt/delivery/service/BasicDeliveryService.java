@@ -36,27 +36,29 @@ public class BasicDeliveryService extends AbstractDeliveryService {
         pendingOrders.sort(Comparator.comparing(order -> order.getTimeInterval().getStart()));
 
         // For each vehicle waiting in the pizzeria, load as many orders as possible on the vehicle and send it out.
-        vehicleManager.getWarehouse().getVehicles().stream()
-            .filter(vehicle -> vehicle.getOrders().isEmpty()).forEach(vehicle -> {
-                boolean loadedAtLeastOneOrderOnVehicle = false;
-                ListIterator<ConfirmedOrder> it = pendingOrders.listIterator();
-                while (it.hasNext()) {
-                    final ConfirmedOrder order = it.next();
-                    if (order.getTotalWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()
-                        && vehicle.checkCompatibility(order.getFoodList())) {
-                        loadedAtLeastOneOrderOnVehicle = true;
-                        vehicleManager.getWarehouse().loadOrder(vehicle, order, currentTick);
-                        vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v ->
-                            vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied().getComponent()).deliverOrder(v, order, currentTick));
-                        it.remove();
+        for (VehicleManager.OccupiedRestaurant restaurant : vehicleManager.getRestaurants()) {
+            restaurant.getVehicles().stream()
+                .filter(vehicle -> vehicle.getOrders().isEmpty()).forEach(vehicle -> {
+                    boolean loadedAtLeastOneOrderOnVehicle = false;
+                    ListIterator<ConfirmedOrder> it = pendingOrders.listIterator();
+                    while (it.hasNext()) {
+                        final ConfirmedOrder order = it.next();
+                        if (order.getTotalWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()
+                            && vehicle.checkCompatibility(order.getFoodList())) {
+                            loadedAtLeastOneOrderOnVehicle = true;
+                            restaurant.loadOrder(vehicle, order, currentTick);
+                            vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v ->
+                                vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied().getComponent()).deliverOrder(v, order, currentTick));
+                            it.remove();
+                        }
                     }
-                }
 
-                // If the vehicle leaves the pizzeria, ensure that it returns after delivering the last order.
-                if (loadedAtLeastOneOrderOnVehicle) {
-                    vehicle.moveQueued(vehicleManager.getWarehouse().getComponent());
-                }
-            });
+                    // If the vehicle leaves the pizzeria, ensure that it returns after delivering the last order.
+                    if (loadedAtLeastOneOrderOnVehicle) {
+                        vehicle.moveQueued(restaurant.getComponent());
+                    }
+                });
+        }
 
         return events;
     }

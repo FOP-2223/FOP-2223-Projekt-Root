@@ -16,7 +16,7 @@ class VehicleManagerImpl implements VehicleManager {
     final Map<Region.Edge, OccupiedEdgeImpl> occupiedEdges;
     private final Region region;
     private final PathCalculator pathCalculator;
-    private final OccupiedWarehouseImpl warehouse;
+    private final List<OccupiedRestaurant> restaurants = new ArrayList<>();
     private final List<VehicleImpl> vehiclesToSpawn = new ArrayList<>();
     private final List<VehicleImpl> vehicles = new ArrayList<>();
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
@@ -26,20 +26,23 @@ class VehicleManagerImpl implements VehicleManager {
     VehicleManagerImpl(
         Region region,
         PathCalculator pathCalculator,
-        Region.Node warehouse
+        Map<Region.Node, OccupiedRestaurant.Factory> restaurants
     ) {
+        if (restaurants.size() == 0) {
+            throw new IllegalArgumentException("At least one restaurant is required to create a VehicleManager");
+        }
         this.region = region;
         this.pathCalculator = pathCalculator;
-        this.warehouse = new OccupiedWarehouseImpl(warehouse, this);
+        restaurants.forEach((node, factory) -> this.restaurants.add(factory.create(node, this)));
         occupiedNodes = toOccupiedNodes(region.getNodes());
         occupiedEdges = toOccupiedEdges(region.getEdges());
         allOccupied = getAllOccupied();
     }
 
     private OccupiedNodeImpl<? extends Region.Node> toOccupied(Region.Node node) {
-        return node.equals(warehouse.getComponent())
-            ? warehouse
-            : node instanceof Region.Neighborhood
+            return restaurants.stream().map(Occupied::getComponent).anyMatch(component -> component.equals(node))
+                ? (OccupiedNodeImpl<? extends Region.Node>) restaurants.stream().findFirst().get()
+                : node instanceof Region.Neighborhood
                 ? new OccupiedNeighborhoodImpl((Region.Neighborhood) node, this)
                 : new OccupiedNodeImpl<>(node, this);
     }
@@ -93,8 +96,8 @@ class VehicleManagerImpl implements VehicleManager {
     }
 
     @Override
-    public OccupiedWarehouseImpl getWarehouse() {
-        return warehouse;
+    public List<OccupiedRestaurant> getRestaurants() {
+        return Collections.unmodifiableList(restaurants);
     }
 
     @Override
@@ -167,7 +170,7 @@ class VehicleManagerImpl implements VehicleManager {
     ) {
         final OccupiedNodeImpl<?> occupied;
         if (nodePredicate == null) {
-            occupied = warehouse;
+            occupied = (OccupiedNodeImpl<?>) restaurants.get(0);
         } else {
             occupied = findNode(nodePredicate);
         }
@@ -185,7 +188,7 @@ class VehicleManagerImpl implements VehicleManager {
 
     private void spawnVehicle(VehicleImpl vehicle, long currentTick) {
         vehicles.add(vehicle);
-        OccupiedWarehouseImpl warehouse = (OccupiedWarehouseImpl) vehicle.getOccupied();
+        OccupiedRestaurantImpl warehouse = (OccupiedRestaurantImpl) vehicle.getOccupied();
         warehouse.vehicles.put(vehicle, new AbstractOccupied.VehicleStats(currentTick, null));
         getEventBus().queuePost(SpawnEvent.of(currentTick, vehicle, warehouse.getComponent()));
     }

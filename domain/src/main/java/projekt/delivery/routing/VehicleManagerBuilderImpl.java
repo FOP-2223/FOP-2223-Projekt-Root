@@ -2,10 +2,7 @@ package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 
 class VehicleManagerBuilderImpl implements VehicleManager.Builder {
@@ -13,7 +10,7 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     private final List<VehicleBuilder> vehicles = new ArrayList<>();
     private Region region;
     private PathCalculator pathCalculator;
-    private Region.Node warehouse;
+    private final Map<Region.Node, VehicleManager.OccupiedRestaurant.Factory> restaurants = new HashMap<>();
 
     @Override
     public VehicleManager.Builder region(Region region) {
@@ -28,8 +25,8 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     }
 
     @Override
-    public VehicleManager.Builder warehouse(Region.Node warehouse) {
-        this.warehouse = warehouse;
+    public VehicleManager.Builder addRestaurant(Region.Node node, VehicleManager.OccupiedRestaurant.Factory restaurantFactory) {
+        restaurants.put(node, restaurantFactory);
         return this;
     }
 
@@ -55,11 +52,8 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     public VehicleManager build() {
         Objects.requireNonNull(region, "region");
         Objects.requireNonNull(pathCalculator, "pathCalculator");
-        Objects.requireNonNull(warehouse, "warehouse");
-        if (!warehouse.getRegion().equals(region)) {
-            throw new IllegalArgumentException(String.format("Warehouse %s is not in region %s", warehouse, region));
-        }
-        VehicleManagerImpl vehicleManager = new VehicleManagerImpl(region, pathCalculator, warehouse);
+        Objects.requireNonNull(restaurants, "warehouse");
+        VehicleManagerImpl vehicleManager = new VehicleManagerImpl(region, pathCalculator, restaurants);
         for (VehicleBuilder vehicleBuilder : vehicles) {
             vehicleManager.addVehicle(vehicleBuilder.capacity, vehicleBuilder.compatibleFoodTypes, vehicleBuilder.nodePredicate);
         }

@@ -39,7 +39,7 @@ public abstract class AbstractDeliveryService implements DeliveryService {
 
         //add a OrderReceivedEvent for each order
         newOrders.stream()
-            .map(order -> OrderReceivedEvent.of(currentTick, getVehicleManager().getWarehouse().getComponent(), order))
+            .map(order -> OrderReceivedEvent.of(currentTick, order.getRestaurant().getComponent(), order))
             .forEach(vehicleManager.getEventBus()::queuePost);
 
         return tick(currentTick, newOrders);

@@ -1,12 +1,20 @@
 package projekt.delivery.routing;
 
-import projekt.delivery.event.ArrivedAtWarehouseEvent;
+import projekt.delivery.event.ArrivedAtRestaurantEvent;
 import projekt.delivery.event.LoadOrderEvent;
 
-class OccupiedWarehouseImpl extends OccupiedNodeImpl<Region.Node> implements VehicleManager.Warehouse {
+import java.util.Collections;
+import java.util.List;
 
-    OccupiedWarehouseImpl(Region.Node component, VehicleManager vehicleManager) {
+class OccupiedRestaurantImpl extends OccupiedNodeImpl<Region.Node> implements VehicleManager.OccupiedRestaurant {
+
+    private final String name;
+    private final List<String> availableFood;
+
+    OccupiedRestaurantImpl(Region.Node component, VehicleManager vehicleManager, String name,  List<String> availableFood) {
         super(component, vehicleManager);
+        this.name = name;
+        this.availableFood = availableFood;
     }
 
     @Override
@@ -20,17 +28,27 @@ class OccupiedWarehouseImpl extends OccupiedNodeImpl<Region.Node> implements Veh
                 currentTick,
                 vehicle,
                 order,
-                vehicleManager.getWarehouse()
+                this
             )
         );
     }
 
     @Override
+    public List<String> getAvailableFood() {
+        return Collections.unmodifiableList(availableFood);
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
     protected void emitArrivedEvent(VehicleImpl vehicle, OccupiedEdgeImpl previousEdge, long currentTick) {
-        vehicleManager.getEventBus().queuePost(ArrivedAtWarehouseEvent.of(
+        vehicleManager.getEventBus().queuePost(ArrivedAtRestaurantEvent.of(
                 currentTick,
                 vehicle,
-                component,
+                this,
                 previousEdge.getComponent()
             )
         );

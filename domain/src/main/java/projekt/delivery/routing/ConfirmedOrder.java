@@ -12,20 +12,29 @@ public class ConfirmedOrder implements Serializable {
     private final TickInterval tickInterval;
     private final List<String> foodList;
     private final double weight;
+    private final VehicleManager.OccupiedRestaurant restaurant;
     private long actualDeliveryTick;
 
     private static int nextOrderID;
 
-    public ConfirmedOrder(Location location, TickInterval tickInterval, List<String> foodList, double weight) {
+    public ConfirmedOrder(Location location, VehicleManager.OccupiedRestaurant restaurant, TickInterval tickInterval, List<String> foodList, double weight) {
+
+        String invalidFood = foodList.stream().filter(food -> !restaurant.getAvailableFood().contains(food)).findFirst().orElse(null);
+
+        if (invalidFood != null) {
+            throw new IllegalArgumentException("The given restaurant does not support the ordered food: %s".formatted(invalidFood));
+        }
+
         this.location = location;
+        this.restaurant = restaurant;
         this.tickInterval = tickInterval;
         this.foodList = foodList;
         this.weight = weight;
         orderID = nextOrderID++;
     }
 
-    public ConfirmedOrder(int x, int y, TickInterval tickInterval, List<String> foodList, double weight) {
-        this(new Location(x,y), tickInterval, foodList, weight);
+    public ConfirmedOrder(int x, int y, VehicleManager.OccupiedRestaurant restaurant, TickInterval tickInterval, List<String> foodList, double weight) {
+        this(new Location(x,y), restaurant, tickInterval, foodList, weight);
     }
 
     public Location getLocation() {
@@ -42,6 +51,10 @@ public class ConfirmedOrder implements Serializable {
 
     public int getOrderID() {
         return orderID;
+    }
+
+    public VehicleManager.OccupiedRestaurant getRestaurant() {
+        return restaurant;
     }
 
     public TickInterval getTimeInterval() {

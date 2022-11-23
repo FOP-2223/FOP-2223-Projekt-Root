@@ -7,12 +7,12 @@ import projekt.delivery.routing.VehicleManager;
 class LoadOrderEventImpl extends EventImpl implements LoadOrderEvent {
 
     private final ConfirmedOrder order;
-    private final VehicleManager.Warehouse warehouse;
+    private final VehicleManager.OccupiedRestaurant restaurant;
 
-    LoadOrderEventImpl(long tick, Vehicle vehicle, ConfirmedOrder order, VehicleManager.Warehouse warehouse) {
+    LoadOrderEventImpl(long tick, Vehicle vehicle, ConfirmedOrder order, VehicleManager.OccupiedRestaurant restaurant) {
         super(tick, vehicle);
         this.order = order;
-        this.warehouse = warehouse;
+        this.restaurant = restaurant;
     }
 
     public ConfirmedOrder getOrder() {
@@ -20,8 +20,8 @@ class LoadOrderEventImpl extends EventImpl implements LoadOrderEvent {
     }
 
     @Override
-    public VehicleManager.Warehouse getWarehouse() {
-        return warehouse;
+    public VehicleManager.OccupiedRestaurant getRestaurant() {
+        return restaurant;
     }
 
     @Override
@@ -30,7 +30,7 @@ class LoadOrderEventImpl extends EventImpl implements LoadOrderEvent {
             + "time=" + getTick()
             + ", vehicle=" + getVehicle()
             + ", order=" + getOrder()
-            + ", warehouse=" + getWarehouse()
+            + ", warehouse=" + getRestaurant()
             + ')';
     }
 }

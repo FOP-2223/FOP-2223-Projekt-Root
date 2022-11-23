@@ -10,12 +10,12 @@ public interface LoadOrderEvent extends Event {
         long tick,
         Vehicle vehicle,
         ConfirmedOrder order,
-        VehicleManager.Warehouse warehouse
+        VehicleManager.OccupiedRestaurant restaurant
     ) {
-        return new LoadOrderEventImpl(tick, vehicle, order, warehouse);
+        return new LoadOrderEventImpl(tick, vehicle, order, restaurant);
     }
 
     ConfirmedOrder getOrder();
 
-    VehicleManager.Warehouse getWarehouse();
+    VehicleManager.OccupiedRestaurant getRestaurant();
 }

@@ -38,11 +38,11 @@ public class ProblemSolverDeliveryService extends AbstractDeliveryService {
         pendingOrders.sort(Comparator.comparing(order -> order.getTimeInterval().getStart()));
 
         // For each vehicle waiting in the pizzeria, load as many orders as possible on the vehicle and send it out.
-        vehicleManager.getWarehouse().getVehicles().stream()
-            .filter(vehicle -> vehicle.getOrders().isEmpty()).forEach(vehicle -> {
-                boolean loadedAtLeastOneOrderOnVehicle = false;
-
-                //TODO
+        //TODO
+//        vehicleManager.getRestaurants().getVehicles().stream()
+//            .filter(vehicle -> vehicle.getOrders().isEmpty()).forEach(vehicle -> {
+//                boolean loadedAtLeastOneOrderOnVehicle = false;
+//
 
 //                List<ConfirmedOrder> ordersReadyForVehicle = solution.get(vehicle).entrySet()
 //                    .stream()
@@ -67,11 +67,11 @@ public class ProblemSolverDeliveryService extends AbstractDeliveryService {
 //                    }
 //                }
 
-                // If the vehicle leaves the pizzeria, ensure that it returns after delivering the last order.
-                if (loadedAtLeastOneOrderOnVehicle) {
-                    vehicle.moveQueued(vehicleManager.getWarehouse().getComponent());
-                }
-            });
+//                // If the vehicle leaves the pizzeria, ensure that it returns after delivering the last order.
+//                if (loadedAtLeastOneOrderOnVehicle) {
+//                    vehicle.moveQueued(vehicleManager.getRestaurants().getComponent());
+//                }
+//            });
 
         return events;
     }
