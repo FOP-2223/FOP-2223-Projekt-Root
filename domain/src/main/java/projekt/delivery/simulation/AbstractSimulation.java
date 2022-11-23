@@ -1,26 +1,33 @@
 package projekt.delivery.simulation;
 
 import projekt.delivery.event.Event;
+import projekt.delivery.rating.Rater;
+import projekt.delivery.rating.RatingCriteria;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public abstract class AbstractSimulation implements Simulation {
 
-    private final SimulationConfig simulationConfig;
-    List<Listener> listeners = new ArrayList<>();
+    protected final SimulationConfig simulationConfig;
+    List<SimulationListener> listeners = new ArrayList<>();
     private volatile boolean terminationRequested = false;
+    protected long currentTick = 0;
+    protected List<Event> currentEvents;
+    protected final Map<RatingCriteria, Rater.Factory> raterFactoryMap;
+    protected final Map<RatingCriteria, Rater> currentRaterMap = new HashMap<>();
+    protected boolean isRunning = false;
 
-    private long currentTick = 0;
-    private List<Event> currentEvents;
-
-    public AbstractSimulation(SimulationConfig simulationConfig) {
+    public AbstractSimulation(SimulationConfig simulationConfig, Map<RatingCriteria, Rater.Factory> raterFactoryMap) {
         this.simulationConfig = simulationConfig;
+        this.raterFactoryMap = raterFactoryMap;
     }
 
     @Override
     public void runSimulation() {
+
+        isRunning = true;
+        setupRaters();
+
         while (!terminationRequested) {
             if (simulationConfig.isPaused()) {
                 try {
@@ -39,8 +46,9 @@ public abstract class AbstractSimulation implements Simulation {
             long executionTime = System.currentTimeMillis() - tickStartTime;
             long millisTillNextTick = simulationConfig.getMillisecondsPerTick() - executionTime;
             if (millisTillNextTick < 0) {
-                // TODO: Make text yellow.
+                System.out.println("\033[0;33m"); //make text yellow
                 System.out.println("WARNING: Can't keep up! Did the system time change, or is the server overloaded?");
+                System.out.println("\033[0m"); // reset text color
             } else {
                 try {
                     //noinspection BusyWait
@@ -50,12 +58,14 @@ public abstract class AbstractSimulation implements Simulation {
                 }
             }
         }
+
+        isRunning = false;
     }
 
     @Override
-    public void runSimulation(int maxTicks) {
-        addListener(() -> {
-            if (getCurrentTick() == maxTicks) endSimulation();
+    public void runSimulation(long simulationLength) {
+        addListener((events, tick) -> {
+            if (tick == simulationLength) endSimulation();
         });
 
         runSimulation();
@@ -64,6 +74,21 @@ public abstract class AbstractSimulation implements Simulation {
     @Override
     public void endSimulation() {
         terminationRequested = true;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    @Override
+    public double getCurrentRating() {
+        return currentRaterMap.values().stream().mapToDouble(Rater::getScore).average().orElse(-1.0);
+    }
+
+    @Override
+    public double getRatingForCriterion(RatingCriteria criterion) {
+        return currentRaterMap.get(criterion).getScore();
     }
 
     @Override
@@ -85,24 +110,38 @@ public abstract class AbstractSimulation implements Simulation {
     public void runTick() {
         currentTick++;
         currentEvents = Collections.unmodifiableList(tick());
-        onStateUpdated();
+        onTick();
     }
 
     abstract List<Event> tick();
 
     @Override
-    public void onStateUpdated() {
-        for (Listener listener : listeners) {
-            listener.onStateUpdated();
+    public void onTick() {
+        for (SimulationListener listener : listeners) {
+            listener.onTick(getCurrentEvents(), getCurrentTick());
         }
     }
 
-    public void addListener(Listener listener) {
+    public void addListener(SimulationListener listener) {
         listeners.add(listener);
     }
 
-    public boolean removeListener(Listener listener) {
+    public boolean removeListener(SimulationListener listener) {
         return listeners.remove(listener);
+    }
+
+    private void setupRaters() {
+        for (Rater rater : currentRaterMap.values()) {
+            removeListener(rater);
+        }
+
+        currentRaterMap.clear();
+
+        for (RatingCriteria criterion : raterFactoryMap.keySet()) {
+            Rater rater = raterFactoryMap.get(criterion).create();
+            addListener(rater);
+            currentRaterMap.put(criterion, rater);
+        }
     }
 
 }

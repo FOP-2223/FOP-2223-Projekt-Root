@@ -1,11 +1,18 @@
 package projekt.delivery.rating;
 
-import projekt.delivery.routing.ConfirmedOrder;
+import projekt.delivery.simulation.SimulationListener;
 
-import java.util.List;
+public interface Rater extends SimulationListener {
 
-public interface Rater {
+    /**
+     * Gets the score of the entire simulation up to the current tick.
+     * This method has no side effects
+     * @return the rating
+     */
+    double getScore();
 
-    // TODO: Check both optimization criteria
-    double rate(List<ConfirmedOrder> confirmedOrders);
+    interface Factory {
+
+        Rater create();
+    }
 }

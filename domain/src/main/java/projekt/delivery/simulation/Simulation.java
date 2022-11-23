@@ -1,11 +1,13 @@
 package projekt.delivery.simulation;
 
+import projekt.delivery.deliveryService.DeliveryService;
 import projekt.delivery.event.Event;
+import projekt.delivery.rating.RatingCriteria;
 
 import java.util.List;
 
 public interface Simulation {
-    void onStateUpdated();
+    void onTick();
 
     /**
      * Start the simulation of the food delivery.
@@ -23,14 +25,22 @@ public interface Simulation {
      * @param maxTicks The maximum amount of ticks the simulation will run.
      *                 When the maximum amount of ticks is reached the simulation will be stopped automatically.
      */
-    void runSimulation(int maxTicks);
+    void runSimulation(long maxTicks);
 
     /**
      * Stops the currently running simulation of the food delivery service.
      */
     void endSimulation();
 
+    boolean isRunning();
+
+    double getCurrentRating();
+
+    double getRatingForCriterion(RatingCriteria criterion);
+
     SimulationConfig getSimulationConfig();
+
+    DeliveryService getDeliveryService();
 
     long getCurrentTick();
 
@@ -38,15 +48,8 @@ public interface Simulation {
 
     void runTick();
 
-    double getRating();
+    void addListener(SimulationListener listener);
 
-    void addListener(Listener listener);
-
-    boolean removeListener(Listener listener);
-
-    interface Listener {
-
-        void onStateUpdated();
-    }
+    boolean removeListener(SimulationListener listener);
 
 }

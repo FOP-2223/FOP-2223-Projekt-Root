@@ -1,39 +1,33 @@
 package projekt.delivery.archetype;
 
-import projekt.delivery.deliveryService.ProblemSolverDeliveryService;
-import projekt.delivery.routing.ConfirmedOrder;
+import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.VehicleManager;
-import projekt.delivery.solver.BasicDeliveryProblemSolver;
-import projekt.delivery.solver.DeliveryProblemSolver;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ProblemArchetypeImpl implements ProblemArchetype {
 
     private final VehicleManager vehicleManager;
-    private final DeterministicOrderGenerator orderGenerator;
+    private final OrderGenerator orderGenerator;
 
-    public ProblemArchetypeImpl(DeterministicOrderGenerator orderGenerator, VehicleManager vehicleManager) {
+    private final RatingCriteria ratingCriteria;
+
+    public ProblemArchetypeImpl(OrderGenerator orderGenerator, VehicleManager vehicleManager, RatingCriteria ratingCriteria) {
         this.vehicleManager = vehicleManager;
         this.orderGenerator = orderGenerator;
+        this.ratingCriteria = ratingCriteria;
     }
 
     @Override
-    public ProblemSolverDeliveryService createProblemSolverDeliveryService(DeliveryProblemSolver deliveryProblemSolver) {
-        return new ProblemSolverDeliveryService(
-            vehicleManager,
-            deliveryProblemSolver.solve(this)
-        );
-    }
-
-    @Override
-    public DeterministicOrderGenerator getOrderGenerator() {
+    public OrderGenerator getOrderGenerator() {
         return orderGenerator;
     }
 
     @Override
     public VehicleManager getVehicleManager() {
         return vehicleManager;
+    }
+
+    @Override
+    public RatingCriteria getRatingCriteria() {
+        return ratingCriteria;
     }
 }
