@@ -11,16 +11,9 @@ import java.util.function.Predicate;
 class VehicleManagerBuilderImpl implements VehicleManager.Builder {
 
     private final List<VehicleBuilder> vehicles = new ArrayList<>();
-    private long tick;
     private Region region;
     private PathCalculator pathCalculator;
     private Region.Node warehouse;
-
-    @Override
-    public VehicleManager.Builder time(long tick) {
-        this.tick = tick;
-        return this;
-    }
 
     @Override
     public VehicleManager.Builder region(Region region) {
@@ -60,14 +53,13 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
 
     @Override
     public VehicleManager build() {
-        Objects.requireNonNull(tick, "time");
         Objects.requireNonNull(region, "region");
         Objects.requireNonNull(pathCalculator, "pathCalculator");
         Objects.requireNonNull(warehouse, "warehouse");
         if (!warehouse.getRegion().equals(region)) {
             throw new IllegalArgumentException(String.format("Warehouse %s is not in region %s", warehouse, region));
         }
-        VehicleManagerImpl vehicleManager = new VehicleManagerImpl(tick, region, pathCalculator, warehouse);
+        VehicleManagerImpl vehicleManager = new VehicleManagerImpl(region, pathCalculator, warehouse);
         for (VehicleBuilder vehicleBuilder : vehicles) {
             vehicleManager.addVehicle(vehicleBuilder.capacity, vehicleBuilder.compatibleFoodTypes, vehicleBuilder.nodePredicate);
         }

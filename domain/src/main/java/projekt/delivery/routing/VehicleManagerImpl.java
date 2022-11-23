@@ -22,15 +22,12 @@ class VehicleManagerImpl implements VehicleManager {
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
     private final Set<AbstractOccupied<?>> allOccupied;
     private final EventBus eventBus = new EventBus();
-    private long currentTick;
 
     VehicleManagerImpl(
-        long currentTick,
         Region region,
         PathCalculator pathCalculator,
         Region.Node warehouse
     ) {
-        this.currentTick = currentTick;
         this.region = region;
         this.pathCalculator = pathCalculator;
         this.warehouse = new OccupiedWarehouseImpl(warehouse, this);
@@ -145,11 +142,6 @@ class VehicleManagerImpl implements VehicleManager {
     public EventBus getEventBus() {
         return eventBus;
     }
-
-    /*@Override
-    public long getCurrentTick() {
-        return currentTick;
-    }*/
 
     @Override
     public List<Event> tick(long currentTick) {

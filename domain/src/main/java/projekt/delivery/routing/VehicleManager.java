@@ -61,7 +61,6 @@ public interface VehicleManager {
     }
 
     interface Builder {
-        Builder time(long time);
 
         Builder region(Region region);
 
