@@ -1,7 +1,6 @@
-package projekt.delivery.deliveryService;
+package projekt.delivery.service;
 
 import projekt.delivery.event.*;
-import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;

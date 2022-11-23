@@ -1,6 +1,6 @@
 package projekt.delivery.simulation;
 
-import projekt.delivery.deliveryService.DeliveryService;
+import projekt.delivery.service.DeliveryService;
 import projekt.delivery.event.Event;
 import projekt.delivery.rating.RatingCriteria;
 

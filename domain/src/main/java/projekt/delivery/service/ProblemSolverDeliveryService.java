@@ -1,4 +1,4 @@
-package projekt.delivery.deliveryService;
+package projekt.delivery.service;
 
 import projekt.delivery.archetype.OrderGenerator;
 import projekt.delivery.archetype.ProblemArchetype;

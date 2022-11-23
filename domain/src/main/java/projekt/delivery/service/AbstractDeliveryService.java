@@ -1,15 +1,13 @@
-package projekt.delivery.deliveryService;
+package projekt.delivery.service;
 
 import projekt.delivery.event.Event;
 import projekt.delivery.event.OrderReceivedEvent;
-import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.VehicleManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class AbstractDeliveryService implements DeliveryService {
     protected final VehicleManager vehicleManager;
