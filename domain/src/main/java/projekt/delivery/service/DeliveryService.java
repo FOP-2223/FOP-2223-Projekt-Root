@@ -1,12 +1,13 @@
 package projekt.delivery.service;
 
 import projekt.delivery.event.Event;
+import projekt.delivery.event.Tickable;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.VehicleManager;
 
 import java.util.List;
 
-public interface DeliveryService {
+public interface DeliveryService extends Tickable {
 
     Factory SIMPLE = BasicDeliveryService::new;
     Factory BOGO = BogoDeliveryService::new;

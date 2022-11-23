@@ -3,12 +3,13 @@ package projekt.delivery.routing;
 import org.jetbrains.annotations.Nullable;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.EventBus;
+import projekt.delivery.event.Tickable;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
-public interface VehicleManager {
+public interface VehicleManager extends Tickable {
 
     static Builder builder() {
         return new VehicleManagerBuilderImpl();
