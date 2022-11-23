@@ -102,18 +102,6 @@ class VehicleImpl implements Vehicle {
         return orders;
     }
 
-    @Override
-    public boolean checkCompatibility(String food) {
-        return true; //TODO drinnenlassen?
-    }
-
-    public boolean checkCompatibility(List<String> foods) {
-        for (String food : foods) {
-            if (!checkCompatibility(food)) return false;
-        }
-        return true;
-    }
-
     private void checkMoveToNode(Region.Node node) {
         if (occupied.component.equals(node) && moveQueue.isEmpty()) {
             throw new IllegalArgumentException("Vehicle " + getId() + " cannot move to own node " + node);
@@ -152,12 +140,6 @@ class VehicleImpl implements Vehicle {
 
         if (capacityNeeded > capacity) {
             throw new VehicleOverloadedException(this, capacityNeeded);
-        }
-
-        Optional<String> incompatibleFood = order.getFoodList().stream().filter(f ->
-            !checkCompatibility(f)).findFirst();
-        if (incompatibleFood.isPresent()) {
-            throw new FoodNotSupportedException(this, incompatibleFood.get());
         }
 
         orders.add(order);

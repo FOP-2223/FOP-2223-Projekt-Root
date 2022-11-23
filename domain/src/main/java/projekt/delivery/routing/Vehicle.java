@@ -61,10 +61,6 @@ public interface Vehicle extends Comparable<Vehicle> {
      */
     Collection<ConfirmedOrder> getOrders();
 
-    boolean checkCompatibility(String food);
-
-    boolean checkCompatibility(List<String> foods);
-
     /**
      * @throws FoodNotSupportedException if the vehicle does not support a food type in the provided order
      */

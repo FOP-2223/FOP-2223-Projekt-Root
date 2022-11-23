@@ -43,8 +43,7 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                     ListIterator<ConfirmedOrder> it = pendingOrders.listIterator();
                     while (it.hasNext()) {
                         final ConfirmedOrder order = it.next();
-                        if (order.getTotalWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()
-                            && vehicle.checkCompatibility(order.getFoodList())) {
+                        if (order.getTotalWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()) {
                             loadedAtLeastOneOrderOnVehicle = true;
                             restaurant.loadOrder(vehicle, order, currentTick);
                             vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v ->
