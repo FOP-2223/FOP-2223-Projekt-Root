@@ -1,6 +1,7 @@
 package projekt.delivery.deliveryService;
 
 import projekt.delivery.event.Event;
+import projekt.delivery.event.OrderReceivedEvent;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.VehicleManager;
@@ -8,6 +9,7 @@ import projekt.delivery.routing.VehicleManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class AbstractDeliveryService implements DeliveryService {
     protected final VehicleManager vehicleManager;
@@ -36,6 +38,11 @@ public abstract class AbstractDeliveryService implements DeliveryService {
                 unprocessedOrders = new ArrayList<>();
             }
         }
+
+        //add a OrderReceivedEvent for each order
+        newOrders.stream()
+            .map(order -> OrderReceivedEvent.of(currentTick, getVehicleManager().getWarehouse().getComponent(), order))
+            .forEach(vehicleManager.getEventBus()::queuePost);
 
         return tick(currentTick, newOrders);
     }
