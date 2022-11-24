@@ -11,17 +11,17 @@ public class EmptyOrderGenerator implements OrderGenerator {
         return List.of();
     }
 
-    public static class EmptyOrderGeneratorFactory implements Factory {
+    public static class Factory implements OrderGenerator.Factory {
         @Override
         public OrderGenerator create() {
             return new EmptyOrderGenerator();
         }
     }
 
-    public static class EmptyOrderGeneratorFactoryBuilder implements FactoryBuilder {
+    public static class FactoryBuilder implements OrderGenerator.FactoryBuilder {
         @Override
         public Factory build() {
-            return new EmptyOrderGeneratorFactory();
+            return new Factory();
         }
     }
 }
