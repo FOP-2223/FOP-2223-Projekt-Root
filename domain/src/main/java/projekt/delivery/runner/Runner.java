@@ -11,7 +11,6 @@ public interface Runner {
 
     Map<RatingCriteria, Double> run(
         ProblemGroup problemGroup,
-        Map<RatingCriteria, Rater.Factory> raterFactory,
         SimulationConfig config,
         int simulationRuns);
 

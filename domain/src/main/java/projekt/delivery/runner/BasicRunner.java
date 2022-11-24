@@ -19,11 +19,10 @@ public class BasicRunner implements Runner {
     @Override
     public Map<RatingCriteria, Double> run(
         ProblemGroup problemGroup,
-        Map<RatingCriteria, Rater.Factory> raterFactoryMap,
         SimulationConfig simulationConfig,
         int simulationRuns) {
 
-        List<Simulation> simulations = createSimulations(problemGroup.getProblems(), raterFactoryMap, simulationConfig);
+        List<Simulation> simulations = createSimulations(problemGroup, simulationConfig);
         Map<RatingCriteria, Double> results = new HashMap<>();
 
         for (RatingCriteria criteria : problemGroup.getRaterFactoryMap().keySet()) {
@@ -43,15 +42,14 @@ public class BasicRunner implements Runner {
     }
 
     private List<Simulation> createSimulations(
-        List<ProblemArchetype> problems,
-        Map<RatingCriteria, Rater.Factory> raterFactoryMap,
+        ProblemGroup problemGroup,
         SimulationConfig simulationConfig) {
 
         List<Simulation> simulations = new ArrayList<>();
 
-        problems.forEach(problem -> simulations.add(new BasicDeliverySimulation(
+        problemGroup.getProblems().forEach(problem -> simulations.add(new BasicDeliverySimulation(
             simulationConfig,
-            raterFactoryMap,
+            problemGroup.getRaterFactoryMap(),
             new ProblemSolverDeliveryService(problem),
             problem.orderGeneratorFactory(),
             problem.simulationLength())));
