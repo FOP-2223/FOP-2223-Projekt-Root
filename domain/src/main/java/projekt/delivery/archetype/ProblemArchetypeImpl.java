@@ -16,11 +16,6 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
     }
 
     @Override
-    public OrderGenerator getOrderGenerator() {
-        return orderGeneratorFactory.create();
-    }
-
-    @Override
     public OrderGenerator.Factory getOrderGeneratorFactory() {
         return orderGeneratorFactory;
     }
