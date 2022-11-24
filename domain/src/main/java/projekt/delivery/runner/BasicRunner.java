@@ -53,8 +53,8 @@ public class BasicRunner implements Runner {
             simulationConfig,
             raterFactoryMap,
             new ProblemSolverDeliveryService(problem),
-            problem.getOrderGeneratorFactory(),
-            problem.getSimulationLength())));
+            problem.orderGeneratorFactory(),
+            problem.simulationLength())));
 
         return simulations;
     }

@@ -5,9 +5,9 @@ import projekt.delivery.routing.VehicleManager;
 
 public interface ProblemArchetype {
 
-    OrderGenerator.Factory getOrderGeneratorFactory();
+    OrderGenerator.Factory orderGeneratorFactory();
 
-    VehicleManager getVehicleManager();
+    VehicleManager vehicleManager();
 
-    long getSimulationLength();
+    long simulationLength();
 }

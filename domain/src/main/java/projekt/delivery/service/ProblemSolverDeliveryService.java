@@ -1,9 +1,7 @@
 package projekt.delivery.service;
 
-import projekt.delivery.archetype.OrderGenerator;
 import projekt.delivery.archetype.ProblemArchetype;
 import projekt.delivery.event.Event;
-import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.ConfirmedOrder;
 
 import java.util.ArrayList;
@@ -20,7 +18,7 @@ public class ProblemSolverDeliveryService extends AbstractDeliveryService {
     public ProblemSolverDeliveryService(
         ProblemArchetype problemArchetype
     ) {
-        super(problemArchetype.getVehicleManager());
+        super(problemArchetype.vehicleManager());
 //        orderGenerator = problemArchetype.getOrderGenerator();
 //        ratingCriteria = problemArchetype.getRatingCriteria();
     }

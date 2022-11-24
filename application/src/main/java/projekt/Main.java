@@ -118,7 +118,7 @@ public class Main {
         simulation.addListener(mainFrame);
 
         //start simulation
-        simulation.runSimulation(problemArchetype.getSimulationLength()); // -> blocks the thread until the simulation is finished.
+        simulation.runSimulation(problemArchetype.simulationLength()); // -> blocks the thread until the simulation is finished.
 
         System.out.println(simulation.getRatingForCriterion(RatingCriteria.IN_TIME));
     }
