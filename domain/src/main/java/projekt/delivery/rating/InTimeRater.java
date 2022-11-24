@@ -19,6 +19,9 @@ public class InTimeRater implements Rater {
     private final long maxTicksOff;
 
     InTimeRater(long ignoredTicksOff, long maxTicksOff) {
+        if (ignoredTicksOff < 0) throw new IllegalArgumentException(String.valueOf(ignoredTicksOff));
+        if (maxTicksOff <= 0) throw new IllegalArgumentException(String.valueOf(maxTicksOff));
+
         this.ignoredTicksOff = ignoredTicksOff;
         this.maxTicksOff = maxTicksOff;
     }
