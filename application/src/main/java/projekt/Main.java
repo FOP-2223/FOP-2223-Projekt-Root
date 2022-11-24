@@ -3,16 +3,15 @@ package projekt;
 import com.formdev.flatlaf.FlatDarkLaf;
 import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
-import projekt.delivery.archetype.FridayOrderGenerator;
-import projekt.delivery.archetype.OrderGenerator;
-import projekt.delivery.archetype.ProblemArchetype;
-import projekt.delivery.archetype.ProblemArchetypeImpl;
+import projekt.delivery.archetype.*;
 import projekt.delivery.rating.InTimeRater;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.DijkstraPathCalculator;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.runner.BasicRunner;
+import projekt.delivery.runner.Runner;
 import projekt.delivery.service.DeliveryService;
 import projekt.delivery.service.ProblemSolverDeliveryService;
 import projekt.delivery.simulation.BasicDeliverySimulation;
@@ -81,6 +80,8 @@ public class Main {
             .addVehicle(2, List.of())
             .build();
 
+        final int simulationLength = 480;
+
         //OrderGenerator
         OrderGenerator.Factory orderGeneratorFactory = new FridayOrderGenerator.FridayOrderGeneratorFactoryBuilder()
             .setOrderCount(1000)
@@ -88,7 +89,7 @@ public class Main {
             .setVariance(0.5)
             .setMaxWeight(0.5)
             .setVehicleManager(vehicleManager)
-            .setLastTick(480)
+            .setLastTick(simulationLength)
             .build();
 
         //ProblemArchetype
@@ -105,7 +106,7 @@ public class Main {
         SimulationConfig simulationConfig = new SimulationConfig(1000);
 
         // layer 4 - Simulation
-        Simulation simulation = new BasicDeliverySimulation(simulationConfig, raterFactoryMap, deliveryService, orderGeneratorFactory);
+        Simulation simulation = new BasicDeliverySimulation(simulationConfig, raterFactoryMap, deliveryService, orderGeneratorFactory, simulationLength);
 
         // the lasagna is complete
 

@@ -16,8 +16,9 @@ public class BasicDeliverySimulation extends AbstractSimulation {
     public BasicDeliverySimulation(SimulationConfig simulationConfig,
                                    Map<RatingCriteria, Rater.Factory> raterFactoryMap,
                                    DeliveryService deliveryService,
-                                   OrderGenerator.Factory orderGeneratorFactory) {
-        super(simulationConfig, raterFactoryMap, orderGeneratorFactory);
+                                   OrderGenerator.Factory orderGeneratorFactory,
+                                   long simulationLength) {
+        super(simulationConfig, raterFactoryMap, orderGeneratorFactory, simulationLength);
         this.deliveryService = deliveryService;
     }
 

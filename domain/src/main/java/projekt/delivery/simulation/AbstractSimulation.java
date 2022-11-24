@@ -4,7 +4,6 @@ import projekt.delivery.archetype.OrderGenerator;
 import projekt.delivery.event.Event;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.rating.RatingCriteria;
-import projekt.delivery.routing.ConfirmedOrder;
 
 import java.util.*;
 
@@ -14,6 +13,7 @@ public abstract class AbstractSimulation implements Simulation {
     List<SimulationListener> listeners = new ArrayList<>();
     private volatile boolean terminationRequested = false;
     protected long currentTick = 0;
+    private final long simulationLength;
     protected List<Event> lastEvents;
     protected final Map<RatingCriteria, Rater.Factory> raterFactoryMap;
     protected final Map<RatingCriteria, Rater> currentRaterMap = new HashMap<>();
@@ -23,10 +23,12 @@ public abstract class AbstractSimulation implements Simulation {
 
     public AbstractSimulation(SimulationConfig simulationConfig,
                               Map<RatingCriteria, Rater.Factory> raterFactoryMap,
-                              OrderGenerator.Factory orderGeneratorFactory) {
+                              OrderGenerator.Factory orderGeneratorFactory,
+                              long simulationLength) {
         this.simulationConfig = simulationConfig;
         this.raterFactoryMap = raterFactoryMap;
         this.orderGeneratorFactory = orderGeneratorFactory;
+        this.simulationLength = simulationLength;
     }
 
     @Override
@@ -34,7 +36,7 @@ public abstract class AbstractSimulation implements Simulation {
         setupNewSimulation();
         isRunning = true;
 
-        while (!terminationRequested) {
+        while (!terminationRequested && currentTick <= simulationLength) {
             if (simulationConfig.isPaused()) {
                 try {
                     //noinspection BusyWait

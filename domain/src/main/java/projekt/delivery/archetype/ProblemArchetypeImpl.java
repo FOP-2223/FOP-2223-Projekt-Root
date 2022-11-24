@@ -23,6 +23,11 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
     }
 
     @Override
+    public OrderGenerator.Factory getOrderGeneratorFactory() {
+        return orderGeneratorFactory;
+    }
+
+    @Override
     public VehicleManager getVehicleManager() {
         return vehicleManager;
     }
