@@ -23,10 +23,14 @@ public interface VehicleManager extends Tickable {
 
     Collection<Vehicle> getAllVehicles();
 
-    List<OccupiedRestaurant> getOccupiedRestaurants();
+    Collection<OccupiedRestaurant> getOccupiedRestaurants();
+
+    OccupiedRestaurant getOccupiedRestaurant(Region.Node component);
 
     // O(1)
     <C extends Region.Component<C>> Occupied<C> getOccupied(C component);
+
+    Collection<OccupiedNeighborhood> getOccupiedNeighborhoods();
 
     OccupiedNeighborhood getOccupiedNeighborhood(Region.Node component);
 

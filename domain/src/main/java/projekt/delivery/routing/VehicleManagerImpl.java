@@ -16,7 +16,6 @@ class VehicleManagerImpl implements VehicleManager {
     final Map<Region.Edge, OccupiedEdgeImpl> occupiedEdges;
     private final Region region;
     private final PathCalculator pathCalculator;
-    private final List<OccupiedRestaurant> occupiedRestaurants;
     private final List<VehicleImpl> vehiclesToSpawn = new ArrayList<>();
     private final List<VehicleImpl> vehicles = new ArrayList<>();
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
@@ -31,13 +30,9 @@ class VehicleManagerImpl implements VehicleManager {
         this.pathCalculator = pathCalculator;
         occupiedNodes = toOccupiedNodes(region.getNodes());
         occupiedEdges = toOccupiedEdges(region.getEdges());
-        occupiedRestaurants = occupiedNodes.values().stream()
-            .filter(VehicleManager.OccupiedRestaurant.class::isInstance)
-            .map(VehicleManager.OccupiedRestaurant.class::cast)
-            .toList();
         allOccupied = getAllOccupied();
 
-        if (occupiedRestaurants.size() == 0) {
+        if (getOccupiedRestaurants().size() == 0) {
             throw new IllegalArgumentException("At least one restaurant is required to create a VehicleManager");
         }
     }
@@ -99,7 +94,21 @@ class VehicleManagerImpl implements VehicleManager {
 
     @Override
     public List<OccupiedRestaurant> getOccupiedRestaurants() {
-        return Collections.unmodifiableList(occupiedRestaurants);
+        return occupiedNodes.values().stream()
+            .filter(OccupiedRestaurant.class::isInstance)
+            .map(OccupiedRestaurant.class::cast)
+            .toList();
+    }
+
+    @Override
+    public OccupiedRestaurant getOccupiedRestaurant(Region.Node component) {
+        Objects.requireNonNull(component, "component is null!");
+        final @Nullable OccupiedNodeImpl<?> node = occupiedNodes.get(component);
+        if (node instanceof OccupiedRestaurant) {
+            return (OccupiedRestaurant) node;
+        } else {
+            throw new IllegalArgumentException("Component " + component + " is not a restaurant");
+        }
     }
 
     @Override
@@ -120,6 +129,14 @@ class VehicleManagerImpl implements VehicleManager {
             return result;
         }
         throw new IllegalArgumentException("Component is not of recognized subtype: " + component.getClass().getName());
+    }
+
+    @Override
+    public Collection<OccupiedNeighborhood> getOccupiedNeighborhoods() {
+        return occupiedNodes.values().stream()
+            .filter(OccupiedNeighborhood.class::isInstance)
+            .map(OccupiedNeighborhood.class::cast)
+            .toList();
     }
 
     @Override
@@ -172,7 +189,7 @@ class VehicleManagerImpl implements VehicleManager {
     ) {
         final OccupiedNodeImpl<?> occupied;
         if (nodePredicate == null) {
-            occupied = (OccupiedNodeImpl<?>) occupiedRestaurants.get(0);
+            occupied = (OccupiedNodeImpl<?>) getOccupiedRestaurants().get(0);
         } else {
             occupied = findNode(nodePredicate);
         }
