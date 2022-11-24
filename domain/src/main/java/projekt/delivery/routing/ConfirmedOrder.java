@@ -9,7 +9,7 @@ import java.util.List;
 public class ConfirmedOrder implements Serializable {
     private final Location location;
     private final int orderID;
-    private final TickInterval tickInterval;
+    private final TickInterval deliveryInterval;
     private final List<String> foodList;
     private final double weight;
     private final VehicleManager.OccupiedRestaurant restaurant;
@@ -17,7 +17,7 @@ public class ConfirmedOrder implements Serializable {
 
     private static int nextOrderID;
 
-    public ConfirmedOrder(Location location, VehicleManager.OccupiedRestaurant restaurant, TickInterval tickInterval, List<String> foodList, double weight) {
+    public ConfirmedOrder(Location location, VehicleManager.OccupiedRestaurant restaurant, TickInterval deliveryInterval, List<String> foodList, double weight) {
 
         String invalidFood = foodList.stream().filter(food -> !restaurant.getComponent().getAvailableFood().contains(food)).findFirst().orElse(null);
 
@@ -27,14 +27,14 @@ public class ConfirmedOrder implements Serializable {
 
         this.location = location;
         this.restaurant = restaurant;
-        this.tickInterval = tickInterval;
+        this.deliveryInterval = deliveryInterval;
         this.foodList = foodList;
         this.weight = weight;
         orderID = nextOrderID++;
     }
 
-    public ConfirmedOrder(int x, int y, VehicleManager.OccupiedRestaurant restaurant, TickInterval tickInterval, List<String> foodList, double weight) {
-        this(new Location(x,y), restaurant, tickInterval, foodList, weight);
+    public ConfirmedOrder(int x, int y, VehicleManager.OccupiedRestaurant restaurant, TickInterval deliveryInterval, List<String> foodList, double weight) {
+        this(new Location(x,y), restaurant, deliveryInterval, foodList, weight);
     }
 
     public Location getLocation() {
@@ -57,8 +57,8 @@ public class ConfirmedOrder implements Serializable {
         return restaurant;
     }
 
-    public TickInterval getTimeInterval() {
-        return tickInterval;
+    public TickInterval getDeliveryInterval() {
+        return deliveryInterval;
     }
 
     public List<String> getFoodList() {
@@ -84,8 +84,8 @@ public class ConfirmedOrder implements Serializable {
             getX(),
             getY(),
             orderID,
-            tickInterval,
-            tickInterval,
+            deliveryInterval,
+            deliveryInterval,
             foodList.toString()
         );
     }

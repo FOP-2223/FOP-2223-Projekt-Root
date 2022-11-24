@@ -35,7 +35,7 @@ public class ProblemSolverDeliveryService extends AbstractDeliveryService {
         pendingOrders.addAll(newOrders);
 
         // Prioritize orders according to their expected delivery times.
-        pendingOrders.sort(Comparator.comparing(order -> order.getTimeInterval().getStart()));
+        pendingOrders.sort(Comparator.comparing(order -> order.getDeliveryInterval().getStart()));
 
         // For each vehicle waiting in the pizzeria, load as many orders as possible on the vehicle and send it out.
         //TODO

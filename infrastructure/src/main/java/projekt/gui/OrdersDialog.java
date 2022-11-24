@@ -3,14 +3,9 @@ package projekt.gui;
 import projekt.delivery.routing.ConfirmedOrder;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 class OrdersDialog extends JDialog {
 
@@ -183,7 +178,7 @@ class OrdersDialog extends JDialog {
 
         // TODO: make okButton update actual order
         textField1.setText(order.getLocation().toString());
-        deliveryTimeSelector.setValue(order.getTimeInterval().getStart());
+        deliveryTimeSelector.setValue(order.getDeliveryInterval().getStart());
         order.getFoodList().forEach(foodListModel::addElement);
 
         pack();

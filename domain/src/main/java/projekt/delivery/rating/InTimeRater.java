@@ -1,6 +1,5 @@
 package projekt.delivery.rating;
 
-import projekt.delivery.archetype.OrderGenerator;
 import projekt.delivery.event.DeliverOrderEvent;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.OrderReceivedEvent;
@@ -35,7 +34,7 @@ public class InTimeRater implements Rater {
                 pendingOrders.remove(deliverOrderEvent);
 
                 ConfirmedOrder order = deliverOrderEvent.getOrder();
-                long ticksOff = Math.max(order.getActualDeliveryTick() - order.getTimeInterval().getEnd() - IGNORED_TICKS_OFF, 0);
+                long ticksOff = Math.max(order.getActualDeliveryTick() - order.getDeliveryInterval().getEnd() - IGNORED_TICKS_OFF, 0);
                 totalTicksOff += ticksOff;
 
                 ordersDelivered++;
