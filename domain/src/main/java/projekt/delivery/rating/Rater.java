@@ -15,4 +15,9 @@ public interface Rater extends SimulationListener {
 
         Rater create();
     }
+
+    interface FactoryBuilder {
+
+        Factory build();
+    }
 }

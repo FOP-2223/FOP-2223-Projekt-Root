@@ -10,8 +10,6 @@ import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.DijkstraPathCalculator;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
-import projekt.delivery.runner.BasicRunner;
-import projekt.delivery.runner.Runner;
 import projekt.delivery.service.DeliveryService;
 import projekt.delivery.service.ProblemSolverDeliveryService;
 import projekt.delivery.simulation.BasicDeliverySimulation;
@@ -83,7 +81,7 @@ public class Main {
         final int simulationLength = 480;
 
         //OrderGenerator
-        OrderGenerator.Factory orderGeneratorFactory = new FridayOrderGenerator.FridayOrderGeneratorFactoryBuilder()
+        OrderGenerator.Factory orderGeneratorFactory = new FridayOrderGenerator.FactoryBuilder()
             .setOrderCount(1000)
             .setDeliveryInterval(15)
             .setVariance(0.5)
@@ -100,7 +98,10 @@ public class Main {
 
         //Rater
         Map<RatingCriteria, Rater.Factory> raterFactoryMap = new HashMap<>();
-        raterFactoryMap.put(RatingCriteria.IN_TIME, new InTimeRater.InTimeRaterFactory());
+        raterFactoryMap.put(RatingCriteria.IN_TIME, new InTimeRater.FactoryBuilder()
+            .setIgnoredTicksOff(5)
+            .setMaxTicksOff(25)
+            .build());
 
         // SimulationConfig
         SimulationConfig simulationConfig = new SimulationConfig(1000);
