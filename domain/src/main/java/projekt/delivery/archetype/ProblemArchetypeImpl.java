@@ -7,13 +7,11 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
 
     private final VehicleManager vehicleManager;
     private final OrderGenerator.Factory orderGeneratorFactory;
-    private final RatingCriteria ratingCriteria;
     private final long simulationLength;
 
-    public ProblemArchetypeImpl(OrderGenerator.Factory orderGeneratorFactory, VehicleManager vehicleManager, RatingCriteria ratingCriteria, long simulationLength) {
+    public ProblemArchetypeImpl(OrderGenerator.Factory orderGeneratorFactory, VehicleManager vehicleManager, long simulationLength) {
         this.vehicleManager = vehicleManager;
         this.orderGeneratorFactory = orderGeneratorFactory;
-        this.ratingCriteria = ratingCriteria;
         this.simulationLength = simulationLength;
     }
 
@@ -30,11 +28,6 @@ public class ProblemArchetypeImpl implements ProblemArchetype {
     @Override
     public VehicleManager getVehicleManager() {
         return vehicleManager;
-    }
-
-    @Override
-    public RatingCriteria getRatingCriteria() {
-        return ratingCriteria;
     }
 
     @Override

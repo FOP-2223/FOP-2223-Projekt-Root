@@ -12,8 +12,8 @@ import java.util.List;
 
 public class ProblemSolverDeliveryService extends AbstractDeliveryService {
 
-    private final OrderGenerator orderGenerator;
-    private final RatingCriteria ratingCriteria;
+//    private final OrderGenerator orderGenerator;
+//    private final RatingCriteria ratingCriteria;
 
     protected final List<ConfirmedOrder> pendingOrders = new ArrayList<>();
 
@@ -21,8 +21,8 @@ public class ProblemSolverDeliveryService extends AbstractDeliveryService {
         ProblemArchetype problemArchetype
     ) {
         super(problemArchetype.getVehicleManager());
-        orderGenerator = problemArchetype.getOrderGenerator();
-        ratingCriteria = problemArchetype.getRatingCriteria();
+//        orderGenerator = problemArchetype.getOrderGenerator();
+//        ratingCriteria = problemArchetype.getRatingCriteria();
     }
 
     @Override

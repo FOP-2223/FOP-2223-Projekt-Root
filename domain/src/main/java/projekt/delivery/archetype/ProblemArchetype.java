@@ -11,7 +11,5 @@ public interface ProblemArchetype {
 
     VehicleManager getVehicleManager();
 
-    RatingCriteria getRatingCriteria();
-
     long getSimulationLength();
 }

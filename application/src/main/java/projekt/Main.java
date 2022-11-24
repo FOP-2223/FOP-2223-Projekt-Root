@@ -91,7 +91,7 @@ public class Main {
             .build();
 
         //ProblemArchetype
-        ProblemArchetype problemArchetype = new ProblemArchetypeImpl(orderGeneratorFactory, vehicleManager, RatingCriteria.IN_TIME, 480);
+        ProblemArchetype problemArchetype = new ProblemArchetypeImpl(orderGeneratorFactory, vehicleManager, 480);
 
         //layer 3 - DeliveryService
         DeliveryService deliveryService = new ProblemSolverDeliveryService(problemArchetype);
