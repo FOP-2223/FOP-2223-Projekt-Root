@@ -3,7 +3,6 @@ package projekt.delivery.runner;
 import projekt.delivery.archetype.ProblemGroup;
 import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.service.BasicDeliveryService;
-import projekt.delivery.service.ProblemSolverDeliveryService;
 import projekt.delivery.simulation.BasicDeliverySimulation;
 import projekt.delivery.simulation.Simulation;
 import projekt.delivery.simulation.SimulationConfig;

@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class ProblemSolverDeliveryService extends AbstractDeliveryService {
+public class OurDeliveryService extends AbstractDeliveryService {
 
 //    private final OrderGenerator orderGenerator;
 //    private final RatingCriteria ratingCriteria;
 
     protected final List<ConfirmedOrder> pendingOrders = new ArrayList<>();
 
-    public ProblemSolverDeliveryService(
+    public OurDeliveryService(
         ProblemArchetype problemArchetype
     ) {
         super(problemArchetype.vehicleManager());
