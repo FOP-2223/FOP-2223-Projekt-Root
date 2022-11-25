@@ -34,8 +34,9 @@ public class EventBus {
         try {
             log.put(tick, queuedEvents);
             System.out.printf("Tick: %s - %s\n", tick, queuedEvents);
+            List<Event> copy = new ArrayList<>(queuedEvents);
             queuedEvents.clear();
-            return queuedEvents;
+            return copy;
         } finally {
             lock.writeLock().unlock();
         }
