@@ -30,7 +30,7 @@ public class InTimeRater implements Rater {
         long maxTotalTicksOff = maxTicksOff * (ordersDelivered + pendingOrders.size());
         long actualTotalTicksOff = totalTicksOff + pendingOrders.size() * maxTicksOff;
 
-        return totalTicksOff == 0 ? 1 : 1 - (((double) actualTotalTicksOff)  / maxTotalTicksOff);
+        return 1 - (((double) actualTotalTicksOff)  / maxTotalTicksOff);
     }
 
     @Override
