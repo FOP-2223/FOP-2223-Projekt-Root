@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class InTimeRater implements Rater {
 
-    private double totalTicksOff = 0;
+    private long totalTicksOff = 0;
     private long ordersDelivered = 0;
     private final Set<ConfirmedOrder> pendingOrders = new HashSet<>();
 
@@ -28,8 +28,9 @@ public class InTimeRater implements Rater {
 
     public double getScore() {
         long maxTotalTicksOff = maxTicksOff * (ordersDelivered + pendingOrders.size());
+        long actualTotalTicksOff = totalTicksOff + pendingOrders.size() * maxTicksOff;
 
-        return totalTicksOff == 0 ? 1 : 1 - (maxTotalTicksOff / totalTicksOff);
+        return totalTicksOff == 0 ? 1 : 1 - (((double) actualTotalTicksOff)  / maxTotalTicksOff);
     }
 
     @Override
@@ -40,7 +41,9 @@ public class InTimeRater implements Rater {
             .forEach(deliverOrderEvent -> {
                 ConfirmedOrder order = deliverOrderEvent.getOrder();
 
-                pendingOrders.remove(order);
+                if (!pendingOrders.remove(order)) {
+                    throw new AssertionError("DeliverOrderEvent before OrderReceivedEvent");
+                }
 
                 long ticksOff = Math.max(Math.min(order.getActualDeliveryTick() - order.getDeliveryInterval().getEnd() - ignoredTicksOff, 15), 0);
                 totalTicksOff += ticksOff;
