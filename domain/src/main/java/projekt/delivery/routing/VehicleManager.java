@@ -1,6 +1,6 @@
 package projekt.delivery.routing;
 
-import org.jetbrains.annotations.Nullable;
+import projekt.base.Location;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.EventBus;
 import projekt.delivery.event.Tickable;
@@ -42,6 +42,8 @@ public interface VehicleManager extends Tickable {
 
     List<Event> tick(long currentTick);
 
+    void reset();
+
     interface Occupied<C extends Region.Component<? super C>> {
 
         static <RC extends Region.Component<RC>> Predicate<? super Occupied<RC>> named(String name) {
@@ -53,6 +55,8 @@ public interface VehicleManager extends Tickable {
         VehicleManager getVehicleManager();
 
         Collection<Vehicle> getVehicles();
+
+        void reset();
     }
 
     interface OccupiedNeighborhood extends Occupied<Region.Neighborhood> {
@@ -72,15 +76,11 @@ public interface VehicleManager extends Tickable {
         Builder pathCalculator(PathCalculator pathCalculator);
 
         Builder addVehicle(
+            Location startingLocation,
             double capacity,
-            Collection<String> compatibleFoodTypes,
-            @Nullable Predicate<? super Occupied<? extends Region.Node>> nodePredicate
+            Collection<String> compatibleFoodTypes//TODO remove
         );
 
-        Builder addVehicle(
-            double capacity,
-            Collection<String> compatibleFoodTypes
-        );
         VehicleManager build();
     }
 }

@@ -66,4 +66,10 @@ public class BasicDeliveryService extends AbstractDeliveryService {
     public List<ConfirmedOrder> getPendingOrders() {
         return pendingOrders;
     }
+
+    @Override
+    public void reset() {
+        super.reset();
+        pendingOrders.clear();
+    }
 }

@@ -56,14 +56,11 @@ public interface Vehicle extends Comparable<Vehicle> {
      */
     VehicleManager getVehicleManager();
 
-    /**
-     *
-     */
+    VehicleManager.Occupied<? extends Region.Node> getStartingNode();
+
     Collection<ConfirmedOrder> getOrders();
 
-    /**
-     * @throws FoodNotSupportedException if the vehicle does not support a food type in the provided order
-     */
+    void reset();
 
     // TODO: allow appending of own methods?
     default double getCurrentWeight() {

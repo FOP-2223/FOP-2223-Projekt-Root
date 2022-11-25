@@ -13,20 +13,21 @@ class VehicleImpl implements Vehicle {
     private final Collection<String> compatibleFoodTypes;
     private final VehicleManagerImpl vehicleManager;
     private final Deque<PathImpl> moveQueue = new LinkedList<>();
+    private final VehicleManager.OccupiedRestaurant startingNode;
     private AbstractOccupied<?> occupied;
 
     public VehicleImpl(
         int id,
         double capacity,
         Collection<String> compatibleFoodTypes,
-        AbstractOccupied<?> occupied,
-        VehicleManagerImpl vehicleManager
-    ) {
+        VehicleManagerImpl vehicleManager,
+        VehicleManager.OccupiedRestaurant startingNode) {
         this.id = id;
         this.capacity = capacity;
         this.compatibleFoodTypes = compatibleFoodTypes;
-        this.occupied = occupied;
+        this.occupied = (AbstractOccupied<?>) startingNode;
         this.vehicleManager = vehicleManager;
+        this.startingNode = startingNode;
     }
 
     @Override
@@ -98,8 +99,20 @@ class VehicleImpl implements Vehicle {
     }
 
     @Override
+    public VehicleManager.Occupied<? extends Region.Node> getStartingNode() {
+        return startingNode;
+    }
+
+    @Override
     public Collection<ConfirmedOrder> getOrders() {
         return orders;
+    }
+
+    @Override
+    public void reset() {
+        occupied = (AbstractOccupied<?>) startingNode;
+        moveQueue.clear();
+        orders.clear();
     }
 
     private void checkMoveToNode(Region.Node node) {

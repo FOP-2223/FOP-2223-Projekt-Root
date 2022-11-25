@@ -141,6 +141,8 @@ public abstract class AbstractSimulation implements Simulation {
 
     private void setupNewSimulation() {
         currentTick = 0;
+        lastEvents = new ArrayList<>();
+        getDeliveryService().reset();
         setupRaters();
         setupOrderGenerator();
     }

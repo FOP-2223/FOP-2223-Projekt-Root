@@ -35,6 +35,11 @@ abstract class AbstractOccupied<C extends Region.Component<? super C>> implement
         return unmodifiableVehicles;
     }
 
+    @Override
+    public void reset() {
+        vehicles.clear();
+    }
+
     abstract void tick(long currentTick);
 
     abstract void addVehicle(VehicleImpl vehicle, long currentTick);

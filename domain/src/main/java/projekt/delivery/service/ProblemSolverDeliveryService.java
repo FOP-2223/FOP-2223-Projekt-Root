@@ -78,4 +78,10 @@ public class ProblemSolverDeliveryService extends AbstractDeliveryService {
     public List<ConfirmedOrder> getPendingOrders() {
         return pendingOrders;
     }
+
+    @Override
+    public void reset() {
+        super.reset();
+        pendingOrders.clear();
+    }
 }

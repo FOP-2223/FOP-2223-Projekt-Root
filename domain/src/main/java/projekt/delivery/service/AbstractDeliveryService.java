@@ -50,5 +50,11 @@ public abstract class AbstractDeliveryService implements DeliveryService {
         return vehicleManager;
     }
 
+    @Override
+    public void reset() {
+        unprocessedOrders.clear();
+        vehicleManager.reset();
+    }
+
     abstract List<Event> tick(long currentTick, List<ConfirmedOrder> newOrders);
 }

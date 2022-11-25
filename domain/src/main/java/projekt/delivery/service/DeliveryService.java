@@ -20,6 +20,8 @@ public interface DeliveryService extends Tickable {
 
     List<ConfirmedOrder> getPendingOrders();
 
+    void reset();
+
     interface Factory {
 
         DeliveryService create(VehicleManager vehicleManager);

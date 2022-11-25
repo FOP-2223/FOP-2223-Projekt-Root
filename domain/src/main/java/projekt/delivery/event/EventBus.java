@@ -42,6 +42,10 @@ public class EventBus {
         }
     }
 
+    public void clear() {
+        queuedEvents.clear();
+    }
+
     public Map<Long, List<Event>> getLog() {
         return unmodifiableLog;
     }
