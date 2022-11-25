@@ -2,6 +2,7 @@ package projekt.delivery.runner;
 
 import projekt.delivery.archetype.ProblemGroup;
 import projekt.delivery.rating.RatingCriteria;
+import projekt.delivery.service.BasicDeliveryService;
 import projekt.delivery.service.ProblemSolverDeliveryService;
 import projekt.delivery.simulation.BasicDeliverySimulation;
 import projekt.delivery.simulation.Simulation;
@@ -34,7 +35,7 @@ public class BasicRunner implements Runner {
             }
         }
 
-        results.replaceAll((criteria, rating) -> results.get(criteria) / simulationRuns);
+        results.replaceAll((criteria, rating) -> (results.get(criteria) / (simulationRuns * problemGroup.problems().size())));
 
         return results;
     }
@@ -48,7 +49,7 @@ public class BasicRunner implements Runner {
         problemGroup.problems().forEach(problem -> simulations.add(new BasicDeliverySimulation(
             simulationConfig,
             problemGroup.raterFactoryMap(),
-            new ProblemSolverDeliveryService(problem),
+            new BasicDeliveryService(problem.vehicleManager()),
             problem.orderGeneratorFactory(),
             problem.simulationLength())));
 
