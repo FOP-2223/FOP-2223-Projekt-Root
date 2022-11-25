@@ -14,6 +14,7 @@ class OccupiedNeighborhoodImpl extends OccupiedNodeImpl<Region.Neighborhood> imp
             throw new IllegalArgumentException("The specified vehicle is not located on this node!");
         }
 
+        order.setActualDeliveryTick(tick);
         ((VehicleImpl) vehicle).unloadOrder(order);
         vehicleManager.getEventBus().queuePost(DeliverOrderEvent.of(
                 tick,
