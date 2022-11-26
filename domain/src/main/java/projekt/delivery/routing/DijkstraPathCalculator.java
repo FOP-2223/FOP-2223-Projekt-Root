@@ -55,17 +55,19 @@ public class DijkstraPathCalculator implements PathCalculator {
         }
     }
 
-    @Override
-    public Deque<Region.Node> getPath(Region.Node start, Region.Node end) {
-        if (!start.getRegion().equals(end.getRegion())) {
-            throw new IllegalArgumentException("Start and end are not in the same region");
-        }
+    /**
+     * Executes Dijkstra's algorithm starting at the given node.
+     * @param end The starting node.
+     * @return The result of the algorithm. Each {@link DijkstraNode} contains the information about which adjacent node
+     * lies on the shortest path to given node.
+     */
 
+    private Map<Region.Node, DijkstraNode> execute(Region.Node end) {
         // Initialize SSSP
-        int size = start.getRegion().getNodes().size();
+        int size = end.getRegion().getNodes().size();
         Queue<DijkstraNode> queue = new PriorityQueue<>(size);
         Map<Region.Node, DijkstraNode> references = new HashMap<>(size);
-        initSSSP(queue, references, start);
+        initSSSP(queue, references, end);
 
         // Relax edges
         while (!queue.isEmpty()) {
@@ -96,17 +98,60 @@ public class DijkstraPathCalculator implements PathCalculator {
             }
         }
 
+        return references;
+    }
+
+    /**
+     * Reconstructs the path from {@code start} to {@code end} after Dijkstra's algorithm was performed.
+     * @param references the results of Dijkstra's algorithm.
+     * @param start the start node of the path.
+     * @param end the end node of the path.
+     * @return The reconstructed path from {@code start} to {@code end}.
+     */
+    private Deque<Region.Node> reconstructPath(Map<Region.Node, DijkstraNode> references, Region.Node start, Region.Node end) {
+
+        if (start == end) {
+            return new ArrayDeque<>();
+        }
         // Reconstruct path, the start node is not part of the path
-        Deque<Region.Node> path = new ArrayDeque<>(size);
-        DijkstraNode node = references.get(end);
-        DijkstraNode startNode = references.get(start);
-        while (node != startNode) {
-            path.addFirst(node.node);
-            assert node.previous != null;
-            node = references.get(node.previous.node);
+        Deque<Region.Node> path = new ArrayDeque<>(start.getRegion().getNodes().size());
+        DijkstraNode node = references.get(start);
+        DijkstraNode endNode = references.get(end);
+
+        //don't add the startNode to the path
+        node = node.previous;
+
+        while (node != endNode) {
+            assert node != null;
+            path.addLast(node.node);
+            node = node.previous;
         }
 
+        //add endNode to path
+        path.addLast(endNode.node);
+
         return path;
+    }
+
+    @Override
+    public Deque<Region.Node> getPath(Region.Node start, Region.Node end) {
+        Map<Region.Node, DijkstraNode> references = execute(end);
+
+        return reconstructPath(references, start, end);
+    }
+
+    @Override
+    public Map<Region.Node, Deque<Region.Node>> getAllPathsTo(Region.Node end) {
+
+        Map<Region.Node, DijkstraNode> references = execute(end);
+
+        Map<Region.Node, Deque<Region.Node>> paths = new HashMap<>();
+
+        for (Region.Node node : end.getRegion().getNodes()) {
+            paths.put(node, reconstructPath(references, node, end));
+        }
+
+        return paths;
     }
 
     /**
