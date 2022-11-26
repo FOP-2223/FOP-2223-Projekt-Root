@@ -35,6 +35,12 @@ class VehicleImpl implements Vehicle {
         return occupied;
     }
 
+    @Override
+    public @Nullable VehicleManager.Occupied<?> getPreviousOccupied() {
+        AbstractOccupied.VehicleStats stats = occupied.vehicles.get(this);
+        return stats == null ? null : stats.previous;
+    }
+
     void setOccupied(AbstractOccupied<?> occupied) {
         this.occupied = occupied;
     }
