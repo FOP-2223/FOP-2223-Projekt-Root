@@ -3,9 +3,7 @@ package projekt;
 import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
 import projekt.delivery.archetype.*;
-import projekt.delivery.rating.InTimeRater;
-import projekt.delivery.rating.Rater;
-import projekt.delivery.rating.RatingCriteria;
+import projekt.delivery.rating.*;
 import projekt.delivery.routing.DijkstraPathCalculator;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
@@ -128,11 +126,11 @@ public class Main {
             .addVehicle(new Location(10, 8), 2, List.of())
             .build();
 
-        final int simulationLength = 480;
+        final int simulationLength = 1000;
 
         //OrderGenerator
-        OrderGenerator.Factory orderGeneratorFactory = new FridayOrderGenerator.FactoryBuilder()
-            .setOrderCount(400)
+        OrderGenerator.Factory orderGeneratorFactory1 = new FridayOrderGenerator.FactoryBuilder()
+            .setOrderCount(200)
             .setDeliveryInterval(15)
             .setVariance(0.5)
             .setMaxWeight(0.5)
@@ -140,7 +138,14 @@ public class Main {
             .setLastTick(400)
             .build();
 
-
+        OrderGenerator.Factory orderGeneratorFactory2 = new FridayOrderGenerator.FactoryBuilder()
+            .setOrderCount(200)
+            .setDeliveryInterval(15)
+            .setVariance(0.5)
+            .setMaxWeight(0.5)
+            .setVehicleManager(vehicleManager2)
+            .setLastTick(400)
+            .build();
 
         //Rater
         Map<RatingCriteria, Rater.Factory> raterFactoryMap1 = new HashMap<>();
@@ -149,15 +154,33 @@ public class Main {
             .setMaxTicksOff(25)
             .build());
 
+        raterFactoryMap1.put(RatingCriteria.TRAVEL_DISTANCE, new TravelDistanceRater.FactoryBuilder()
+            .setFactor(0.75)
+            .setVehicleManager(vehicleManager1)
+            .build());
+
+        raterFactoryMap1.put(RatingCriteria.AMOUNT_DELIVERED, new AmountDeliveredRater.FactoryBuilder()
+            .setFactor(0.99)
+            .build());
+
         Map<RatingCriteria, Rater.Factory> raterFactoryMap2 = new HashMap<>();
-        raterFactoryMap1.put(RatingCriteria.IN_TIME, new InTimeRater.FactoryBuilder()
+        raterFactoryMap2.put(RatingCriteria.IN_TIME, new InTimeRater.FactoryBuilder()
             .setIgnoredTicksOff(5)
             .setMaxTicksOff(25)
             .build());
 
+        raterFactoryMap2.put(RatingCriteria.TRAVEL_DISTANCE, new TravelDistanceRater.FactoryBuilder()
+            .setFactor(0.75)
+            .setVehicleManager(vehicleManager2)
+            .build());
+
+        raterFactoryMap2.put(RatingCriteria.AMOUNT_DELIVERED, new AmountDeliveredRater.FactoryBuilder()
+            .setFactor(0.99)
+            .build());
+
         //ProblemArchetype
-        ProblemArchetype problemArchetype1 = new ProblemArchetypeImpl(orderGeneratorFactory, vehicleManager1, raterFactoryMap1, simulationLength);
-        ProblemArchetype problemArchetype2 = new ProblemArchetypeImpl(orderGeneratorFactory, vehicleManager2, raterFactoryMap2, simulationLength);
+        ProblemArchetype problemArchetype1 = new ProblemArchetypeImpl(orderGeneratorFactory1, vehicleManager1, raterFactoryMap1, simulationLength);
+        ProblemArchetype problemArchetype2 = new ProblemArchetypeImpl(orderGeneratorFactory2, vehicleManager2, raterFactoryMap2, simulationLength);
 
         //layer 3 - DeliveryService
         DeliveryService deliveryService = new BasicDeliveryService(vehicleManager1);
@@ -168,7 +191,13 @@ public class Main {
         //ProblemGroup
         ProblemGroup problemGroup = new ProblemGroupImpl(List.of(problemArchetype1, problemArchetype2), new ArrayList<>(raterFactoryMap1.keySet()));
 
-        System.out.println(new BasicRunner().run(problemGroup, simulationConfig, 10).get(RatingCriteria.IN_TIME));
+        Map<RatingCriteria, Double> result = new BasicRunner().run(problemGroup, simulationConfig, 10);
+
+        System.out.println("IN_TIME: " + result.get(RatingCriteria.IN_TIME));
+
+        System.out.println("TRAVEL_DISTANCE: " + result.get(RatingCriteria.TRAVEL_DISTANCE));
+
+        System.out.println("AMOUNT_DELIVERED: " + result.get(RatingCriteria.AMOUNT_DELIVERED));
 
         // the lasagna is complete
 

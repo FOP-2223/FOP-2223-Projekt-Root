@@ -11,6 +11,8 @@ import java.util.Set;
 
 public class InTimeRater implements Rater {
 
+    public static final RatingCriteria RATING_CRITERIA = RatingCriteria.IN_TIME;
+
     private long totalTicksOff = 0;
     private long ordersDelivered = 0;
     private final Set<ConfirmedOrder> pendingOrders = new HashSet<>();
@@ -30,7 +32,7 @@ public class InTimeRater implements Rater {
         long maxTotalTicksOff = maxTicksOff * (ordersDelivered + pendingOrders.size());
         long actualTotalTicksOff = totalTicksOff + pendingOrders.size() * maxTicksOff;
 
-        return 1 - (((double) actualTotalTicksOff)  / maxTotalTicksOff);
+        return 1 - (((double) actualTotalTicksOff) / maxTotalTicksOff);
     }
 
     @Override
@@ -56,6 +58,11 @@ public class InTimeRater implements Rater {
             .map(OrderReceivedEvent.class::cast)
             .map(OrderReceivedEvent::getOrder)
             .forEach(pendingOrders::add);
+    }
+
+    @Override
+    public RatingCriteria getRatingCriteria() {
+        return RATING_CRITERIA;
     }
 
     public static class Factory implements Rater.Factory {
