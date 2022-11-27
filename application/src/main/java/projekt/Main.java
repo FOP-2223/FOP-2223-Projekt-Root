@@ -14,6 +14,7 @@ import projekt.delivery.service.BasicDeliveryService;
 import projekt.delivery.service.DeliveryService;
 import projekt.delivery.simulation.SimulationConfig;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,25 +140,33 @@ public class Main {
             .setLastTick(400)
             .build();
 
-        //ProblemArchetype
-        ProblemArchetype problemArchetype1 = new ProblemArchetypeImpl(orderGeneratorFactory, vehicleManager1, simulationLength);
-        ProblemArchetype problemArchetype2 = new ProblemArchetypeImpl(orderGeneratorFactory, vehicleManager2, simulationLength);
 
-        //layer 3 - DeliveryService
-        DeliveryService deliveryService = new BasicDeliveryService(vehicleManager1);
 
         //Rater
-        Map<RatingCriteria, Rater.Factory> raterFactoryMap = new HashMap<>();
-        raterFactoryMap.put(RatingCriteria.IN_TIME, new InTimeRater.FactoryBuilder()
+        Map<RatingCriteria, Rater.Factory> raterFactoryMap1 = new HashMap<>();
+        raterFactoryMap1.put(RatingCriteria.IN_TIME, new InTimeRater.FactoryBuilder()
             .setIgnoredTicksOff(5)
             .setMaxTicksOff(25)
             .build());
+
+        Map<RatingCriteria, Rater.Factory> raterFactoryMap2 = new HashMap<>();
+        raterFactoryMap1.put(RatingCriteria.IN_TIME, new InTimeRater.FactoryBuilder()
+            .setIgnoredTicksOff(5)
+            .setMaxTicksOff(25)
+            .build());
+
+        //ProblemArchetype
+        ProblemArchetype problemArchetype1 = new ProblemArchetypeImpl(orderGeneratorFactory, vehicleManager1, raterFactoryMap1, simulationLength);
+        ProblemArchetype problemArchetype2 = new ProblemArchetypeImpl(orderGeneratorFactory, vehicleManager2, raterFactoryMap2, simulationLength);
+
+        //layer 3 - DeliveryService
+        DeliveryService deliveryService = new BasicDeliveryService(vehicleManager1);
 
         // SimulationConfig
         SimulationConfig simulationConfig = new SimulationConfig(0);
 
         //ProblemGroup
-        ProblemGroup problemGroup = new ProblemGroupImpl(List.of(problemArchetype1, problemArchetype2), raterFactoryMap);
+        ProblemGroup problemGroup = new ProblemGroupImpl(List.of(problemArchetype1, problemArchetype2), new ArrayList<>(raterFactoryMap1.keySet()));
 
         System.out.println(new BasicRunner().run(problemGroup, simulationConfig, 10).get(RatingCriteria.IN_TIME));
 

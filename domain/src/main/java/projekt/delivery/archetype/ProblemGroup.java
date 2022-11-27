@@ -9,5 +9,5 @@ import java.util.Map;
 public interface ProblemGroup {
     List<ProblemArchetype> problems();
 
-    Map<RatingCriteria, Rater.Factory> raterFactoryMap();
+    List<RatingCriteria> ratingCriteria();
 }

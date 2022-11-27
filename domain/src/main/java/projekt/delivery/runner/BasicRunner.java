@@ -23,7 +23,7 @@ public class BasicRunner implements Runner {
         List<Simulation> simulations = createSimulations(problemGroup, simulationConfig);
         Map<RatingCriteria, Double> results = new HashMap<>();
 
-        for (RatingCriteria criteria : problemGroup.raterFactoryMap().keySet()) {
+        for (RatingCriteria criteria : problemGroup.ratingCriteria()) {
             results.put(criteria, 0.0);
         }
 
@@ -47,7 +47,7 @@ public class BasicRunner implements Runner {
 
         problemGroup.problems().forEach(problem -> simulations.add(new BasicDeliverySimulation(
             simulationConfig,
-            problemGroup.raterFactoryMap(),
+            problem.raterFactoryMap(),
             new BasicDeliveryService(problem.vehicleManager()),
             problem.orderGeneratorFactory(),
             problem.simulationLength())));
