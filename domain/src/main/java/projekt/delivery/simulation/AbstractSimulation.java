@@ -90,11 +90,6 @@ public abstract class AbstractSimulation implements Simulation {
     }
 
     @Override
-    public double getCurrentRating() {
-        return currentRaterMap.values().stream().mapToDouble(Rater::getScore).average().orElse(-1.0);
-    }
-
-    @Override
     public double getRatingForCriterion(RatingCriteria criterion) {
         return currentRaterMap.get(criterion).getScore();
     }
@@ -110,26 +105,18 @@ public abstract class AbstractSimulation implements Simulation {
     }
 
     @Override
-    public List<Event> getLastEvents() {
-        return lastEvents;
-    }
-
-    @Override
     public void runCurrentTick() {
         getDeliveryService().deliver(currentOrderGenerator.generateOrders(getCurrentTick()));
         lastEvents = Collections.unmodifiableList(tick());
-        onTick();
+
+        for (SimulationListener listener : listeners) {
+            listener.onTick(lastEvents, getCurrentTick());
+        }
+
         currentTick++;
     }
 
     abstract List<Event> tick();
-
-    @Override
-    public void onTick() {
-        for (SimulationListener listener : listeners) {
-            listener.onTick(getLastEvents(), getCurrentTick());
-        }
-    }
 
     public void addListener(SimulationListener listener) {
         listeners.add(listener);
