@@ -41,6 +41,11 @@ class VehicleImpl implements Vehicle {
         return stats == null ? null : stats.previous;
     }
 
+    @Override
+    public List<? extends Path> getPaths() {
+        return new LinkedList<>(moveQueue);
+    }
+
     void setOccupied(AbstractOccupied<?> occupied) {
         this.occupied = occupied;
     }

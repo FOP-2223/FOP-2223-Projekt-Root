@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Deque;
+import java.util.List;
 import java.util.function.Consumer;
 
 public interface Vehicle extends Comparable<Vehicle> {
@@ -24,6 +25,8 @@ public interface Vehicle extends Comparable<Vehicle> {
      * @return the previous component or null if this vehicle has not moved yet.
      */
     @Nullable VehicleManager.Occupied<?> getPreviousOccupied();
+
+    List<? extends Path> getPaths();
 
     /**
      * Deletes the entire move queue and moves directly to the provided {@link Region.Node}.
