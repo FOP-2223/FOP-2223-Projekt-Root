@@ -10,7 +10,6 @@ class VehicleImpl implements Vehicle {
     private final int id;
     private final double capacity;
     private final List<ConfirmedOrder> orders = new ArrayList<>();
-    private final Collection<String> compatibleFoodTypes;
     private final VehicleManagerImpl vehicleManager;
     private final Deque<PathImpl> moveQueue = new LinkedList<>();
     private final VehicleManager.OccupiedRestaurant startingNode;
@@ -19,12 +18,10 @@ class VehicleImpl implements Vehicle {
     public VehicleImpl(
         int id,
         double capacity,
-        Collection<String> compatibleFoodTypes,
         VehicleManagerImpl vehicleManager,
         VehicleManager.OccupiedRestaurant startingNode) {
         this.id = id;
         this.capacity = capacity;
-        this.compatibleFoodTypes = compatibleFoodTypes;
         this.occupied = (AbstractOccupied<?>) startingNode;
         this.vehicleManager = vehicleManager;
         this.startingNode = startingNode;

@@ -200,8 +200,7 @@ class VehicleManagerImpl implements VehicleManager {
 
     Vehicle addVehicle(
         Location startingLocation,
-        double capacity,
-        Collection<String> compatibleFoodTypes
+        double capacity
     ) {
         OccupiedNodeImpl<? extends Region.Node> occupied = getOccupiedNode(startingLocation);
 
@@ -212,7 +211,6 @@ class VehicleManagerImpl implements VehicleManager {
         final VehicleImpl vehicle = new VehicleImpl(
             vehicles.size() + vehiclesToSpawn.size(),
             capacity,
-            compatibleFoodTypes,
             this,
             (OccupiedRestaurant) occupied);
         vehiclesToSpawn.add(vehicle);

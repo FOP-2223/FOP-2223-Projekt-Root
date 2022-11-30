@@ -76,8 +76,7 @@ public interface VehicleManager {
 
         Builder addVehicle(
             Location startingLocation,
-            double capacity,
-            Collection<String> compatibleFoodTypes//TODO remove
+            double capacity
         );
 
         VehicleManager build();

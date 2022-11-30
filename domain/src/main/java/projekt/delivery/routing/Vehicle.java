@@ -72,12 +72,10 @@ public interface Vehicle extends Comparable<Vehicle> {
 
     void reset();
 
-    // TODO: allow appending of own methods?
     default double getCurrentWeight() {
         return getOrders().stream().mapToDouble(ConfirmedOrder::getTotalWeight).sum();
     }
 
-    // TODO: Gui exercise to draw paths?
     interface Path {
 
         Deque<Region.Node> getNodes();

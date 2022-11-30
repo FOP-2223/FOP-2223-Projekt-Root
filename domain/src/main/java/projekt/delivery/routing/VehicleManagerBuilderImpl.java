@@ -27,13 +27,12 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     @Override
     public VehicleManager.Builder addVehicle(
         Location startingLocation,
-        double capacity,
-        Collection<String> compatibleFoodTypes
+        double capacity
     ) {
         if (capacity <= 0) {
             throw new IllegalArgumentException("Capacity must be positive");
         }
-        vehicles.add(new VehicleBuilder(startingLocation, capacity, compatibleFoodTypes));
+        vehicles.add(new VehicleBuilder(startingLocation, capacity));
         return this;
     }
 
@@ -43,10 +42,10 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
         Objects.requireNonNull(pathCalculator, "pathCalculator");
         VehicleManagerImpl vehicleManager = new VehicleManagerImpl(region, pathCalculator);
         for (VehicleBuilder vehicleBuilder : vehicles) {
-            vehicleManager.addVehicle(vehicleBuilder.startingLocation, vehicleBuilder.capacity, vehicleBuilder.compatibleFoodTypes);
+            vehicleManager.addVehicle(vehicleBuilder.startingLocation, vehicleBuilder.capacity);
         }
         return vehicleManager;
     }
 
-    private record VehicleBuilder(Location startingLocation, double capacity, Collection<String> compatibleFoodTypes) { }
+    private record VehicleBuilder(Location startingLocation, double capacity) { }
 }
