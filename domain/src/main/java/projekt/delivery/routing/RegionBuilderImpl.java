@@ -78,6 +78,11 @@ class RegionBuilderImpl implements Region.Builder {
         RegionImpl region = new RegionImpl();
         nodes.forEach((l, n) -> region.putNode(n.build(region)));
         edges.forEach(e -> {
+
+            if (!nodes.containsKey(e.getLocationA()) || !nodes.containsKey(e.locationB)) {
+                throw new IllegalArgumentException("Can't create an edge if one of the connected nodes wasn't added to the region");
+            }
+
             nodes.get(e.locationA).connections.add(e.locationB);
             nodes.get(e.locationB).connections.add(e.locationA);
             region.putEdge(e.build(region, distanceCalc));
