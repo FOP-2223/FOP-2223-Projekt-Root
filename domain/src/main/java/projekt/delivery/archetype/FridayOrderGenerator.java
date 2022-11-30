@@ -13,10 +13,12 @@ import java.util.*;
  */
 public class FridayOrderGenerator implements OrderGenerator {
 
-    private final Random random = new Random();
+    private final Random random;
     private final Map<Long, List<ConfirmedOrder>> orders = new HashMap<>();
 
-    FridayOrderGenerator(int orderCount, VehicleManager vehicleManager, int deliveryDifference, double maxWeight, double variance, int lastTick) {
+    FridayOrderGenerator(int orderCount, VehicleManager vehicleManager, int deliveryDifference, double maxWeight, double variance, int lastTick, int seed) {
+        random = seed < 0 ? new Random() : new Random(seed);
+
         for (int i = 0; i < orderCount; i++) {
             long deliveryTime;
             do {
@@ -69,19 +71,21 @@ public class FridayOrderGenerator implements OrderGenerator {
         public final double maxWeight;
         public final double variance;
         public final int lastTick;
+        public final int seed;
 
-        public Factory(int orderCount, VehicleManager vehicleManager, int deliveryInterval, double maxWeight, double variance, int lastTick) {
+        public Factory(int orderCount, VehicleManager vehicleManager, int deliveryInterval, double maxWeight, double variance, int lastTick, int seed) {
             this.orderCount = orderCount;
             this.vehicleManager = vehicleManager;
             this.deliveryInterval = deliveryInterval;
             this.maxWeight = maxWeight;
             this.variance = variance;
             this.lastTick = lastTick;
+            this.seed = seed;
         }
 
         @Override
         public OrderGenerator create() {
-            return new FridayOrderGenerator(orderCount, vehicleManager, deliveryInterval, maxWeight, variance, lastTick);
+            return new FridayOrderGenerator(orderCount, vehicleManager, deliveryInterval, maxWeight, variance, lastTick, seed);
         }
     }
 
@@ -94,6 +98,7 @@ public class FridayOrderGenerator implements OrderGenerator {
         public double maxWeight = 0.5;
         public double variance = 0.5;
         public int lastTick = 480;
+        public int seed = -1;
 
         public FactoryBuilder setOrderCount(int orderCount) {
             this.orderCount = orderCount;
@@ -125,10 +130,15 @@ public class FridayOrderGenerator implements OrderGenerator {
             return this;
         }
 
+        public FactoryBuilder setSeed(int seed) {
+            this.seed = seed;
+            return this;
+        }
+
         @Override
         public Factory build() {
             Objects.requireNonNull(vehicleManager);
-            return new Factory(orderCount, vehicleManager, deliveryInterval, maxWeight, variance, lastTick);
+            return new Factory(orderCount, vehicleManager, deliveryInterval, maxWeight, variance, lastTick, seed);
         }
     }
 }
