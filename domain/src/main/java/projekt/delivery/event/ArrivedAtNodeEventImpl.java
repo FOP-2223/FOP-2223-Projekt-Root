@@ -3,7 +3,7 @@ package projekt.delivery.event;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
-class ArrivedAtNodeEventImpl extends EventImpl implements ArrivedAtNodeEvent {
+class ArrivedAtNodeEventImpl extends VehicleEventImpl implements ArrivedAtNodeEvent {
 
     private final Region.Node node;
     private final Region.Edge lastEdge;

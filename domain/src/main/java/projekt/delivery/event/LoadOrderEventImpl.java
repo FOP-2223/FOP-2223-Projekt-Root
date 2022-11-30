@@ -4,7 +4,7 @@ import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
 
-class LoadOrderEventImpl extends EventImpl implements LoadOrderEvent {
+class LoadOrderEventImpl extends VehicleEventImpl implements LoadOrderEvent {
 
     private final ConfirmedOrder order;
     private final VehicleManager.OccupiedRestaurant restaurant;

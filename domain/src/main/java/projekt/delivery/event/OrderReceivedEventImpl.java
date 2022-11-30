@@ -9,7 +9,7 @@ class OrderReceivedEventImpl extends EventImpl implements OrderReceivedEvent {
     private final ConfirmedOrder order;
 
     public OrderReceivedEventImpl(long tick, ConfirmedOrder order) {
-        super(tick, null);
+        super(tick);
         this.order = order;
     }
 
@@ -23,15 +23,9 @@ class OrderReceivedEventImpl extends EventImpl implements OrderReceivedEvent {
     }
 
     @Override
-    public Vehicle getVehicle() {
-        return null;
-    }
-
-    @Override
     public String toString() {
         return "OrderReceivedEventImpl{" +
             "time=" + getTick() +
-            ", node=" + this.getOrder() +
             ", order=" + this.getOrder() +
             '}';
     }
