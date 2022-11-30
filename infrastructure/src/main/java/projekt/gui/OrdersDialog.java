@@ -1,24 +1,25 @@
 package projekt.gui;
 
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import projekt.delivery.routing.ConfirmedOrder;
 
-import javax.swing.*;
-import java.awt.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
-class OrdersDialog extends JDialog {
+class OrdersDialog extends Dialog<ConfirmedOrder> {
 
-    private final JTextField textField1 = new JTextField();
-    private final JSpinner deliveryTimeSelector;
-    private final JTextField foodTextField = new JTextField();
-    private final JButton addFoodButton = new JButton("Add food");
-    private final DefaultListModel<String> foodListModel = new DefaultListModel<>();
-    private final JList<String> foodList = new JList<>(foodListModel);
-    private final JScrollPane foodListPane = new JScrollPane(foodList);
-    private final JButton removeFoodButton = new JButton("Remove Food");
-    private final JButton okButton = new JButton("Submit order");
-    private final JButton cancelButton = new JButton("Cancel");
+    private final TextField locationTextField = new TextField();
+    private final Spinner<Long> deliveryTimeSpinner;
+    private final TextField foodTextField = new TextField();
+    private final Button addFoodButton = new Button("Add food");
+    //private final DefaultListModel<String> foodListModel = new DefaultListModel<>();
+    private final ListView<String> foodList = new ListView<>();
+    //private final ScrollPane foodListPane = new ScrollPane(foodList);
+    private final Button removeFoodButton = new Button("Remove Food");
+    private final Button okButton = new Button("Submit order");
+    private final Button cancelButton = new Button("Cancel");
 
     private final MainFrame mainFrame;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
@@ -46,23 +47,34 @@ class OrdersDialog extends JDialog {
     OrdersDialog(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
 
-        setMinimumSize(new Dimension(600, 500));
-        setMaximumSize(new Dimension(600, 600)); // ignored for whatever reason... ask your favorite higher being as to why
+        this.getGraphic().minHeight(600);
+        this.getGraphic().minWidth(600);
+        this.getGraphic().maxHeight(600);
+        this.getGraphic().maxWidth(600);
+        //setMinimumSize(new Dimension(600, 500));
+        //setMaximumSize(new Dimension(600, 600));
+        // ignored for whatever reason... ask your favorite higher being as to why
 
+
+        deliveryTimeSpinner = new Spinner<>(mainFrame.getSimulation().getCurrentTick(), Long.MAX_VALUE, 1);
+        deliveryTimeSpinner.getValueFactory().setValue(mainFrame.getSimulation().getCurrentTick());
         //TODO in LocalDateTime umrechnen?
-        deliveryTimeSelector = new JSpinner(new SpinnerNumberModel(
-            mainFrame.getSimulation().getCurrentTick(), mainFrame.getSimulation().getCurrentTick(),Long.MAX_VALUE,1));
 
-        foodList.addListSelectionListener(listSelectionEvent -> removeFoodButton.setEnabled(foodList.getSelectedIndex() >= 0));
-        addFoodButton.addActionListener(actionEvent -> {
+        foodList.getSelectionModel().selectedItemProperty().addListener(
+            (observable, oldValue, newValue) -> {
+                removeFoodButton.setDisable(foodList.getSelectionModel().getSelectedIndex() < 0);
+            }
+        );
+        addFoodButton.setOnAction(actionEvent -> {
             String food = foodTextField.getText();
-            foodListModel.addElement(food);
+            foodList.getItems().add(food);
             resetFields();
         });
-        removeFoodButton.setEnabled(false);
-        removeFoodButton.addActionListener(actionEvent -> foodListModel.remove(foodList.getSelectedIndex()));
-        okButton.addActionListener(actionEvent -> {
-            Integer[] coordinates = Arrays.stream(textField1.getText().replaceAll("\\(?\\)?", "").split(","))
+        removeFoodButton.setDisable(true);
+        removeFoodButton.setOnAction(actionEvent -> foodList.getItems().remove(foodList.getSelectionModel().getSelectedItem()));
+
+        okButton.setOnAction(actionEvent -> {
+            Integer[] coordinates = Arrays.stream(locationTextField.getText().replaceAll("\\(?\\)?", "").split(","))
                 .map(String::trim)
                 .map(Integer::parseInt)
                 .toArray(Integer[]::new);
@@ -76,88 +88,44 @@ class OrdersDialog extends JDialog {
             );*/
 //            ordersPanel.addOrder(textField1.getText());
             mainFrame.getControlsPanel().unpause();
-            setVisible(false);
-        });
-        cancelButton.addActionListener(actionEvent -> {
-            mainFrame.getControlsPanel().unpause();
-            setVisible(false);
+            okButton.setVisible(false);
         });
 
-        // TODO: why are the components jumping around depending on the number of entries in extrasPane...
+        cancelButton.setOnAction(actionEvent -> {
+            mainFrame.getControlsPanel().unpause();
+            cancelButton.setVisible(false);
+        });
+
+        /*// OLD TODO: why are the components jumping around depending on the number of entries in extrasPane...
         setLayout(new GridBagLayout());
         final GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.anchor = GridBagConstraints.PAGE_START;
-        constraints.weighty = 1;
-        constraints.insets = new Insets(6, 6, 6, 6);
+        */
 
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0;
-        add(new JLabel("Location:", JLabel.LEFT), constraints);
+        final GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(6, 6, 6, 6));
 
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.gridwidth = 3;
-        constraints.weightx = 1;
-        add(textField1, constraints);
+        grid.add(new Label("Location:"), 0, 0, 1, 1);
+        grid.add(locationTextField, 1, 0, 3, 1);
 
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0;
-        add(new JLabel("Delivery time:", JLabel.LEFT), constraints);
+        grid.add(new Label("Delivery time:"), 0, 1, 1, 1);
+        grid.add(deliveryTimeSpinner, 1, 1, 3, 1);
 
-        constraints.gridx = 1;
-        constraints.gridy = 1;
-        constraints.gridwidth = 3;
-        constraints.weightx = 1;
-        add(deliveryTimeSelector, constraints);
+        grid.add(new Label("Food"), 0, 2, 1, 1);
+        grid.add(foodTextField, 1, 2, 3, 1);
 
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0;
-        add(new JLabel("Food", JLabel.LEFT), constraints);
+        grid.add(foodList, 0, 3, 2, 2);
+        grid.add(addFoodButton, 2, 3, 2, 1);
 
-        constraints.gridx = 1;
-        constraints.gridy = 2;
-        constraints.gridwidth = 3;
-        constraints.weightx = 1;
-        add(foodTextField, constraints);
+        grid.add(removeFoodButton, 2, 4, 2, 1);
+        grid.add(okButton, 0, 5, 2, 1);
 
-        constraints.gridx = 0;
-        constraints.gridy = 3;
-        constraints.gridwidth = 2;
-        constraints.gridheight = 2;
-        add(foodListPane, constraints);
+        grid.add(cancelButton, 2, 5, 2, 1);
 
-        constraints.gridx = 2;
-        constraints.gridy = 3;
-        constraints.gridwidth = 2;
-        constraints.gridheight = 1;
-        add(addFoodButton, constraints);
-
-        constraints.gridx = 2;
-        constraints.gridy = 4;
-        constraints.gridwidth = 2;
-        constraints.gridheight = 1;
-        add(removeFoodButton, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 5;
-        constraints.gridwidth = 2;
-        constraints.gridheight = 1;
-        add(okButton, constraints);
-
-        constraints.gridx = 2;
-        constraints.gridy = 5;
-        constraints.gridwidth = 2;
-        constraints.gridheight = 1;
-        add(cancelButton, constraints);
-
-        setModal(true);
+        getDialogPane().setContent(grid);
     }
 
     void showAddOrderDialog() {
@@ -166,28 +134,27 @@ class OrdersDialog extends JDialog {
         // or everything else goes belly up because Swing...
         // removeAll();
 
-        textField1.setText("(0, 0)");
-        deliveryTimeSelector.setValue(mainFrame.getSimulation().getCurrentTick());
-
-        pack();
-        setVisible(true);
+        locationTextField.setText("(0, 0)");
+        deliveryTimeSpinner.getValueFactory().
+            setValue(mainFrame.getSimulation().getCurrentTick());
+        getDialogPane().setVisible(true);
     }
 
     void showEditOrderDialog(ConfirmedOrder order) {
         setTitle("Edit order");
 
         // TODO: make okButton update actual order
-        textField1.setText(order.getLocation().toString());
-        deliveryTimeSelector.setValue(order.getDeliveryInterval().getStart());
-        order.getFoodList().forEach(foodListModel::addElement);
+        locationTextField.setText(order.getLocation().toString());
+        deliveryTimeSpinner.getValueFactory().setValue(order.getDeliveryInterval().getStart());
+        //order.getFoodList().forEach(foodListModel::addElement);
 
-        pack();
-        setVisible(true);
+        //pack();
+        getDialogPane().setVisible(true);
     }
 
     private void resetFields() {
-        textField1.setText("(0, 0)");
-        deliveryTimeSelector.setValue(mainFrame.getSimulation().getCurrentTick());
+        locationTextField.setText("(0, 0)");
+        deliveryTimeSpinner.getValueFactory().setValue(mainFrame.getSimulation().getCurrentTick());
         foodTextField.setText("");
     }
 }

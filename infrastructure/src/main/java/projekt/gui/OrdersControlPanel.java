@@ -1,12 +1,12 @@
 package projekt.gui;
 
-import javax.swing.*;
-import java.awt.*;
+import javafx.scene.control.Button;
+import javafx.scene.layout.GridPane;
 
-public class OrdersControlPanel extends JPanel {
-    final JButton addOrderButton;
-    final JButton editOrderButton;
-    final JButton removeOrderButton;
+public class OrdersControlPanel extends GridPane {
+    final Button addOrderButton;
+    final Button editOrderButton;
+    final Button removeOrderButton;
     private final MainFrame mainFrame;
     private final OrdersPanel ordersPanel;
     private final OrdersDialog ordersDialog;
@@ -16,29 +16,29 @@ public class OrdersControlPanel extends JPanel {
         this.ordersPanel = ordersPanel;
         this.ordersDialog = new OrdersDialog(mainFrame);
 
-        addOrderButton = new JButton("Add");
-        editOrderButton = new JButton("Edit");
-        removeOrderButton = new JButton("Remove");
+        addOrderButton = new Button("Add");
+        editOrderButton = new Button("Edit");
+        removeOrderButton = new Button("Remove");
         initComponents();
     }
 
     private void initComponents() {
-        addOrderButton.addActionListener(actionEvent -> {
+        addOrderButton.setOnAction(event -> {
             mainFrame.getControlsPanel().pause();
             ordersDialog.showAddOrderDialog();
         });
-        editOrderButton.setEnabled(false);
-        editOrderButton.addActionListener(actionEvent -> {
+        editOrderButton.setDisable(false);
+        editOrderButton.setOnAction(event -> {
             mainFrame.getControlsPanel().pause();
             ordersDialog.showEditOrderDialog(ordersPanel.getSelectedOrder());
         });
-        removeOrderButton.setEnabled(false);
-        removeOrderButton.addActionListener(actionEvent -> ordersPanel.removeSelected());
+        removeOrderButton.setDisable(true);
+        removeOrderButton.setOnAction(event -> ordersPanel.removeSelected());
 
-        setLayout(new GridLayout(1, 3, 6, 6));
-
-        add(addOrderButton);
-        add(editOrderButton);
-        add(removeOrderButton);
+        //setLayout(new GridLayout(1, 3, 6, 6));
+        // TODO: match gridlayout
+        add(addOrderButton, 0, 0, 2, 2);
+        add(editOrderButton, 0, 1, 2, 2);
+        add(removeOrderButton, 0, 2, 2, 2);
     }
 }

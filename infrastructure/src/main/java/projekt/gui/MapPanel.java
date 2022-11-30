@@ -1,36 +1,36 @@
 package projekt.gui;
 
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 import projekt.base.Location;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
+import java.awt.geom.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static projekt.gui.Utils.getDifference;
 import static projekt.gui.Utils.toPoint;
 
-public class MapPanel extends JPanel {
+public class MapPanel extends TitledPane {
 
     private static final Stroke STROKE = new BasicStroke(.1f);
-    private static final Color NODE_COLOR = TUColors.COLOR_0D;
-    private static final Color EDGE_COLOR = TUColors.COLOR_0C;
+    private static final java.awt.Color NODE_COLOR = TUColors.COLOR_0D;
+    //private static final Color NODE_COLOR = Color.rgb(nc.getRed(), nc.getGreen(), nc.getBlue(), nc.getAlpha()/255.0);
+    private static final java.awt.Color EDGE_COLOR = TUColors.COLOR_0C;
+    //private static final Color EDGE_COLOR = Color.rgb(ec.getRed(), ec.getGreen(), ec.getBlue(), ec.getAlpha()/255.0);
 
     private static final double NODE_DIAMETER = .95;
     private static final double IMAGE_SIZE = .5;
-    private static final Color CAR_COLOR = TUColors.COLOR_6C;
-    private static final Image CAR = Utils.loadImage("car.png", new Color(CAR_COLOR.getRed(), CAR_COLOR.getGreen(), CAR_COLOR.getBlue(), 255 / 4));
-    private static final Image CAR_SELECTED = Utils.loadImage("car.png", CAR_COLOR);
+    private static final java.awt.Color CAR_COLOR = TUColors.COLOR_6C;
+    //private static final Color CAR_COLOR = Color.rgb(cc.getRed(), cc.getGreen(), cc.getBlue(), cc.getAlpha()/255.0);
+    //private static final Image CAR = Utils.loadImage("car.png", new Color(CAR_COLOR.getRed(), CAR_COLOR.getGreen(), CAR_COLOR.getBlue(), 255 / 4));
+    //private static final Image CAR_SELECTED = Utils.loadImage("car.png", CAR_COLOR);
     private static final double SCALE_IN = 1.1;
     private static final double SCALE_OUT = 1 / SCALE_IN;
     final AtomicReference<Point> lastPoint = new AtomicReference<>();
@@ -44,52 +44,55 @@ public class MapPanel extends JPanel {
     }
 
     private void initComponents() {
-        setBackground(Color.BLACK);
-        setBorder(new TitledBorder("Map"));
-        this.addMouseMotionListener(new MouseAdapter() {
+        //final Label map = new Label("Map");
+        setText("Map");
+        setCollapsible(false);
+        var bgf = new BackgroundFill(Color.BLACK, new CornerRadii(0), new javafx.geometry.Insets(0));
+        setBackground(new Background(bgf));
 
-            @Override
-            public void mouseDragged(MouseEvent event) {
-                try {
-                    var lastTransformed = transformation.inverseTransform(lastPoint.get(), null);
-                    var currentTransformed = transformation.inverseTransform(event.getPoint(), null);
-                    var difference = getDifference(currentTransformed, lastTransformed);
-                    transformation.translate(difference.getX(), difference.getY());
-                    repaint();
-                    lastPoint.set(event.getPoint());
-                    updateLocation();
-                } catch (NoninvertibleTransformException e) {
-                    throw new IllegalStateException();
-                }
-            }
+        //setBorder(new TitledBorder("Map"));
 
-            @Override
-            public void mouseMoved(MouseEvent event) {
-                lastPoint.set(event.getPoint());
-                updateLocation();
-            }
-        });
-        this.addMouseWheelListener(event -> {
+        this.setOnMouseDragged(actionEvent -> {
             try {
+                var lastTransformed = transformation.inverseTransform(lastPoint.get(), null);
+
+                var point = new Point((int) actionEvent.getX(), (int) actionEvent.getY());
+                var currentTransformed = transformation.inverseTransform(point, null);
+                var difference = getDifference(currentTransformed, lastTransformed);
+                transformation.translate(difference.getX(), difference.getY());
+                //repaint();
+                lastPoint.set(point);
+                updateLocation();
+            } catch (NoninvertibleTransformException e) {
+                throw new IllegalStateException();
+            }
+        }
+        );
+
+        this.setOnMouseMoved(actionEvent -> {
+            var point = new Point((int) actionEvent.getX(), (int) actionEvent.getY());
+            lastPoint.set(point);
+            updateLocation();
+        });
+
+        this.setOnScroll(event -> {
+            try {
+
                 var before = transformation.inverseTransform(lastPoint.get(), null);
-                var scale = event.getWheelRotation() > 0 ? SCALE_OUT : SCALE_IN;
+                var scale = event.getDeltaX() > 0 ? SCALE_OUT : SCALE_IN;
                 transformation.scale(scale, scale);
                 var after = transformation.inverseTransform(lastPoint.get(), null);
                 var difference = getDifference(after, before);
                 transformation.translate(difference.getX(), difference.getY());
-                repaint();
+                //repaint();
                 updateLocation();
             } catch (NoninvertibleTransformException e) {
-                throw new IllegalStateException("");
+                throw new IllegalStateException("Cannot inverse location after scroll");
             }
         });
-        this.addMouseListener(new MouseAdapter() {
 
-            @Override
-            public void mousePressed(MouseEvent e) {
-                updateVehicleSelection();
-            }
-        });
+        // mouse pressed
+        this.setOnMouseClicked(e -> updateVehicleSelection());
     }
 
     /**
@@ -238,10 +241,10 @@ public class MapPanel extends JPanel {
      * @param vehicle the vehicle to paint
      */
     private void paintVehicle(Graphics2D g, Vehicle vehicle) {
-        var image = CAR_SELECTED;
+        /*var image = CAR_SELECTED;
         if (mainFrame.getSelectedVehicle() != null && mainFrame.getSelectedVehicle() != vehicle)
             image = CAR;
-        paintImage(g, toPoint(vehicle), image);
+        paintImage(g, toPoint(vehicle), image);*/
     }
 
     /**
@@ -267,6 +270,10 @@ public class MapPanel extends JPanel {
         g.draw(circle);
         g.setStroke(oldStroke);
         g.setColor(oldColor);
+    }
+
+    private static Color convert(java.awt.Color color) {
+        return Color.rgb(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()/255.0);
     }
 
     /**
@@ -302,7 +309,7 @@ public class MapPanel extends JPanel {
      * @param color    the color of the text
      * @param text     the text
      */
-    private void text(Graphics2D g, Point2D position, Color color, String text) {
+    private void text(Graphics2D g, Point2D position, java.awt.Color color, String text) {
         var oldTransformation = g.getTransform();
         var oldColor = g.getColor();
         g.setColor(color);
@@ -321,7 +328,7 @@ public class MapPanel extends JPanel {
      */
     public void drawGrid(Graphics2D g2d, int width, int height, boolean drawMinors) {
         // save g2d configuration
-        Color oldColor = g2d.getColor();
+        java.awt.Color oldColor = g2d.getColor();
         Stroke oldStroke = g2d.getStroke();
         // G2d Configuration
         g2d.setColor(TUColors.COLOR_0D);
@@ -375,7 +382,7 @@ public class MapPanel extends JPanel {
         g2d.setStroke(oldStroke);
     }
 
-    @Override
+    /*@Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (lastPoint.get() == null)
@@ -385,7 +392,7 @@ public class MapPanel extends JPanel {
         g2d.setTransform(getTransform());
         paintMap(g2d);
         g2d.setTransform(old);
-    }
+    }*/
 
     /**
      * Paints the Map using the given g2d. This method assumes that (0,0) paints

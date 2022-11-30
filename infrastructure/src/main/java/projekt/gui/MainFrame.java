@@ -1,5 +1,8 @@
 package projekt.gui;
 
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import org.jetbrains.annotations.Nullable;
 import projekt.delivery.event.Event;
 import projekt.delivery.routing.Region;
@@ -8,11 +11,9 @@ import projekt.delivery.routing.VehicleManager;
 import projekt.delivery.simulation.Simulation;
 import projekt.delivery.simulation.SimulationListener;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.List;
 
-public class MainFrame extends JFrame implements SimulationListener {
+public class MainFrame extends Stage implements SimulationListener {
 
     final Region region;
     final VehicleManager vehicleManager;
@@ -21,7 +22,7 @@ public class MainFrame extends JFrame implements SimulationListener {
     private ControlsPanel controlsPanel;
     private InfoPanel infoPanel;
     private MapPanel mapPanel;
-    private MenuBar menuBar;
+    private MyMenuBar menuBar;
 
     private Vehicle selectedVehicle;
 
@@ -40,19 +41,25 @@ public class MainFrame extends JFrame implements SimulationListener {
         infoPanel = new InfoPanel(this);
         mapPanel = new MapPanel(this);
         controlsPanel = new ControlsPanel(this, simulation.getSimulationConfig());
-        menuBar = new MenuBar(this);
+        menuBar = new MyMenuBar(this);
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(500, 500));
+        //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        //setMinimumSize(new Dimension(500, 500));
+        setMinWidth(500);
+        setMinHeight(500);
 
-        setLayout(new BorderLayout(6, 6));
+        //setLayout(new BorderLayout(6, 6));
+        final BorderPane bp = new BorderPane();
 
         // Menu Bar
-        setJMenuBar(menuBar);
-        add(mapPanel, BorderLayout.CENTER);
-        add(infoPanel, BorderLayout.EAST);
-        add(controlsPanel, BorderLayout.SOUTH);
-        pack();
+        // TODO: loop calls - must be set in super constructor, but requires this to be build
+        //setMenuBar(menuBar);
+
+        bp.setCenter(mapPanel);
+        bp.setLeft(infoPanel);
+        bp.setBottom(controlsPanel);
+        final Scene scene = new Scene(bp);
+        setScene(scene);
     }
 
     public MapPanel getMapPanel() {
@@ -83,7 +90,7 @@ public class MainFrame extends JFrame implements SimulationListener {
 
     public void onUpdate() {
         infoPanel.setSelectedVehicle(selectedVehicle);
-        mapPanel.repaint();
+        //mapPanel.repaint();
     }
 
     public Region getRegion() {

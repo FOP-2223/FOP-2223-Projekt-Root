@@ -1,18 +1,21 @@
 package projekt.gui;
 
-import javax.swing.*;
+import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
+
 import java.time.format.DateTimeFormatter;
 
-public class CurrentTimePanel extends JPanel {
+public class CurrentTimePanel extends Pane {
 
     private final MainFrame mainFrame;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
-    private final JLabel currentTimeLabel = new JLabel();
+    //private final JLabel currentTimeLabel = new JLabel();
+    private final Text currentTimeLabel = new Text();
 
     CurrentTimePanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
 
-        add(currentTimeLabel);
+        getChildren().add(currentTimeLabel);
 
         new Thread(() -> {
             while (true) {

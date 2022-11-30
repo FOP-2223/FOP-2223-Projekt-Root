@@ -1,23 +1,23 @@
 package projekt.gui;
 
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.text.Font;
 import projekt.delivery.routing.ConfirmedOrder;
 
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class OrdersPanel extends JPanel {
+public class OrdersPanel extends TableView<ConfirmedOrder> {
 
     private final MainFrame mainFrame;
     private final OrdersControlPanel ordersControlPanel;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
-    private OrderTableModel tableModel;
-    private JTable table;
+    //private OrderTableModel tableModel;
+    //private Table table;
 
     public OrdersPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -26,6 +26,14 @@ public class OrdersPanel extends JPanel {
     }
 
     private void initComponents() {
+        final var label = new Label("Orders");
+        label.setFont(new Font("Arial", 20));
+        getChildren().add(label); // TODO: wrong place?
+        //setEditable(true);
+        var col1 = new TableColumn<ConfirmedOrder, ConfirmedOrder>("title1");
+        var col2 = new TableColumn<ConfirmedOrder, ConfirmedOrder>("title2");
+        getColumns().addAll(col1, col2);
+
         tableModel = new OrderTableModel();
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -37,9 +45,11 @@ public class OrdersPanel extends JPanel {
         table.setModel(new OrderTableModel());
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getSelectionModel().addListSelectionListener(e -> {
-            ordersControlPanel.editOrderButton.setEnabled(table.getSelectedRow() >= 0);
-            ordersControlPanel.removeOrderButton.setEnabled(table.getSelectedRow() >= 0);
+            ordersControlPanel.editOrderButton.setDisable(getSelectedRow() < 0);
+            ordersControlPanel.removeOrderButton.setDisable(table.getSelectedRow() < 0);
         });
+
+
         add(scrollPane, BorderLayout.CENTER);
 
         add(ordersControlPanel, BorderLayout.SOUTH);
@@ -78,5 +88,9 @@ public class OrdersPanel extends JPanel {
         public boolean isCellEditable(int row, int column) {
             return false;
         }
+    }
+
+    private class OrderItem {
+
     }
 }

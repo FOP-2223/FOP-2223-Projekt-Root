@@ -1,25 +1,25 @@
 package projekt.gui;
 
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 import projekt.delivery.simulation.SimulationConfig;
 
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.function.IntUnaryOperator;
 
-public class ControlsPanel extends JPanel {
+public class ControlsPanel extends GridPane {
 
     private final MainFrame mainFrame;
     private final SimulationConfig simulationConfig;
     private final IntUnaryOperator speedFunction = i -> 1000 - 100 * i;
-    private JButton playPauseButton;
-    private JButton singleStepButton;
-    private JButton stopButton;
-    private JSlider tickIntervalSlider;
-    private JLabel tickIntervalSliderLabel;
-    private JLabel mousePositionLabel;
+    private Button playPauseButton;
+    private Button singleStepButton;
+    private Button stopButton;
+    private Slider tickIntervalSlider;
+    private Label tickIntervalSliderLabel;
+    private Label mousePositionLabel;
     private boolean paused = false;
 
     public ControlsPanel(MainFrame mainFrame, SimulationConfig simulationConfig) {
@@ -29,20 +29,24 @@ public class ControlsPanel extends JPanel {
     }
 
     private void initComponents() {
-        setLayout(new GridLayout(1, 6, 6, 6));
-        setBorder(new TitledBorder("Controls"));
+        //setLayout(new GridLayout(1, 6, 6, 6));
+        //setBorder(new TitledBorder("Controls"));
+        final Label title = new Label("Controls");
+        getChildren().add(title);
         // setBorder(new CompoundBorder(new TitledBorder("Controls"), new
         // EmptyBorder(12, 0, 0, 0))); // More space up top
-        playPauseButton = new JButton();
-        stopButton = new JButton();
-        singleStepButton = new JButton();
-        tickIntervalSlider = new JSlider();
-        tickIntervalSliderLabel = new JLabel();
-        mousePositionLabel = new JLabel();
+        playPauseButton = new Button();
+        stopButton = new Button();
+        singleStepButton = new Button();
+        tickIntervalSlider = new Slider();
+        tickIntervalSliderLabel = new Label();
+        mousePositionLabel = new Label();
 
-        playPauseButton.setFont(new Font("Dialog", 0, 16)); // NOI18N
+        final Font dialog = new Font("Dialog", 16);
+        playPauseButton.setFont(dialog); // NOI18N
+
         playPauseButton.setText("Play / Pause");
-        playPauseButton.addActionListener(actionEvent -> {
+        playPauseButton.setOnAction(actionEvent -> {
             if (!paused) {
                 pause();
             } else {
@@ -50,65 +54,62 @@ public class ControlsPanel extends JPanel {
             }
         });
 
-        stopButton.setFont(new Font("Dialog", 0, 16)); // NOI18N
+        stopButton.setFont(dialog); // NOI18N
         stopButton.setText("Stop");
-        stopButton.setEnabled(false);
+        stopButton.setDisable(true);
 
-        singleStepButton.setFont(new Font("Dialog", 0, 16)); // NOI18N
+        singleStepButton.setFont(dialog); // NOI18N
         singleStepButton.setText("Single step");
-        singleStepButton.setEnabled(false);
-        singleStepButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                // TODO: advance one step - make AbstractDeliverService#runTick() public?
-                mainFrame.getSimulation().runCurrentTick();
-            }
+        singleStepButton.setDisable(true);
+        singleStepButton.setOnAction(actionEvent -> {
+            // TODO: advance one step - make AbstractDeliverService#runTick() public?
+            mainFrame.getSimulation().runCurrentTick();
         });
 
         // tickSpeedSlider.setToolTipText("");
         tickIntervalSlider.setValue(0);
-        tickIntervalSlider.setMinimum(0);
-        tickIntervalSlider.setMaximum(9);
-        tickIntervalSlider.setMajorTickSpacing(1);
+        tickIntervalSlider.setMin(0);
+        tickIntervalSlider.setMax(9);
+        tickIntervalSlider.setMajorTickUnit(1);
         tickIntervalSlider.setSnapToTicks(true);
-        tickIntervalSlider.addChangeListener(changeEvent -> {
-            simulationConfig.setMillisecondsPerTick(speedFunction.applyAsInt(tickIntervalSlider.getValue()));
+        tickIntervalSlider.setOnInputMethodTextChanged(changeEvent -> {
+            simulationConfig.setMillisecondsPerTick(speedFunction.applyAsInt((int) tickIntervalSlider.getValue()));
             updateText();
         });
 
         updateText();
 
-        add(playPauseButton);
-        add(stopButton);
-        add(singleStepButton);
-        add(tickIntervalSlider);
-        add(tickIntervalSliderLabel);
-        add(mousePositionLabel);
+        getChildren().add(playPauseButton);
+        getChildren().add(stopButton);
+        getChildren().add(singleStepButton);
+        getChildren().add(tickIntervalSlider);
+        getChildren().add(tickIntervalSliderLabel);
+        getChildren().add(mousePositionLabel);
     }
 
     private void updateText() {
         tickIntervalSliderLabel.setText(
             String.format(
                 "Tick interval: %d ms %s",
-                speedFunction.applyAsInt(tickIntervalSlider.getValue()),
+                speedFunction.applyAsInt((int) tickIntervalSlider.getValue()),
                 paused ? "(paused)" : ""
             )
         );
     }
 
-    public JLabel getMousePositionLabel() {
+    public Label getMousePositionLabel() {
         return mousePositionLabel;
     }
 
     public void pause() {
         simulationConfig.setPaused(paused = true);
-        singleStepButton.setEnabled(true);
+        singleStepButton.setDisable(false);
         updateText();
     }
 
     public void unpause() {
         simulationConfig.setPaused(paused = false);
-        singleStepButton.setEnabled(false);
+        singleStepButton.setDisable(true);
         updateText();
     }
 }

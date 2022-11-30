@@ -1,5 +1,8 @@
 package projekt.gui;
 
+import javafx.scene.control.ListView;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.GridPane;
 import projekt.delivery.routing.Vehicle;
 
 import javax.swing.*;
@@ -7,11 +10,11 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.Objects;
 
-public class VehiclePanel extends JPanel {
+public class VehiclePanel extends GridPane {
 
     private final MainFrame mainFrame;
 
-    private JList<Vehicle> selectionList;
+    private ListView<Vehicle> selectionList;
 
     public VehiclePanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -19,11 +22,13 @@ public class VehiclePanel extends JPanel {
     }
 
     public void initComponents() {
-        setLayout(new GridLayout(0, 1));
-        setBorder(new TitledBorder("Vehicle Selection"));
-        selectionList = new JList<>();
-        var scrollPane = new JScrollPane(selectionList);
-        add(scrollPane, BorderLayout.CENTER);
+        //setLayout(new GridLayout(0, 1));
+        //setBorder(new Title = "Vehicle Selection");
+
+        //setBorder(new TitledBorder("Vehicle Selection"));
+        selectionList = new ListView<>();
+        //var scrollPane = new ScrollPane(selectionList);
+        getChildren().add(selectionList, BorderLayout.CENTER);
         selectionList.setCellRenderer(new ListCellRenderer<>() {
 
             final ListCellRenderer<? super Vehicle> original = selectionList.getCellRenderer();
