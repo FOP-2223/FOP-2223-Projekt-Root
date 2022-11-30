@@ -9,11 +9,6 @@ plugins {
 
 version = file("version").readLines().first()
 
-javafx {
-    version = "17.0.1"
-    modules("javafx.controls", "javafx.fxml")
-}
-
 jagr {
     assignmentId.set("projekt")
     submissions {

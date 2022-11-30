@@ -3,6 +3,11 @@ plugins{
     alias(libs.plugins.javafx)
 }
 
+javafx {
+    version = "17.0.1"
+    modules("javafx.controls", "javafx.fxml")
+}
+
 dependencies {
     implementation(project(":domain"))
     implementation(libs.annotations)
