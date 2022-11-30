@@ -54,7 +54,7 @@ public class Main {
             .addEdge("A67_1", new Location(0, 5), new Location(6, 8))
             .addEdge("A67_2", new Location(0, 5), new Location(-2, 0))
             .addEdge("Straße", new Location(3, -1), new Location(1, -2))
-            .distanceCalculator(new EuclideanDistanceCalculator()) //TODO braucht man das noch?
+            .distanceCalculator(new EuclideanDistanceCalculator())
             .build();
 
         Region region2 = Region.builder()
@@ -89,7 +89,7 @@ public class Main {
             .addEdge("A67_1", new Location(0, 5), new Location(6, 8))
             .addEdge("A67_2", new Location(0, 5), new Location(-2, 0))
             .addEdge("Straße", new Location(6, 8), new Location(10, 8))
-            .distanceCalculator(new EuclideanDistanceCalculator()) //TODO braucht man das noch?
+            .distanceCalculator(new EuclideanDistanceCalculator())
             .build();
 
         // layer 2 - VehicleManager
