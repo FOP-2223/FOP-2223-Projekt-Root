@@ -68,7 +68,7 @@ public class BogoDeliveryService extends AbstractDeliveryService {
 
     private void scheduleRandomMove(
         List<Event> events,
-        Class<? extends Event> eventType
+        Class<? extends VehicleEvent> eventType
     ) {
         events.stream()
             .filter(eventType::isInstance)
