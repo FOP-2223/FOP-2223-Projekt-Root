@@ -1,9 +1,10 @@
 [versions]
 algoutils = "0.4.0"
+algo-student = "0.6.0"
 
 [libraries]
 annotations = "org.jetbrains:annotations:23.0.0"
-algoutils-student = { module = "org.tudalgo:algoutils-student", version.ref = "algoutils" }
+algoutils-student = { module = "org.tudalgo:algoutils-student", version.ref = "algo-student" }
 algoutils-tutor = { module = "org.tudalgo:algoutils-tutor", version.ref = "algoutils" }
 flatlaf = "com.formdev:flatlaf:2.0.1"
 junit-core = { module = "org.junit.jupiter:junit-jupiter", version = "5.9.1" }
