@@ -1,21 +1,14 @@
 package projekt.delivery.rating;
 
-import projekt.delivery.event.DeliverOrderEvent;
 import projekt.delivery.event.Event;
-import projekt.delivery.event.OrderReceivedEvent;
-import projekt.delivery.routing.ConfirmedOrder;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import static org.tudalgo.algoutils.student.Student.crash;
 
 public class InTimeRater implements Rater {
 
     public static final RatingCriteria RATING_CRITERIA = RatingCriteria.IN_TIME;
-
-    private long totalTicksOff = 0;
-    private long ordersDelivered = 0;
-    private final Set<ConfirmedOrder> pendingOrders = new HashSet<>();
 
     private final long ignoredTicksOff;
     private final long maxTicksOff;
@@ -29,35 +22,12 @@ public class InTimeRater implements Rater {
     }
 
     public double getScore() {
-        long maxTotalTicksOff = maxTicksOff * (ordersDelivered + pendingOrders.size());
-        long actualTotalTicksOff = totalTicksOff + pendingOrders.size() * maxTicksOff;
-
-        return 1 - (((double) actualTotalTicksOff) / maxTotalTicksOff);
+        return crash(); // TODO: H8.2 - remove if implemented
     }
 
     @Override
     public void onTick(List<Event> events, long tick) {
-        events.stream()
-            .filter(DeliverOrderEvent.class::isInstance)
-            .map(DeliverOrderEvent.class::cast)
-            .forEach(deliverOrderEvent -> {
-                ConfirmedOrder order = deliverOrderEvent.getOrder();
-
-                if (!pendingOrders.remove(order)) {
-                    throw new AssertionError("DeliverOrderEvent before OrderReceivedEvent");
-                }
-
-                long ticksOff = Math.max(Math.min(order.getActualDeliveryTick() - order.getDeliveryInterval().getEnd() - ignoredTicksOff, 15), 0);
-                totalTicksOff += ticksOff;
-
-                ordersDelivered++;
-            });
-
-        events.stream()
-            .filter(OrderReceivedEvent.class::isInstance)
-            .map(OrderReceivedEvent.class::cast)
-            .map(OrderReceivedEvent::getOrder)
-            .forEach(pendingOrders::add);
+        crash(); // TODO: H8.2 - remove if implemented
     }
 
     @Override

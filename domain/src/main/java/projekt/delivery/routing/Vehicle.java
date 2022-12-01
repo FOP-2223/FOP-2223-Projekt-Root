@@ -7,6 +7,8 @@ import java.util.Deque;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static org.tudalgo.algoutils.student.Student.crash;
+
 public interface Vehicle extends Comparable<Vehicle> {
 
     /**
@@ -73,7 +75,7 @@ public interface Vehicle extends Comparable<Vehicle> {
     void reset();
 
     default double getCurrentWeight() {
-        return getOrders().stream().mapToDouble(ConfirmedOrder::getTotalWeight).sum();
+        return crash(); // TODO: H5.1 - remove if implemented
     }
 
     interface Path {

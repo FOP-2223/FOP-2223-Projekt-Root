@@ -5,13 +5,11 @@ import projekt.delivery.event.Event;
 import projekt.delivery.routing.ConfirmedOrder;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
-public class OurDeliveryService extends AbstractDeliveryService {
+import static org.tudalgo.algoutils.student.Student.crash;
 
-//    private final OrderGenerator orderGenerator;
-//    private final RatingCriteria ratingCriteria;
+public class OurDeliveryService extends AbstractDeliveryService {
 
     protected final List<ConfirmedOrder> pendingOrders = new ArrayList<>();
 
@@ -19,59 +17,11 @@ public class OurDeliveryService extends AbstractDeliveryService {
         ProblemArchetype problemArchetype
     ) {
         super(problemArchetype.vehicleManager());
-//        orderGenerator = problemArchetype.getOrderGenerator();
-//        ratingCriteria = problemArchetype.getRatingCriteria();
     }
 
     @Override
     List<Event> tick(long currentTick, List<ConfirmedOrder> newOrders) {
-
-        // Move vehicles forward.
-        List<Event> events = vehicleManager.tick(currentTick);
-
-        // Add all newly arrived orders to the list of pending orders.
-        pendingOrders.addAll(newOrders);
-
-        // Prioritize orders according to their expected delivery times.
-        pendingOrders.sort(Comparator.comparing(order -> order.getDeliveryInterval().getStart()));
-
-        // For each vehicle waiting in the pizzeria, load as many orders as possible on the vehicle and send it out.
-        //TODO
-//        vehicleManager.getRestaurants().getVehicles().stream()
-//            .filter(vehicle -> vehicle.getOrders().isEmpty()).forEach(vehicle -> {
-//                boolean loadedAtLeastOneOrderOnVehicle = false;
-//
-
-//                List<ConfirmedOrder> ordersReadyForVehicle = solution.get(vehicle).entrySet()
-//                    .stream()
-//                    .filter(entry -> entry.getKey() <= currentTick)
-//                    .map(Map.Entry::getValue)
-//                    .flatMap(List::stream)
-//                    .toList();
-//
-//                List<ConfirmedOrder> ordersPendingForVehicle = pendingOrders
-//                    .stream()
-//                    .filter(ordersReadyForVehicle::contains)
-//                    .toList();
-//
-//                for (ConfirmedOrder order : ordersPendingForVehicle) {
-//                    if (order.getTotalWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()
-//                        && vehicle.checkCompatibility(order.getFoodList())) {
-//                        loadedAtLeastOneOrderOnVehicle = true;
-//                        vehicleManager.getWarehouse().loadOrder(vehicle, order, currentTick);
-//                        vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v ->
-//                            vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied().getComponent()).deliverOrder(v, order, currentTick));
-//                        pendingOrders.remove(order);
-//                    }
-//                }
-
-//                // If the vehicle leaves the pizzeria, ensure that it returns after delivering the last order.
-//                if (loadedAtLeastOneOrderOnVehicle) {
-//                    vehicle.moveQueued(vehicleManager.getRestaurants().getComponent());
-//                }
-//            });
-
-        return events;
+        return crash(); // TODO: H9.2 - remove if implemented
     }
 
     @Override
