@@ -17,8 +17,8 @@ public class CurrentTimePanel extends JPanel {
         new Thread(() -> {
             while (true) {
                 currentTimeLabel.setText("Current time and date: " +
-                    mainFrame.getDeliveryService().getSimulationConfig().tickToLocalDateTime(
-                        mainFrame.getDeliveryService().getCurrentTick()
+                    mainFrame.getSimulation().getSimulationConfig().tickToLocalDateTime(
+                        mainFrame.getSimulation().getCurrentTick()
                     ).format(dateTimeFormatter));
                 try {
                     //noinspection BusyWait

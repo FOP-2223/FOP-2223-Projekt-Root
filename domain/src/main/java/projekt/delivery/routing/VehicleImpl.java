@@ -10,28 +10,37 @@ class VehicleImpl implements Vehicle {
     private final int id;
     private final double capacity;
     private final List<ConfirmedOrder> orders = new ArrayList<>();
-    private final Collection<String> compatibleFoodTypes;
     private final VehicleManagerImpl vehicleManager;
     private final Deque<PathImpl> moveQueue = new LinkedList<>();
+    private final VehicleManager.OccupiedRestaurant startingNode;
     private AbstractOccupied<?> occupied;
 
     public VehicleImpl(
         int id,
         double capacity,
-        Collection<String> compatibleFoodTypes,
-        AbstractOccupied<?> occupied,
-        VehicleManagerImpl vehicleManager
-    ) {
+        VehicleManagerImpl vehicleManager,
+        VehicleManager.OccupiedRestaurant startingNode) {
         this.id = id;
         this.capacity = capacity;
-        this.compatibleFoodTypes = compatibleFoodTypes;
-        this.occupied = occupied;
+        this.occupied = (AbstractOccupied<?>) startingNode;
         this.vehicleManager = vehicleManager;
+        this.startingNode = startingNode;
     }
 
     @Override
     public VehicleManager.Occupied<?> getOccupied() {
         return occupied;
+    }
+
+    @Override
+    public @Nullable VehicleManager.Occupied<?> getPreviousOccupied() {
+        AbstractOccupied.VehicleStats stats = occupied.vehicles.get(this);
+        return stats == null ? null : stats.previous;
+    }
+
+    @Override
+    public List<? extends Path> getPaths() {
+        return new LinkedList<>(moveQueue);
     }
 
     void setOccupied(AbstractOccupied<?> occupied) {
@@ -98,17 +107,24 @@ class VehicleImpl implements Vehicle {
     }
 
     @Override
+    public VehicleManager.Occupied<? extends Region.Node> getStartingNode() {
+        return startingNode;
+    }
+
+    @Override
     public Collection<ConfirmedOrder> getOrders() {
         return orders;
     }
 
     @Override
-    public Collection<String> getCompatibleFoodTypes() {
-        return compatibleFoodTypes;
+    public void reset() {
+        occupied = (AbstractOccupied<?>) startingNode;
+        moveQueue.clear();
+        orders.clear();
     }
 
     private void checkMoveToNode(Region.Node node) {
-        if (occupied.component.equals(node)) {
+        if (occupied.component.equals(node) && moveQueue.isEmpty()) {
             throw new IllegalArgumentException("Vehicle " + getId() + " cannot move to own node " + node);
         }
     }
@@ -145,12 +161,6 @@ class VehicleImpl implements Vehicle {
 
         if (capacityNeeded > capacity) {
             throw new VehicleOverloadedException(this, capacityNeeded);
-        }
-
-        Optional<String> incompatibleFood = order.getFoodList().stream().filter(f ->
-            !compatibleFoodTypes.contains(f)).findFirst();
-        if (incompatibleFood.isPresent()) {
-            throw new FoodNotSupportedException(this, incompatibleFood.get());
         }
 
         orders.add(order);

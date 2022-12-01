@@ -1,11 +1,11 @@
 package projekt.delivery.routing;
 
-import projekt.delivery.event.ArrivedAtWarehouseEvent;
+import projekt.delivery.event.ArrivedAtRestaurantEvent;
 import projekt.delivery.event.LoadOrderEvent;
 
-class OccupiedWarehouseImpl extends OccupiedNodeImpl<Region.Node> implements VehicleManager.Warehouse {
+class OccupiedRestaurantImpl extends OccupiedNodeImpl<Region.Restaurant> implements VehicleManager.OccupiedRestaurant {
 
-    OccupiedWarehouseImpl(Region.Node component, VehicleManager vehicleManager) {
+    OccupiedRestaurantImpl(Region.Restaurant component, VehicleManager vehicleManager) {
         super(component, vehicleManager);
     }
 
@@ -20,17 +20,17 @@ class OccupiedWarehouseImpl extends OccupiedNodeImpl<Region.Node> implements Veh
                 currentTick,
                 vehicle,
                 order,
-                vehicleManager.getWarehouse()
+                this
             )
         );
     }
 
     @Override
     protected void emitArrivedEvent(VehicleImpl vehicle, OccupiedEdgeImpl previousEdge, long currentTick) {
-        vehicleManager.getEventBus().queuePost(ArrivedAtWarehouseEvent.of(
+        vehicleManager.getEventBus().queuePost(ArrivedAtRestaurantEvent.of(
                 currentTick,
                 vehicle,
-                component,
+                this,
                 previousEdge.getComponent()
             )
         );

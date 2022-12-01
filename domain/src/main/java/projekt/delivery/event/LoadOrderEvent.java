@@ -4,18 +4,18 @@ import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
 
-public interface LoadOrderEvent extends Event {
+public interface LoadOrderEvent extends VehicleEvent {
 
     static LoadOrderEvent of(
         long tick,
         Vehicle vehicle,
         ConfirmedOrder order,
-        VehicleManager.Warehouse warehouse
+        VehicleManager.OccupiedRestaurant restaurant
     ) {
-        return new LoadOrderEventImpl(tick, vehicle, order, warehouse);
+        return new LoadOrderEventImpl(tick, vehicle, order, restaurant);
     }
 
     ConfirmedOrder getOrder();
 
-    VehicleManager.Warehouse getWarehouse();
+    VehicleManager.OccupiedRestaurant getRestaurant();
 }

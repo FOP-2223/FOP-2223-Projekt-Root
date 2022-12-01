@@ -32,16 +32,18 @@ public class EventBus {
         // is not a read lock because the queue has to be cleared too
         lock.writeLock().lock();
         try {
-            final List<Event> events = queuedEvents.stream()
-                .sorted(Comparator.comparing(Event::getVehicle))
-                .toList();
-            log.put(tick, events);
-            System.out.printf("Tick: %s - %s\n", tick, events);
+            log.put(tick, queuedEvents);
+            System.out.printf("Tick: %s - %s\n", tick, queuedEvents);
+            List<Event> copy = new ArrayList<>(queuedEvents);
             queuedEvents.clear();
-            return events;
+            return copy;
         } finally {
             lock.writeLock().unlock();
         }
+    }
+
+    public void clear() {
+        queuedEvents.clear();
     }
 
     public Map<Long, List<Event>> getLog() {

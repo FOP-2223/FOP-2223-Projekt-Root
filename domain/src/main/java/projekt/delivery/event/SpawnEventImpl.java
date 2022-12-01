@@ -3,7 +3,7 @@ package projekt.delivery.event;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
-class SpawnEventImpl extends EventImpl implements SpawnEvent {
+class SpawnEventImpl extends VehicleEventImpl implements SpawnEvent {
 
     private final Region.Node node;
 

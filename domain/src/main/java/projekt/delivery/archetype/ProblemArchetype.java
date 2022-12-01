@@ -1,17 +1,18 @@
 package projekt.delivery.archetype;
 
-import projekt.delivery.DeliveryService;
-import projekt.delivery.SimulationConfig;
-import projekt.delivery.routing.Region;
+import projekt.delivery.rating.Rater;
+import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.VehicleManager;
+
+import java.util.Map;
 
 public interface ProblemArchetype {
 
-    Region getRegion();
+    OrderGenerator.Factory orderGeneratorFactory();
 
-    VehicleManager getVehicleManager();
+    VehicleManager vehicleManager();
 
-    SimulationConfig getSimulationConfig();
+    Map<RatingCriteria, Rater.Factory> raterFactoryMap();
 
-    void runSimulation(DeliveryService.Factory deliveryServiceFactory);
+    long simulationLength();
 }

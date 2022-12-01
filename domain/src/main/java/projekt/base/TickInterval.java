@@ -54,4 +54,12 @@ public class TickInterval {
     public long getDuration() {
         return end - start;
     }
+
+    @Override
+    public String toString() {
+        return "TickInterval{" +
+            "start=" + start +
+            ", end=" + end +
+            '}';
+    }
 }

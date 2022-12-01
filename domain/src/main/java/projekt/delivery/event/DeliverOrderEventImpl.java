@@ -4,7 +4,7 @@ import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
-class DeliverOrderEventImpl extends EventImpl implements DeliverOrderEvent {
+class DeliverOrderEventImpl extends VehicleEventImpl implements DeliverOrderEvent {
 
     private final Region.Neighborhood node;
     private final ConfirmedOrder order;
@@ -18,6 +18,11 @@ class DeliverOrderEventImpl extends EventImpl implements DeliverOrderEvent {
         super(tick, vehicle);
         this.node = node;
         this.order = order;
+
+        if (getTick() != order.getActualDeliveryTick()) {
+            throw new AssertionError("Tick of DeliverOrderEvent and actualDeliveryTick of order do not match!: %d vs %d"
+                .formatted(getTick(), order.getActualDeliveryTick()));
+        }
     }
 
     @Override

@@ -4,7 +4,7 @@ import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
-public interface DeliverOrderEvent extends Event {
+public interface DeliverOrderEvent extends VehicleEvent {
 
     static DeliverOrderEvent of(
         long tick,

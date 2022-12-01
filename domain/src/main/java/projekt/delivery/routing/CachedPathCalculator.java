@@ -2,20 +2,14 @@ package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class CachedPathCalculator implements PathCalculator {
 
     private final PathCalculator delegate;
-    private final Map<StartEndTuple, Deque<Region.Node>> cache = new HashMap<>();
+    private final Map<Region.Node, Map<Region.Node, Deque<Region.Node>>> cache = new HashMap<>();
     private final int size;
-    private final Set<StartEndTuple> accessOrder;
+    private final Set<Region.Node> accessOrder;
 
     public CachedPathCalculator(PathCalculator delegate, int size) {
         this.delegate = delegate;
@@ -29,57 +23,31 @@ public class CachedPathCalculator implements PathCalculator {
 
     @Override
     public Deque<Region.Node> getPath(Region.Node start, Region.Node end) {
-        final StartEndTuple tuple = new StartEndTuple(start, end);
-        @Nullable Deque<Region.Node> path = cache.get(tuple);
+        return getAllPathsTo(end).get(start);
+    }
+
+    @Override
+    public Map<Region.Node, Deque<Region.Node>> getAllPathsTo(Region.Node end) {
+        @Nullable Map<Region.Node, Deque<Region.Node>> path = cache.get(end);
         if (path != null) {
             return path;
         }
-        path = delegate.getPath(start, end);
+
+        path = delegate.getAllPathsTo(end);
 
         // Limit cache size
         if (accessOrder.size() >= size) {
-            Iterator<StartEndTuple> iterator = accessOrder.iterator();
+            Iterator<Region.Node> iterator = accessOrder.iterator();
             cache.remove(iterator.next());
             iterator.remove();
         }
 
         // Update access order if the element already exists
-        accessOrder.remove(tuple);
-        accessOrder.add(tuple);
-        cache.put(tuple, path);
+        accessOrder.remove(end);
+        accessOrder.add(end);
+        cache.put(end, path);
+
         return path;
     }
 
-    private static class StartEndTuple {
-        final Region.Node start;
-        final Region.Node end;
-        final int hashcode;
-
-        private StartEndTuple(Region.Node start, Region.Node end) {
-            this.start = start;
-            this.end = end;
-            hashcode = Objects.hash(start, end);
-        }
-
-        @Override
-        public int hashCode() {
-            return hashcode;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            StartEndTuple that = (StartEndTuple) o;
-            if (hashcode != that.hashcode) {
-                return false;
-            }
-            return Objects.equals(start, that.start)
-                && Objects.equals(end, that.end);
-        }
-    }
 }

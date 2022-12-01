@@ -1,6 +1,6 @@
 package projekt.delivery.routing;
 
-import org.jetbrains.annotations.Nullable;
+import projekt.base.Location;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.EventBus;
 
@@ -20,10 +20,16 @@ public interface VehicleManager {
 
     Collection<Vehicle> getVehicles();
 
-    Warehouse getWarehouse();
+    Collection<Vehicle> getAllVehicles();
+
+    Collection<OccupiedRestaurant> getOccupiedRestaurants();
+
+    OccupiedRestaurant getOccupiedRestaurant(Region.Node component);
 
     // O(1)
     <C extends Region.Component<C>> Occupied<C> getOccupied(C component);
+
+    Collection<OccupiedNeighborhood> getOccupiedNeighborhoods();
 
     OccupiedNeighborhood getOccupiedNeighborhood(Region.Node component);
 
@@ -33,9 +39,9 @@ public interface VehicleManager {
 
     EventBus getEventBus();
 
-    //long getCurrentTick();
-
     List<Event> tick(long currentTick);
+
+    void reset();
 
     interface Occupied<C extends Region.Component<? super C>> {
 
@@ -48,34 +54,29 @@ public interface VehicleManager {
         VehicleManager getVehicleManager();
 
         Collection<Vehicle> getVehicles();
-    }
 
-    interface Warehouse extends Occupied<Region.Node> {
-        void loadOrder(Vehicle vehicle, ConfirmedOrder order, long tick);
+        void reset();
     }
 
     interface OccupiedNeighborhood extends Occupied<Region.Neighborhood> {
         void deliverOrder(Vehicle vehicle, ConfirmedOrder order, long tick);
     }
 
+    @SuppressWarnings("unused")
+    interface OccupiedRestaurant extends Occupied<Region.Restaurant> {
+
+        void loadOrder(Vehicle vehicle, ConfirmedOrder order, long tick);
+    }
+
     interface Builder {
-        Builder time(long time);
 
         Builder region(Region region);
 
         Builder pathCalculator(PathCalculator pathCalculator);
 
-        Builder warehouse(Region.Node warehouse);
-
         Builder addVehicle(
-            double capacity,
-            Collection<String> compatibleFoodTypes,
-            @Nullable Predicate<? super Occupied<? extends Region.Node>> nodePredicate
-        );
-
-        Builder addVehicle(
-            double capacity,
-            Collection<String> compatibleFoodTypes
+            Location startingLocation,
+            double capacity
         );
 
         VehicleManager build();

@@ -3,7 +3,7 @@ package projekt.delivery.event;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
-public interface ArrivedAtEdgeEvent extends Event {
+public interface ArrivedAtEdgeEvent extends VehicleEvent {
     static ArrivedAtEdgeEvent of(
         long tick,
         Vehicle vehicle,

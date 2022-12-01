@@ -3,7 +3,7 @@ package projekt.delivery.event;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
-public interface SpawnEvent extends Event {
+public interface SpawnEvent extends VehicleEvent {
 
     static SpawnEvent of(
         long tick,

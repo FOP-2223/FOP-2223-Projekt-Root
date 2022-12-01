@@ -53,14 +53,6 @@ class EdgeImpl implements Region.Edge {
         return name;
     }
 
-    private Region.Node getNode(Location location) {
-        final @Nullable Region.Node node = getRegion().getNode(location);
-        if (node == null) {
-            throw new IllegalStateException(String.format("node %s does not exist", location));
-        }
-        return node;
-    }
-
     @Override
     public long getDuration() {
         return duration;
@@ -68,12 +60,12 @@ class EdgeImpl implements Region.Edge {
 
     @Override
     public Region.Node getNodeA() {
-        return getNode(locationA);
+        return getRegion().getNode(locationA);
     }
 
     @Override
     public Region.Node getNodeB() {
-        return getNode(locationB);
+        return getRegion().getNode(locationB);
     }
 
     @Override

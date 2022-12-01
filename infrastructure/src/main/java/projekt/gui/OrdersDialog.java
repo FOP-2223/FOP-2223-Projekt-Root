@@ -3,14 +3,9 @@ package projekt.gui;
 import projekt.delivery.routing.ConfirmedOrder;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 class OrdersDialog extends JDialog {
 
@@ -56,7 +51,7 @@ class OrdersDialog extends JDialog {
 
         //TODO in LocalDateTime umrechnen?
         deliveryTimeSelector = new JSpinner(new SpinnerNumberModel(
-            mainFrame.getDeliveryService().getCurrentTick(), mainFrame.getDeliveryService().getCurrentTick(),Long.MAX_VALUE,1));
+            mainFrame.getSimulation().getCurrentTick(), mainFrame.getSimulation().getCurrentTick(),Long.MAX_VALUE,1));
 
         foodList.addListSelectionListener(listSelectionEvent -> removeFoodButton.setEnabled(foodList.getSelectedIndex() >= 0));
         addFoodButton.addActionListener(actionEvent -> {
@@ -172,7 +167,7 @@ class OrdersDialog extends JDialog {
         // removeAll();
 
         textField1.setText("(0, 0)");
-        deliveryTimeSelector.setValue(mainFrame.getDeliveryService().getCurrentTick());
+        deliveryTimeSelector.setValue(mainFrame.getSimulation().getCurrentTick());
 
         pack();
         setVisible(true);
@@ -183,7 +178,7 @@ class OrdersDialog extends JDialog {
 
         // TODO: make okButton update actual order
         textField1.setText(order.getLocation().toString());
-        deliveryTimeSelector.setValue(order.getTimeInterval().getStart());
+        deliveryTimeSelector.setValue(order.getDeliveryInterval().getStart());
         order.getFoodList().forEach(foodListModel::addElement);
 
         pack();
@@ -192,7 +187,7 @@ class OrdersDialog extends JDialog {
 
     private void resetFields() {
         textField1.setText("(0, 0)");
-        deliveryTimeSelector.setValue(mainFrame.getDeliveryService().getCurrentTick());
+        deliveryTimeSelector.setValue(mainFrame.getSimulation().getCurrentTick());
         foodTextField.setText("");
     }
 }
