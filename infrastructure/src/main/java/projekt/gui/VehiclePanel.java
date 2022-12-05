@@ -1,16 +1,10 @@
 package projekt.gui;
 
 import javafx.scene.control.ListView;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.BorderPane;
 import projekt.delivery.routing.Vehicle;
 
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
-import java.util.Objects;
-
-public class VehiclePanel extends GridPane {
+public class VehiclePanel extends BorderPane {
 
     private final MainFrame mainFrame;
 
@@ -27,8 +21,11 @@ public class VehiclePanel extends GridPane {
 
         //setBorder(new TitledBorder("Vehicle Selection"));
         selectionList = new ListView<>();
-        //var scrollPane = new ScrollPane(selectionList);
-        getChildren().add(selectionList, BorderLayout.CENTER);
+        setCenter(selectionList);
+        // TODO: add to cell Renderer Component:
+        // component.setText(String.format("Vehicle %d", value.getId()));
+
+        /*
         selectionList.setCellRenderer(new ListCellRenderer<>() {
 
             final ListCellRenderer<? super Vehicle> original = selectionList.getCellRenderer();
@@ -39,9 +36,13 @@ public class VehiclePanel extends GridPane {
                 component.setText(String.format("Vehicle %d", value.getId()));
                 return component;
             }
-        });
-        selectionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        selectionList.setModel(new AbstractListModel<>() {
+        });*/
+
+        selectionList.getSelectionModel().selectedItemProperty().addListener(
+            (observable, oldValue, selected) -> mainFrame.setSelectedVehicle(selected));
+
+        // ------
+        /*selectionList.setModel(new AbstractListModel<>() {
 
             Vehicle[] vehicles = null;
 
@@ -54,15 +55,14 @@ public class VehiclePanel extends GridPane {
             public Vehicle getElementAt(int index) {
                 return (vehicles = Objects.requireNonNullElseGet(vehicles, () -> mainFrame.getVehicleManager().getVehicles().toArray(Vehicle[]::new)))[index];
             }
-        });
-        selectionList.addListSelectionListener(l -> mainFrame.setSelectedVehicle(selectionList.getSelectedValue()));
+        });*/
     }
 
     public void onUpdate() {
-        SwingUtilities.updateComponentTreeUI(selectionList);
+        //SwingUtilities.updateComponentTreeUI(selectionList);
     }
 
     public void setSelectedVehicle(Vehicle vehicle) {
-        selectionList.setSelectedValue(vehicle, true);
+        selectionList.getSelectionModel().select(vehicle);
     }
 }

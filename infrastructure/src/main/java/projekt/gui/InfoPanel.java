@@ -48,12 +48,12 @@ public class InfoPanel extends GridPane {
         constraints.gridheight = 3;
         constraints.gridy = 1;
         constraints.weighty = 1;
-        //getChildren().add(detailsPanel);
+        getChildren().add(detailsPanel);
         //add(detailsPanel, constraints);
 
         constraints.gridy = 4;
         //add(ordersPanel, constraints);
-        //getChildren().add(ordersPanel);
+        getChildren().add(ordersPanel);
     }
 
     private BorderPane makeDetailsPane(MainFrame mainFrame) {

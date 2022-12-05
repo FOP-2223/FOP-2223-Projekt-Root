@@ -1,23 +1,24 @@
 package projekt.gui;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Font;
+import projekt.base.TickInterval;
 import projekt.delivery.routing.ConfirmedOrder;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class OrdersPanel extends TableView<ConfirmedOrder> {
 
     private final MainFrame mainFrame;
     private final OrdersControlPanel ordersControlPanel;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
-    //private OrderTableModel tableModel;
-    //private Table table;
 
     public OrdersPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -26,53 +27,52 @@ public class OrdersPanel extends TableView<ConfirmedOrder> {
     }
 
     private void initComponents() {
+        //setBorder(new TitledBorder("Orders"));
         final var label = new Label("Orders");
         label.setFont(new Font("Arial", 20));
         getChildren().add(label); // TODO: wrong place?
-        //setEditable(true);
-        var col1 = new TableColumn<ConfirmedOrder, ConfirmedOrder>("title1");
-        var col2 = new TableColumn<ConfirmedOrder, ConfirmedOrder>("title2");
-        getColumns().addAll(col1, col2);
-
-        tableModel = new OrderTableModel();
-        table = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(table);
-
-        setLayout(new BorderLayout(6, 6));
-        setBorder(new TitledBorder("Orders"));
-
-        tableModel.addRow(new Object[]{0, "19:15 05.03.2022"});
-        table.setModel(new OrderTableModel());
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.getSelectionModel().addListSelectionListener(e -> {
-            ordersControlPanel.editOrderButton.setDisable(getSelectedRow() < 0);
-            ordersControlPanel.removeOrderButton.setDisable(table.getSelectedRow() < 0);
+        setEditable(false);
+        // Row Selection Event Handler:
+        setOnMouseClicked(e -> {
+            var selectedRow = getSelectionModel().getSelectedIndex();
+            ordersControlPanel.editOrderButton.setDisable(selectedRow < 0);
+            ordersControlPanel.removeOrderButton.setDisable(selectedRow < 0);
         });
+        InvalidationListener listener;// = new WeakInvalidationListener(getSelectionModel());
+        //getSelectionModel().selectedItemProperty().addListener(listener);
 
+        var intColumn = new TableColumn<ConfirmedOrder, Integer>("Order ID");
+        intColumn.setCellValueFactory(new PropertyValueFactory<>("orderID"));
+        var dateColumn = new TableColumn<ConfirmedOrder, Date>("Delivery Time");
+        dateColumn.setCellValueFactory(param -> {
+            // TODO: set PropertyValueFactories to change deliveryTick to Date?
+            var tick = param.getValue().getActualDeliveryTick();
+            return (ObservableValue<Date>) new Date(tick);
+        });
+        getColumns().addAll(intColumn, dateColumn);
 
-        add(scrollPane, BorderLayout.CENTER);
+        //tableModel.addRow(new Object[]{0, "19:15 05.03.2022"});
+        //var now = LocalDateTime.now().format(dateTimeFormatter);
+        var tickInterval = new TickInterval(0, 0);
+        getItems().add(new ConfirmedOrder(0, 0, null,  tickInterval, new ArrayList<>(), 0));
 
-        add(ordersControlPanel, BorderLayout.SOUTH);
+        var orders = mainFrame.vehicleManager.getVehicles().stream().flatMap(vehicle -> vehicle.getOrders().stream()).toList();
+        getItems().addAll(orders);
+        //add(ordersControlPanel, BorderLayout.SOUTH);
+        getChildren().add(ordersControlPanel);
     }
 
     void removeSelected() {
-        // TODO: actually remove order
-        tableModel.removeRow(table.getSelectedRow());
-        table.updateUI();
+        var selectedOrder = getSelectionModel().getSelectedItem();
+        getItems().remove(selectedOrder);
+        //table.updateUI();
     }
 
     ConfirmedOrder getSelectedOrder() {
-        return tableModel.orders.get((Integer) tableModel.getValueAt(table.getSelectedRow(), 0));
+        return getSelectionModel().getSelectedItem();
     }
 
-    private class OrderTableModel extends DefaultTableModel {
-
-        private final Map<Integer, ConfirmedOrder> orders = mainFrame.vehicleManager
-            .getVehicles()
-            .stream()
-            .flatMap(vehicle -> vehicle.getOrders().stream())
-            .collect(Collectors.toUnmodifiableMap(ConfirmedOrder::getOrderID, order -> order));
-
+    /*private class OrderTableModel extends DefaultTableModel {
         private OrderTableModel() {
             addColumn("Order ID");
             addColumn("Delivery time");
@@ -83,14 +83,5 @@ public class OrdersPanel extends TableView<ConfirmedOrder> {
                 order.getActualDeliveryTick()
             }));
         }
-
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    }
-
-    private class OrderItem {
-
-    }
+    }*/
 }
