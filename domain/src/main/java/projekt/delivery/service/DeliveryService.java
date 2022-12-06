@@ -1,13 +1,12 @@
 package projekt.delivery.service;
 
 import projekt.delivery.event.Event;
-import projekt.delivery.event.Tickable;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.VehicleManager;
 
 import java.util.List;
 
-public interface DeliveryService extends Tickable {
+public interface DeliveryService {
 
     Factory SIMPLE = BasicDeliveryService::new;
     Factory BOGO = BogoDeliveryService::new;
@@ -19,6 +18,8 @@ public interface DeliveryService extends Tickable {
     VehicleManager getVehicleManager();
 
     List<ConfirmedOrder> getPendingOrders();
+
+    void reset();
 
     interface Factory {
 

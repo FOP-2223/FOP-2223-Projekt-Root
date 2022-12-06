@@ -1,10 +1,17 @@
 package projekt.gui;
 
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Line;
+import javafx.scene.image.Image;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import org.jetbrains.annotations.Nullable;
 import projekt.base.Location;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
@@ -14,12 +21,17 @@ import java.awt.geom.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static projekt.gui.TUColors.COLOR_0A;
+import static projekt.gui.TUColors.COLOR_0D;
 import static projekt.gui.Utils.getDifference;
-import static projekt.gui.Utils.toPoint;
+import static projekt.gui.Utils.midPoint;
 
 public class MapPanel extends TitledPane {
 
-    private static final Stroke STROKE = new BasicStroke(.1f);
+    public static final float OUTER_TICKS_WIDTH = .5f;
+    public static final float FIVE_TICKS_WIDTH = .125f;
+    public static final float ONE_TICKS_WIDTH = 1f / 32f;
+    public static final float TEN_TICKS_WIDTH = .25f;
     private static final java.awt.Color NODE_COLOR = TUColors.COLOR_0D;
     //private static final Color NODE_COLOR = Color.rgb(nc.getRed(), nc.getGreen(), nc.getBlue(), nc.getAlpha()/255.0);
     private static final java.awt.Color EDGE_COLOR = TUColors.COLOR_0C;
@@ -29,8 +41,8 @@ public class MapPanel extends TitledPane {
     private static final double IMAGE_SIZE = .5;
     private static final java.awt.Color CAR_COLOR = TUColors.COLOR_6C;
     //private static final Color CAR_COLOR = Color.rgb(cc.getRed(), cc.getGreen(), cc.getBlue(), cc.getAlpha()/255.0);
-    //private static final Image CAR = Utils.loadImage("car.png", new Color(CAR_COLOR.getRed(), CAR_COLOR.getGreen(), CAR_COLOR.getBlue(), 255 / 4));
-    //private static final Image CAR_SELECTED = Utils.loadImage("car.png", CAR_COLOR);
+    private static final Image CAR = Utils.loadImage2("car.png", new java.awt.Color(CAR_COLOR.getRed(), CAR_COLOR.getGreen(), CAR_COLOR.getBlue(), 255 / 4));
+    private static final Image CAR_SELECTED = Utils.loadImage2("car.png", CAR_COLOR);
     private static final double SCALE_IN = 1.1;
     private static final double SCALE_OUT = 1 / SCALE_IN;
     final AtomicReference<Point> lastPoint = new AtomicReference<>();
@@ -105,8 +117,8 @@ public class MapPanel extends TitledPane {
         var height = getHeight();
         var reverse = getReverseTransform();
         // scale view
-        var min = mainFrame.region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.POINT_MIN);
-        var max = mainFrame.region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.POINT_MAX);
+        var min = mainFrame.region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.POINT_MIN);
+        var max = mainFrame.region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.POINT_MAX);
         reverse.transform(min, min);
         reverse.transform(max, max);
         var currentWidth = max.getY() - min.getY();
@@ -118,7 +130,7 @@ public class MapPanel extends TitledPane {
         reverse = getReverseTransform();
         var center = new Point2D.Double(width / 2d, height / 2d);
         reverse.transform(center, center);
-        var nodeCenter = mainFrame.region.getNodes().stream().map(Utils::toPoint).collect(Utils.Collectors.center());
+        var nodeCenter = mainFrame.region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.center());
         transformation.translate(center.getX() - nodeCenter.getX(), center.getY() - nodeCenter.getY());
         alreadyCentered = true;
     }
@@ -158,7 +170,7 @@ public class MapPanel extends TitledPane {
     private List<Vehicle> getVehicles(Point2D position) {
         return mainFrame.vehicleManager.getVehicles()
             .stream()
-            .filter(v -> toPoint(v).distance(position) < 1).toList();
+            .filter(v -> Utils.midPoint(v).distance(position) < 1).toList();
     }
 
     /**
@@ -206,206 +218,151 @@ public class MapPanel extends TitledPane {
     }
 
     /**
-     * Paints the given image at the given location with a size of {@link #IMAGE_SIZE}.
-     *
-     * @param g     a graphics object to paint the image on
-     * @param x     the x-coordinate
-     * @param y     the y-coordinate
-     * @param image the image to paint
-     */
-    private void paintImage(Graphics2D g, double x, double y, Image image) {
-        var old = g.getTransform();
-        var transformation = new AffineTransform(old);
-        transformation.translate(x - IMAGE_SIZE / 2, y - IMAGE_SIZE / 2);
-        transformation.scale(IMAGE_SIZE, IMAGE_SIZE);
-        g.setTransform(transformation);
-        g.drawImage(image, 0, 0, 1, 1, null);
-        g.setTransform(old);
-    }
-
-    /**
-     * Paints the given image at the given location with a size of {@link #IMAGE_SIZE}.
-     *
-     * @param g        a graphics object to paint the image on
-     * @param location the location
-     * @param image    the image to paint
-     */
-    private void paintImage(Graphics2D g, Point2D location, Image image) {
-        paintImage(g, location.getX(), location.getY(), image);
-    }
-
-    /**
      * Paints the given vehicle.
      *
-     * @param g       g a graphics object to paint the image on
      * @param vehicle the vehicle to paint
      */
-    private void paintVehicle(Graphics2D g, Vehicle vehicle) {
-        /*var image = CAR_SELECTED;
-        if (mainFrame.getSelectedVehicle() != null && mainFrame.getSelectedVehicle() != vehicle)
-            image = CAR;
-        paintImage(g, toPoint(vehicle), image);*/
+    private void paintVehicle(Vehicle vehicle) {
+        var img = CAR_SELECTED;
+        if (mainFrame.getSelectedVehicle() != null && mainFrame.getSelectedVehicle() != vehicle) {
+            img = CAR;
+        }
+        paintImage(midPoint(vehicle), img);
+    }
+
+    private void paintImage(Point2D midPoint, javafx.scene.image.Image img) {
+        var x = midPoint.getX();
+        var y = midPoint.getY();
+        /*var old = g.getTransform();
+        var transformation = new AffineTransform(old);
+        transformation.translate(x - IMAGE_SIZE / 2, y - IMAGE_SIZE / 2);
+        transformation.scale(IMAGE_SIZE, IMAGE_SIZE);*/
+
+        var imageView = new ImageView();
+        imageView.setImage(img);
+        imageView.setTranslateX(IMAGE_SIZE);
+        imageView.setTranslateY(IMAGE_SIZE);
+        imageView.scaleXProperty();
+        imageView.scaleYProperty();
+        getChildren().add(imageView);
     }
 
     /**
      * Paints the given node.
      *
-     * @param g    a graphics object to paint the image on
      * @param node the node to paint
      */
-    private void drawNode(Graphics2D g, Region.Node node) {
-        var oldColor = g.getColor();
-        var oldStroke = g.getStroke();
-        g.setStroke(STROKE);
-        g.setColor(NODE_COLOR);
-        var location = node.getLocation();
-        var circle = new Ellipse2D.Double(location.getX() - NODE_DIAMETER / 2f, location.getY() - NODE_DIAMETER / 2f,
-            NODE_DIAMETER,
-            NODE_DIAMETER);
-        var textPoint = toPoint(node);
-        textPoint.setLocation(textPoint.getX() + .5, textPoint.getY() - .5);
-        text(g, textPoint, TUColors.COLOR_0A, node.getName());
-        g.fill(circle);
-        g.setColor(EDGE_COLOR);
-        g.draw(circle);
-        g.setStroke(oldStroke);
-        g.setColor(oldColor);
+    private void drawNode(Region.Node node) {
+        var n = node.getLocation();
+        var circle = new Ellipse(n.getX() - NODE_DIAMETER / 2f, n.getY() - NODE_DIAMETER / 2f,
+            NODE_DIAMETER, NODE_DIAMETER);
+        circle.setFill(convert(NODE_COLOR));
+        circle.setStrokeWidth(0.1);
+        circle.setStroke(convert(EDGE_COLOR));
+        getChildren().add(circle);
+
+        var text = new Text(n.getX() + .5, n.getY() - .5, node.getName());
+        text.setStroke(convert(COLOR_0A));
+        getChildren().add(text);
     }
 
     private static Color convert(java.awt.Color color) {
         return Color.rgb(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()/255.0);
     }
 
-    /**
-     * Paints the given edge.
-     *
-     * @param g    the graphics object to paint the image on
-     * @param edge the edge to paint
-     */
-    private void paintEdge(Graphics2D g, Region.Edge edge) {
-        var oldColor = g.getColor();
-        var oldStroke = g.getStroke();
-        g.setColor(EDGE_COLOR);
-        g.setStroke(STROKE);
-        var l = toPoint(edge);
-        var l1 = edge.getNodeA().getLocation();
-        var l2 = edge.getNodeB().getLocation();
-        Line2D.Double line = new Line2D.Double(
-            l1.getX(),
-            l1.getY(),
-            l2.getX(),
-            l2.getY());
-        g.draw(line);
-        text(g, l, TUColors.COLOR_0A, String.format("%s", edge.getName()));
-        g.setStroke(oldStroke);
-        g.setColor(oldColor);
-    }
+    private void drawEdge(Region.Edge edge) {
+        var a = edge.getNodeA().getLocation();
+        var b = edge.getNodeB().getLocation();
+        var line = new Line(a.getX(), a.getY(), b.getX(), b.getY());
 
-    /**
-     * Paints the given text at the given position using the given position.
-     *
-     * @param g        the graphics object to paint the image on
-     * @param position the position to start
-     * @param color    the color of the text
-     * @param text     the text
-     */
-    private void text(Graphics2D g, Point2D position, java.awt.Color color, String text) {
-        var oldTransformation = g.getTransform();
-        var oldColor = g.getColor();
-        g.setColor(color);
-        position = oldTransformation.transform(position, null);
-        g.setTransform(new AffineTransform());
-        g.setFont(g.getFont().deriveFont(Font.BOLD));
-        g.drawString(text, (float) position.getX(), (float) position.getY());
-        g.setColor(oldColor);
-        g.setTransform(oldTransformation);
+        line.setStroke(convert(EDGE_COLOR));
+        line.setStrokeWidth(0.1); // TODO: verify width
+        getChildren().add(line);
+
+        var mid = midPoint(edge);
+        var text = new Text(mid.getX(), mid.getY(), edge.getName());
+        text.setStroke(convert(COLOR_0A));
+        getChildren().add(text);
     }
 
     /**
      * Draws a Grid to help With Positioning
      *
-     * @param g2d the specified graphics context
+     * @param width total width of grid
+     * @param height total height of grid
+     * @param drawMinors should all lines be drawn?
      */
-    public void drawGrid(Graphics2D g2d, int width, int height, boolean drawMinors) {
-        // save g2d configuration
-        java.awt.Color oldColor = g2d.getColor();
-        Stroke oldStroke = g2d.getStroke();
-        // G2d Configuration
-        g2d.setColor(TUColors.COLOR_0D);
-        float outerTicksWidth = .5f;
-        float tenTicksWidth = .25f;
-        float fiveTicksWidth = .125f;
-        float oneTicksWidth = 1f / 32f;
+    private void drawGrid(int width, int height, boolean drawMinors) {
+        var color = convert(COLOR_0D);
+
         // Vertical Lines
         for (int i = 0, x = -width / 2; x < width / 2; i++, x += 1) {
-            float strokeWidth;
-            if (i % 10 == 0) {
-                strokeWidth = tenTicksWidth;
-            } else if (i % 5 == 0) {
-                strokeWidth = fiveTicksWidth;
-            } else {
-                strokeWidth = oneTicksWidth;
-                if (!drawMinors) {
-                    continue;
-                }
-            }
-            g2d.setStroke(new BasicStroke(strokeWidth));
-            g2d.drawLine(x, -height / 2, x, height / 2);
+            Float strokeWidth = getStrokeWidth(drawMinors, i);
+            if (strokeWidth == null) continue;
+            var line = new Line(x, -height / 2f, x, height / 2f);
+            line.setStrokeWidth(strokeWidth);
+            getChildren().add(line);
         }
+
         // Horizontal Lines
         for (int i = 0, y = -height / 2; y < height / 2; i++, y += 1) {
-            float strokeWidth;
-            if (i % 10 == 0) {
-                strokeWidth = tenTicksWidth;
-            } else if (i % 5 == 0) {
-                strokeWidth = fiveTicksWidth;
-            } else {
-                strokeWidth = oneTicksWidth;
-                if (!drawMinors) {
-                    continue;
-                }
-            }
-            g2d.setStroke(new BasicStroke(strokeWidth));
-            g2d.drawLine(-width / 2, y, width / 2, y);
+            Float strokeWidth = getStrokeWidth(drawMinors, i);
+            if (strokeWidth == null) continue;
+
+            var line = new Line(-width / 2f, y, width / 2f, y);
+            line.setStrokeWidth(strokeWidth);
+            getChildren().add(line);
         }
 
-        // Border
-        g2d.setStroke(new BasicStroke(outerTicksWidth));
-        g2d.drawRect(
-            (int) (-width / 2 - outerTicksWidth / 2),
-            (int) (-height / 2 - outerTicksWidth / 2),
-            (int) (width + outerTicksWidth),
-            (int) (height + outerTicksWidth));
-
-        // Restore g2d Configuration
-        g2d.setColor(oldColor);
-        g2d.setStroke(oldStroke);
+        var border = new Rectangle(
+            (int) (-width / 2 - OUTER_TICKS_WIDTH / 2),
+            (int) (-height / 2 - OUTER_TICKS_WIDTH / 2),
+            (int) (width + OUTER_TICKS_WIDTH),
+            (int) (height + OUTER_TICKS_WIDTH));
+        border.setStrokeWidth(OUTER_TICKS_WIDTH);
+        getChildren().add(border);
     }
 
-    /*@Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    @Nullable
+    private static Float getStrokeWidth(boolean drawMinors, int i) {
+        float strokeWidth;
+        if (i % 10 == 0) {
+            strokeWidth = TEN_TICKS_WIDTH;
+        } else if (i % 5 == 0) {
+            strokeWidth = FIVE_TICKS_WIDTH;
+        } else {
+            strokeWidth = ONE_TICKS_WIDTH;
+            if (!drawMinors) {
+                return null;
+            }
+        }
+        return strokeWidth;
+    }
+
+    protected void paintComponent() {
+        //super.paintComponent(g);
         if (lastPoint.get() == null)
             center();
-        var g2d = (Graphics2D) g;
-        AffineTransform old = g2d.getTransform();
-        g2d.setTransform(getTransform());
-        paintMap(g2d);
-        g2d.setTransform(old);
-    }*/
+        paintMap();
+    }
 
     /**
      * Paints the Map using the given g2d. This method assumes that (0,0) paints
      * centered
-     *
-     * @param g The specified Graphics Context, transformed so (0,0) is
-     *          centered.
      */
-    private void paintMap(Graphics2D g) {
+    private void paintMap() {
         // Background
-        drawGrid(g, 50, 50, true);
-        mainFrame.region.getEdges().forEach(e -> paintEdge(g, e));
-        mainFrame.getRegion().getNodes().forEach(n -> drawNode(g, n));
-        mainFrame.vehicleManager.getVehicles().forEach(v -> paintVehicle(g, v));
+        drawGrid(50, 50, true);
+        mainFrame.region.getEdges().forEach(this::drawEdge);
+        mainFrame.getRegion().getNodes().forEach(this::drawNode);
+        mainFrame.vehicleManager.getVehicles().forEach(this::paintVehicle);
+    }
+
+    public void resetCenterLocation() {
+        // TODO:
+    }
+
+    public void resetScale() {
+        // TODO:
     }
 }

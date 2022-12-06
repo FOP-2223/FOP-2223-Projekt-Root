@@ -22,15 +22,12 @@ public class MainFrame extends Stage implements SimulationListener {
     private ControlsPanel controlsPanel;
     private InfoPanel infoPanel;
     private MapPanel mapPanel;
-    private MyMenuBar menuBar;
-
     private Vehicle selectedVehicle;
 
     public MainFrame(Region region, VehicleManager vehicleManager, Simulation simulation) {
         this.region = region;
         this.vehicleManager = vehicleManager;
         this.simulation = simulation;
-
         initComponents();
     }
 
@@ -38,10 +35,11 @@ public class MainFrame extends Stage implements SimulationListener {
      * This method is called from within the constructor to initialize the form.
      */
     private void initComponents() {
+        setTitle("Mainframe");
+
         infoPanel = new InfoPanel(this);
         mapPanel = new MapPanel(this);
         controlsPanel = new ControlsPanel(this, simulation.getSimulationConfig());
-        menuBar = new MyMenuBar(this);
 
         //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         //setMinimumSize(new Dimension(500, 500));
@@ -49,12 +47,7 @@ public class MainFrame extends Stage implements SimulationListener {
         setMinHeight(500);
 
         //setLayout(new BorderLayout(6, 6));
-        final BorderPane bp = new BorderPane();
-
-        // Menu Bar
-        // TODO: loop calls - must be set in super constructor, but requires this to be build
-        //setMenuBar(menuBar);
-
+        final BorderPane bp = new BorderPane(new MyMenuBar(this));
         bp.setCenter(mapPanel);
         bp.setLeft(infoPanel);
         bp.setBottom(controlsPanel);

@@ -49,20 +49,24 @@ class RegionImpl implements Region {
     }
 
     void putNode(NodeImpl node) {
-        // TODO: Test exception
         if (this != node.getRegion()) {
-            throw new IllegalArgumentException("Node " + node + " has incorrect region");
+            throw new IllegalArgumentException("Node %s has incorrect region".formatted(node.toString()));
         }
         nodes.put(node.getLocation(), node);
     }
 
     void putEdge(EdgeImpl edge) {
-        // TODO: Write tests for exceptions
         if (this != edge.getRegion()) {
-            throw new IllegalArgumentException("edge has incorrect region");
+            throw new IllegalArgumentException("Edge %s has incorrect region".formatted(edge.toString()));
         }
-        Objects.requireNonNull(edge.getNodeA(), "node " + edge.getLocationA() + " not present in region");
-        Objects.requireNonNull(edge.getNodeB(), "node" + edge.getLocationB() + " not present in region");
+        if (edge.getNodeA() == null) {
+            throw new IllegalArgumentException("NodeA %s has incorrect region".formatted(edge.getLocationA().toString()));
+        }
+
+        if (edge.getNodeB() == null) {
+            throw new IllegalArgumentException("NodeB %s has incorrect region".formatted(edge.getLocationB().toString()));
+        }
+
         edges.computeIfAbsent(
             edge.getNodeA().getLocation(),
             k -> new HashMap<>()

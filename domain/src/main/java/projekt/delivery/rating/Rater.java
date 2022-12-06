@@ -11,6 +11,8 @@ public interface Rater extends SimulationListener {
      */
     double getScore();
 
+    RatingCriteria getRatingCriteria();
+
     interface Factory {
 
         Rater create();

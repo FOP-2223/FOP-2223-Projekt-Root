@@ -87,12 +87,12 @@ class OrdersDialog extends Dialog<ConfirmedOrder> {
                 IntStream.range(0, foodListModel.getSize()).mapToObj(foodListModel::getElementAt).toList()
             );*/
 //            ordersPanel.addOrder(textField1.getText());
-            mainFrame.getControlsPanel().unpause();
+            //mainFrame.getControlsPanel().unpause();
             okButton.setVisible(false);
         });
 
         cancelButton.setOnAction(actionEvent -> {
-            mainFrame.getControlsPanel().unpause();
+            //mainFrame.getControlsPanel().unpause();
             cancelButton.setVisible(false);
         });
 

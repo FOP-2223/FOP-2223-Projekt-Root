@@ -1,13 +1,13 @@
 package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
+import projekt.base.Location;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.EventBus;
 import projekt.delivery.event.SpawnEvent;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class VehicleManagerImpl implements VehicleManager {
@@ -63,9 +63,9 @@ class VehicleManagerImpl implements VehicleManager {
         return Collections.unmodifiableSet(result);
     }
 
-    private OccupiedNodeImpl<?> findNode(Predicate<? super Occupied<? extends Region.Node>> nodePredicate) {
+    private OccupiedNodeImpl<? extends Region.Node> getOccupiedNode(Location location) {
         return occupiedNodes.values().stream()
-            .filter(nodePredicate)
+            .filter(node -> node.getComponent().getLocation().equals(location))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("Could not find node with given predicate"));
     }
@@ -182,24 +182,37 @@ class VehicleManagerImpl implements VehicleManager {
         return eventBus.popEvents(currentTick);
     }
 
-    Vehicle addVehicle(
-        double capacity,
-        Collection<String> compatibleFoodTypes,
-        @Nullable Predicate<? super Occupied<? extends Region.Node>> nodePredicate
-    ) {
-        final OccupiedNodeImpl<?> occupied;
-        if (nodePredicate == null) {
-            occupied = (OccupiedNodeImpl<?>) getOccupiedRestaurants().get(0);
-        } else {
-            occupied = findNode(nodePredicate);
+    public void reset() {
+        for (AbstractOccupied<?> occupied : getAllOccupied()) {
+            occupied.reset();
         }
+
+        for (Vehicle vehicle : getAllVehicles()) {
+            vehicle.reset();
+        }
+
+        vehiclesToSpawn.addAll(getVehicles().stream()
+            .map(VehicleImpl.class::cast)
+            .toList());
+
+        vehicles.clear();
+    }
+
+    Vehicle addVehicle(
+        Location startingLocation,
+        double capacity
+    ) {
+        OccupiedNodeImpl<? extends Region.Node> occupied = getOccupiedNode(startingLocation);
+
+        if (!(occupied instanceof OccupiedRestaurant)) {
+            throw new IllegalArgumentException("Vehicles can only spawn at restaurants!");
+        }
+
         final VehicleImpl vehicle = new VehicleImpl(
             vehicles.size() + vehiclesToSpawn.size(),
             capacity,
-            compatibleFoodTypes,
-            occupied,
-            this
-        );
+            this,
+            (OccupiedRestaurant) occupied);
         vehiclesToSpawn.add(vehicle);
         vehicle.setOccupied(occupied);
         return vehicle;

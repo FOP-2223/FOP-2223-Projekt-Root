@@ -1,5 +1,6 @@
 package projekt.gui;
 
+import javafx.scene.image.Image;
 import projekt.base.Location;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
@@ -42,32 +43,44 @@ public interface Utils {
         return null;
     }
 
-    static Point2D toPoint(Occupied<?> occupied) {
+    static javafx.scene.image.Image loadImage2(String s, Color carColor) {
+        try {
+            return new Image(Utils.class.getClassLoader().getResource(s).openStream());
+        } catch (IOException e) {
+            System.err.println("Could not load Image: "+s);
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    static Point2D midPoint(Occupied<?> occupied) {
         if (occupied.getComponent() instanceof Region.Node) {
-            return toPoint(((Region.Node) occupied.getComponent()).getLocation());
+            return midPoint(((Region.Node) occupied.getComponent()).getLocation());
         } else if (occupied.getComponent() instanceof Region.Edge) {
-            return toPoint((Region.Edge) occupied.getComponent());
+            return midPoint((Region.Edge) occupied.getComponent());
         }
         throw new UnsupportedOperationException("unsupported type of component");
     }
 
-    static Point2D toPoint(Location location) {
+    static Point2D midPoint(Location location) {
         return new Point2D.Double(location.getX(), location.getY());
     }
 
-    static Point2D toPoint(Vehicle vehicle) {
-        return toPoint(vehicle.getOccupied());
+    static Point2D midPoint(Vehicle vehicle) {
+        return midPoint(vehicle.getOccupied());
     }
 
-    static Point2D toPoint(Region.Node node) {
-        return toPoint(node.getLocation());
+    static Point2D midPoint(Region.Node node) {
+        return midPoint(node.getLocation());
     }
 
-    static Point2D toPoint(Region.Edge edge) {
+    static Point2D midPoint(Region.Edge edge) {
         var l1 = edge.getNodeA().getLocation();
         var l2 = edge.getNodeB().getLocation();
         return new Point2D.Double((l1.getX() + l2.getX()) / 2d, (l1.getY() + l2.getY()) / 2d);
     }
+
+
 
     interface Collectors {
 

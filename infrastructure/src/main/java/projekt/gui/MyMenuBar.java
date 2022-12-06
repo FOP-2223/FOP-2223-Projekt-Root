@@ -8,28 +8,20 @@ import javafx.scene.text.Font;
 
 public class MyMenuBar extends MenuBar {
 
-    private final MainFrame mf;
-    private Menu editMenu;
-    private Menu fileMenu;
-    private Menu viewMenu;
-    private MenuItem openFileMenuEntry;
-    private MenuItem saveFileMenuEntry;
-    private MenuItem centerViewMenuEntry;
-    private MenuItem resetZoomMenuEntry;
-
+    private MainFrame mainFrame;
     public MyMenuBar(MainFrame mf) {
-        this.mf = mf;
+        mainFrame = mf;
         initComponents();
     }
 
     private void initComponents() {
-        fileMenu = new Menu();
-        editMenu = new Menu();
-        viewMenu = new Menu();
-        openFileMenuEntry = new MenuItem();
-        saveFileMenuEntry = new MenuItem();
-        centerViewMenuEntry = new MenuItem();
-        resetZoomMenuEntry = new MenuItem();
+        Menu fileMenu = new Menu();
+        Menu editMenu = new Menu();
+        Menu viewMenu = new Menu();
+        MenuItem openFileMenuEntry = new MenuItem();
+        MenuItem saveFileMenuEntry = new MenuItem();
+        MenuItem centerViewMenuEntry = new MenuItem();
+        MenuItem resetZoomMenuEntry = new MenuItem();
 
         final Font dialog = new Font("Dialog", 16);
 
@@ -65,10 +57,10 @@ public class MyMenuBar extends MenuBar {
     }
 
     public void centerViewMenuEntry_actionPerformed(ActionEvent e) {
-        //mf.getMapPanel().resetCenterLocation(); TODO
+        mainFrame.getMapPanel().resetCenterLocation();
     }
 
     public void resetZoomMenuEntry_actionPerformed(ActionEvent e) {
-        //mf.getMapPanel().resetScale(); TODO
+        mainFrame.getMapPanel().resetScale();
     }
 }

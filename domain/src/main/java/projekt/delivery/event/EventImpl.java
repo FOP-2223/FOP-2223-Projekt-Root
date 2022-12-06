@@ -1,15 +1,11 @@
 package projekt.delivery.event;
 
-import projekt.delivery.routing.Vehicle;
-
 class EventImpl implements Event {
 
     private final long tick;
-    private final Vehicle vehicle;
 
-    EventImpl(long tick, Vehicle vehicle) {
+    public EventImpl(long tick) {
         this.tick = tick;
-        this.vehicle = vehicle;
     }
 
     @Override
@@ -18,15 +14,9 @@ class EventImpl implements Event {
     }
 
     @Override
-    public Vehicle getVehicle() {
-        return vehicle;
-    }
-
-    @Override
     public String toString() {
         return "Event("
             + "time=" + getTick()
-            + ", vehicle=" + getVehicle().getId()
             + ')';
     }
 }

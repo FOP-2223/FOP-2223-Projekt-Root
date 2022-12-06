@@ -1,5 +1,7 @@
 package projekt.delivery.routing;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
@@ -17,6 +19,14 @@ public interface Vehicle extends Comparable<Vehicle> {
      * @return The current {@link Region.Component} that this entity is on
      */
     VehicleManager.Occupied<?> getOccupied();
+
+    /**
+     * Returns the previous component this Vehicle occupied.
+     * @return the previous component or null if this vehicle has not moved yet.
+     */
+    @Nullable VehicleManager.Occupied<?> getPreviousOccupied();
+
+    List<? extends Path> getPaths();
 
     /**
      * Deletes the entire move queue and moves directly to the provided {@link Region.Node}.
@@ -56,21 +66,16 @@ public interface Vehicle extends Comparable<Vehicle> {
      */
     VehicleManager getVehicleManager();
 
-    /**
-     *
-     */
+    VehicleManager.Occupied<? extends Region.Node> getStartingNode();
+
     Collection<ConfirmedOrder> getOrders();
 
-    /**
-     * @throws FoodNotSupportedException if the vehicle does not support a food type in the provided order
-     */
+    void reset();
 
-    // TODO: allow appending of own methods?
     default double getCurrentWeight() {
         return getOrders().stream().mapToDouble(ConfirmedOrder::getTotalWeight).sum();
     }
 
-    // TODO: Gui exercise to draw paths?
     interface Path {
 
         Deque<Region.Node> getNodes();

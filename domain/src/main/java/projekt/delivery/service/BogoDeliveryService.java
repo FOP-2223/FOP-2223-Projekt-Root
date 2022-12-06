@@ -68,7 +68,7 @@ public class BogoDeliveryService extends AbstractDeliveryService {
 
     private void scheduleRandomMove(
         List<Event> events,
-        Class<? extends Event> eventType
+        Class<? extends VehicleEvent> eventType
     ) {
         events.stream()
             .filter(eventType::isInstance)
@@ -88,5 +88,11 @@ public class BogoDeliveryService extends AbstractDeliveryService {
     @Override
     public List<ConfirmedOrder> getPendingOrders() {
         return pendingOrders;
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        pendingOrders.clear();
     }
 }

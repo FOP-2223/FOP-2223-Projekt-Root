@@ -20,7 +20,6 @@ public class SimulationConfig {
     }
 
     public LocalDateTime tickToLocalDateTime(long ticks) {
-        //TODO sinnvoll? oder 1 Tick = 1 Minute immer?
         return LocalDateTime.now().minusNanos(1000 * millisecondsPerTick.get() * ticks);
     }
     public boolean isPaused() {

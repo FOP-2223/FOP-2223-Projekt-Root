@@ -9,7 +9,7 @@ import projekt.delivery.simulation.Simulation;
 public class MainFrameFX extends Application {
 
     //private SimulationControls simControls;
-    private MainFrame mainFrame;
+    public MainFrame mainFrame;
 
     public MainFrameFX(Region region, VehicleManager vehicleManager, Simulation simulation) {
         this.mainFrame = new MainFrame(region, vehicleManager, simulation);
@@ -18,8 +18,7 @@ public class MainFrameFX extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         // todo: something with mainframe
-
-        stage.show();
+        mainFrame.show();
     }
 
     public static void main(String[] args) {

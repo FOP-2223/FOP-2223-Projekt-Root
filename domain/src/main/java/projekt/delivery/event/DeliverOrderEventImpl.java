@@ -4,7 +4,7 @@ import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
-class DeliverOrderEventImpl extends EventImpl implements DeliverOrderEvent {
+class DeliverOrderEventImpl extends VehicleEventImpl implements DeliverOrderEvent {
 
     private final Region.Neighborhood node;
     private final ConfirmedOrder order;

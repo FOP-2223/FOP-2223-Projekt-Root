@@ -1,6 +1,7 @@
 package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
+import projekt.base.Location;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -25,20 +26,14 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
 
     @Override
     public VehicleManager.Builder addVehicle(
-        double capacity,
-        Collection<String> compatibleFoodTypes,
-        @Nullable Predicate<? super VehicleManager.Occupied<? extends Region.Node>> nodePredicate
+        Location startingLocation,
+        double capacity
     ) {
         if (capacity <= 0) {
             throw new IllegalArgumentException("Capacity must be positive");
         }
-        vehicles.add(new VehicleBuilder(capacity, compatibleFoodTypes, nodePredicate));
+        vehicles.add(new VehicleBuilder(startingLocation, capacity));
         return this;
-    }
-
-    @Override
-    public VehicleManager.Builder addVehicle(double capacity, Collection<String> compatibleFoodTypes) {
-        return addVehicle(capacity, compatibleFoodTypes, null);
     }
 
     @Override
@@ -47,24 +42,10 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
         Objects.requireNonNull(pathCalculator, "pathCalculator");
         VehicleManagerImpl vehicleManager = new VehicleManagerImpl(region, pathCalculator);
         for (VehicleBuilder vehicleBuilder : vehicles) {
-            vehicleManager.addVehicle(vehicleBuilder.capacity, vehicleBuilder.compatibleFoodTypes, vehicleBuilder.nodePredicate);
+            vehicleManager.addVehicle(vehicleBuilder.startingLocation, vehicleBuilder.capacity);
         }
         return vehicleManager;
     }
 
-    private static class VehicleBuilder {
-        private final double capacity;
-        private final Collection<String> compatibleFoodTypes;
-        private final @Nullable Predicate<? super VehicleManager.Occupied<? extends Region.Node>> nodePredicate;
-
-        private VehicleBuilder(
-            double capacity,
-            Collection<String> compatibleFoodTypes,
-            @Nullable Predicate<? super VehicleManager.Occupied<? extends Region.Node>> nodePredicate
-        ) {
-            this.capacity = capacity;
-            this.compatibleFoodTypes = compatibleFoodTypes;
-            this.nodePredicate = nodePredicate;
-        }
-    }
+    private record VehicleBuilder(Location startingLocation, double capacity) { }
 }
