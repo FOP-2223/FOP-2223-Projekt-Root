@@ -7,32 +7,28 @@ import java.util.function.Function;
 
 import static org.tudalgo.algoutils.student.Student.crash;
 
-public class ComparableUnitTests {
+public class ComparableUnitTests<T extends Comparable<? super T>> {
 
-    private final Function<Integer, Object> testObjectFactory;
+    private final Function<Integer, T> testObjectFactory;
 
-    private Object[] testObjects;
+    private T[] testObjects;
 
-    public ComparableUnitTests(Function<Integer, Object> testObjectFactory) {
+    public ComparableUnitTests(Function<Integer, T> testObjectFactory) {
         this.testObjectFactory = testObjectFactory;
     }
 
-    @BeforeAll
     public void initialize(int testObjectCount) {
         crash(); // TODO: H12.2 - remove if implemented
     }
 
-    @Test
     void testBiggerThen() {
         crash(); // TODO: H12.2 - remove if implemented
     }
 
-    @Test
     void testAsBigAs() {
         crash(); // TODO: H12.2 - remove if implemented
     }
 
-    @Test
     void testLessThen() {
         crash(); // TODO: H12.2 - remove if implemented
     }

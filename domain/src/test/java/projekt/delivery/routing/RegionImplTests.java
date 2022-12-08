@@ -1,17 +1,17 @@
-package projekt;
+package projekt.delivery.routing;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import projekt.ObjectUnitTests;
 
 import static org.tudalgo.algoutils.student.Student.crash;
 
 public class RegionImplTests {
 
-    private ComparableUnitTests comparableUnitTests;
-    private ObjectUnitTests objectUnitTests;
+    private static ObjectUnitTests<RegionImpl> objectUnitTests;
 
     @BeforeAll
-    public void initialize() {
+    public static void initialize() {
         crash(); // TODO: H12.4 - remove if implemented
     }
 

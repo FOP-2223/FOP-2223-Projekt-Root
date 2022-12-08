@@ -1,19 +1,26 @@
-package projekt;
+package projekt.delivery.routing;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import projekt.delivery.routing.Region;
+import projekt.ComparableUnitTests;
+import projekt.ObjectUnitTests;
 
 import static org.tudalgo.algoutils.student.Student.crash;
 
-public class NodeImplUnitTests {
+public class EdgeImplUnitTests {
 
-    private ComparableUnitTests comparableUnitTests;
-    private ObjectUnitTests objectUnitTests;
-    private Region region;
+    private static ComparableUnitTests<EdgeImpl> comparableUnitTests;
+    private static ObjectUnitTests<EdgeImpl> objectUnitTests;
+    private static NodeImpl nodeA;
+    private static NodeImpl nodeB;
+    private static NodeImpl nodeC;
+
+    private static EdgeImpl edgeAA;
+    private static EdgeImpl edgeAB;
+    private static EdgeImpl edgeBC;
 
     @BeforeAll
-    public void initialize() {
+    public static void initialize() {
         crash(); // TODO: H12.5 - remove if implemented
     }
 
@@ -48,17 +55,8 @@ public class NodeImplUnitTests {
     }
 
     @Test
-    void testGetEdge() {
-        crash(); // TODO: H12.5 - remove if implemented
-    }
-
-    @Test
-    void testAdjacent() {
-        crash(); // TODO: H12.5 - remove if implemented
-    }
-
-    @Test
     void testGetNode() {
         crash(); // TODO: H12.5 - remove if implemented
     }
+
 }

@@ -1,42 +1,35 @@
 package projekt;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
 import java.util.function.Function;
 
 import static org.tudalgo.algoutils.student.Student.crash;
 
-public class ObjectUnitTests {
+public class ObjectUnitTests<T> {
 
-    private final Function<Integer, Object> testObjectFactory;
-    private final Function<Object, String> toString;
+    private final Function<Integer, T> testObjectFactory;
+    private final Function<T, String> toString;
 
-    private Object[] testObjects;
-    private Object[] testObjectsReferenceEquality;
-    private Object[] testObjectsContentEquality;
+    private T[] testObjects;
+    private T[] testObjectsReferenceEquality;
+    private T[] testObjectsContentEquality;
 
-    public ObjectUnitTests(Function<Integer, Object> testObjectFactory, Function<Object, String> toString) {
+    public ObjectUnitTests(Function<Integer, T> testObjectFactory, Function<T, String> toString) {
         this.testObjectFactory = testObjectFactory;
         this.toString = toString;
     }
 
-    @BeforeAll
     public void initialize(int testObjectCount) {
         crash(); // TODO: H12.1 - remove if implemented
     }
 
-    @Test
     void testEquals() {
         crash(); // TODO: H12.1 - remove if implemented
     }
 
-    @Test
     void testHashCode() {
         crash(); // TODO: H12.1 - remove if implemented
     }
 
-    @Test
     void testToString() {
         crash(); // TODO: H12.1 - remove if implemented
     }
