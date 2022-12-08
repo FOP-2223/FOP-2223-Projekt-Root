@@ -56,6 +56,10 @@ class NodeImpl implements Region.Node {
         return connections.stream().map(c -> region.getEdge(getLocation(), c)).collect(Collectors.toSet());
     }
 
+    public Set<Location> getConnections() {
+        return connections;
+    }
+
     @Override
     public int compareTo(Region.Node o) {
         return location.compareTo(o.getLocation());
