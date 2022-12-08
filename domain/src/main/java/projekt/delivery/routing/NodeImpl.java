@@ -61,6 +61,10 @@ class NodeImpl implements Region.Node {
         return crash(); // TODO: H3.5 - remove if implemented
     }
 
+    public Set<Location> getConnections() {
+        return connections;
+    }
+
     @Override
     public int hashCode() {
         return crash(); // TODO: H3.7 - remove if implemented
