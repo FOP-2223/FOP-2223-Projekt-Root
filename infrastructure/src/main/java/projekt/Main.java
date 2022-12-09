@@ -7,12 +7,9 @@ import projekt.delivery.rating.*;
 import projekt.delivery.routing.DijkstraPathCalculator;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
-import projekt.delivery.runner.BasicRunner;
 import projekt.delivery.service.BasicDeliveryService;
 import projekt.delivery.service.DeliveryService;
-import projekt.delivery.simulation.BasicDeliverySimulation;
 import projekt.delivery.simulation.SimulationConfig;
-import projekt.gui.MainFrame;
 import projekt.gui.MainFrameFX;
 
 import java.util.ArrayList;
@@ -21,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Main {
-
     public static ProblemGroup problemGroup;
     public static SimulationConfig simulationConfig;
 
@@ -197,28 +193,6 @@ public class Main {
         //ProblemGroup
         problemGroup = new ProblemGroupImpl(List.of(problemArchetype1, problemArchetype2), new ArrayList<>(raterFactoryMap1.keySet()));
 
-        MainFrame mainFrame = new MainFrame(region1, vehicleManager1, new BasicDeliverySimulation(simulationConfig, raterFactoryMap1, deliveryService, orderGeneratorFactory1, simulationLength));
-
-
-        //Map<RatingCriteria, Double> result = new BasicRunner().run(problemGroup, simulationConfig, 10);
-
-        //System.out.println("IN_TIME: " + result.get(RatingCriteria.IN_TIME));
-
-        //System.out.println("TRAVEL_DISTANCE: " + result.get(RatingCriteria.TRAVEL_DISTANCE));
-
-        //System.out.println("AMOUNT_DELIVERED: " + result.get(RatingCriteria.AMOUNT_DELIVERED));
-
-        // the lasagna is complete
-
-        // Gui Setup
-//        FlatDarkLaf.setup();
-//        MainFrame mainFrame = new MainFrame(region1, vehicleManager1, simulation);
-//        mainFrame.setVisible(true);
-//        simulation.addListener(mainFrame);
-//
-//        //start simulation
-//        simulation.runSimulation(problemArchetype1.simulationLength()); // -> blocks the thread until the simulation is finished.
-//
-//        System.out.println(simulation.getRatingForCriterion(RatingCriteria.IN_TIME));
+        MyApplication.launch();
     }
 }

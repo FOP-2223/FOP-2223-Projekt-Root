@@ -26,6 +26,10 @@ public class CachedPathCalculator implements PathCalculator {
         return getAllPathsTo(end).get(start);
     }
 
+    public PathCalculator getDelegate() {
+        return delegate;
+    }
+
     @Override
     public Map<Region.Node, Deque<Region.Node>> getAllPathsTo(Region.Node end) {
         @Nullable Map<Region.Node, Deque<Region.Node>> path = cache.get(end);

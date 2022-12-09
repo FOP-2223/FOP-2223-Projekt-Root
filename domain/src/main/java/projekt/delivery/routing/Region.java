@@ -30,6 +30,8 @@ public interface Region {
 
     Collection<Edge> getEdges();
 
+    DistanceCalculator getDistanceCalculator();
+
     interface Component<C extends Component<C>> extends Comparable<C> {
 
         static <RC extends Component<RC>> Predicate<? super RC> named(String name) {

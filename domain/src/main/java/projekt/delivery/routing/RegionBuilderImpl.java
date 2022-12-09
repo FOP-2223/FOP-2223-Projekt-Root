@@ -75,7 +75,7 @@ class RegionBuilderImpl implements Region.Builder {
     @Override
     public Region build() {
         Objects.requireNonNull(distanceCalc, "distanceCalculator");
-        RegionImpl region = new RegionImpl();
+        RegionImpl region = new RegionImpl(distanceCalc);
         nodes.forEach((l, n) -> region.putNode(n.build(region)));
         edges.forEach(e -> {
 
