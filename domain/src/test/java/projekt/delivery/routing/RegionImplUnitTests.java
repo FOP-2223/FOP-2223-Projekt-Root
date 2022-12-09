@@ -19,12 +19,21 @@ public class RegionImplUnitTests {
     @BeforeAll
     public static void initialize() {
 
-        Function<Integer, Region> testObjectFactory = i -> Region.builder()
-            .addNode("node: " + i + "-1", new Location(i, i))
-            .addNode("node: " + i + "-2", i == 0 ? new Location(-1, -1) : new Location(2*i, 2*i))
-            .addEdge("edge: " + i, new Location(i, i), i == 0 ? new Location(-1, -1) : new Location(2*i, 2*i))
-            .distanceCalculator(new EuclideanDistanceCalculator())
-            .build();
+        Function<Integer, Region> testObjectFactory = i -> {
+            RegionImpl region = new RegionImpl();
+
+            Location nodeBLocation = i == 0 ? new Location(-1, -1) : new Location(2 * i, 2 * i);
+            NodeImpl A = new NodeImpl(region, "node: " + i, new Location(i,i), Set.of(nodeBLocation));
+            NodeImpl B = new NodeImpl(region, "node: " + i, nodeBLocation, Set.of(new Location(i,i)));
+
+            EdgeImpl AB = new EdgeImpl(region, "edge: " + i, A.getLocation(), nodeBLocation, 1);
+
+            region.putNode(A);
+            region.putNode(B);
+            region.putEdge(AB);
+
+            return region;
+        };
 
         objectUnitTests = new ObjectUnitTests<>(testObjectFactory, null);
 

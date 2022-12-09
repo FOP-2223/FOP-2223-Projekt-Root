@@ -15,10 +15,6 @@ public class ComparableUnitTests<T extends Comparable<? super T>> {
         this.testObjectFactory = testObjectFactory;
     }
 
-    public static void main(String[] args) {
-        new ComparableUnitTests<Integer>(i -> i).initialize(10);
-    }
-
     @SuppressWarnings("unchecked")
     public void initialize(int testObjectCount) {
         testObjects = (T[]) new Comparable<?>[testObjectCount];
