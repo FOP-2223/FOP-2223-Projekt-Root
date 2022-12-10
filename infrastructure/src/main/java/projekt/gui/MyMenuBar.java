@@ -8,9 +8,9 @@ import javafx.scene.text.Font;
 
 public class MyMenuBar extends MenuBar {
 
-    private MainFrame mainFrame;
-    public MyMenuBar(MainFrame mf) {
-        mainFrame = mf;
+    private final SimulationScene scene;
+    public MyMenuBar(SimulationScene scene) {
+        this.scene = scene;
         initComponents();
     }
 
@@ -57,10 +57,10 @@ public class MyMenuBar extends MenuBar {
     }
 
     public void centerViewMenuEntry_actionPerformed(ActionEvent e) {
-        mainFrame.getMapPanel().resetCenterLocation();
+        scene.mapPanel.resetCenterLocation();
     }
 
     public void resetZoomMenuEntry_actionPerformed(ActionEvent e) {
-        mainFrame.getMapPanel().resetScale();
+        scene.mapPanel.resetScale();
     }
 }

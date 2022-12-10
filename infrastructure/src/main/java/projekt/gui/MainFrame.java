@@ -37,9 +37,9 @@ public class MainFrame extends Stage implements SimulationListener {
     private void initComponents() {
         setTitle("Mainframe");
 
-        infoPanel = new InfoPanel(this);
-        mapPanel = new MapPanel(this);
-        controlsPanel = new ControlsPanel(this, simulation.getSimulationConfig());
+        infoPanel = new InfoPanel(null);
+        mapPanel = new MapPanel(null);
+        controlsPanel = new ControlsPanel(null, simulation.getSimulationConfig());
 
         //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         //setMinimumSize(new Dimension(500, 500));
@@ -47,7 +47,7 @@ public class MainFrame extends Stage implements SimulationListener {
         setMinHeight(500);
 
         //setLayout(new BorderLayout(6, 6));
-        final BorderPane bp = new BorderPane(new MyMenuBar(this));
+        final BorderPane bp = new BorderPane(new MyMenuBar(null));
         bp.setCenter(mapPanel);
         bp.setLeft(infoPanel);
         bp.setBottom(controlsPanel);

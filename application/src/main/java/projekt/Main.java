@@ -7,13 +7,11 @@ import projekt.delivery.rating.*;
 import projekt.delivery.routing.DijkstraPathCalculator;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
-import projekt.delivery.runner.BasicRunner;
 import projekt.delivery.service.BasicDeliveryService;
 import projekt.delivery.service.DeliveryService;
 import projekt.delivery.simulation.BasicDeliverySimulation;
 import projekt.delivery.simulation.SimulationConfig;
 import projekt.gui.MainFrame;
-import projekt.gui.MainFrameFX;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -212,7 +210,7 @@ public class Main {
 
         // Gui Setup
 //        FlatDarkLaf.setup();
-//        MainFrame mainFrame = new MainFrame(region1, vehicleManager1, simulation);
+//        MainFrameFX mainFrame = new MainFrameFX(region1, vehicleManager1, );
 //        mainFrame.setVisible(true);
 //        simulation.addListener(mainFrame);
 //

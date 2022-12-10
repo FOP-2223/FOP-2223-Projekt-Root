@@ -11,7 +11,7 @@ import java.util.function.IntUnaryOperator;
 
 public class ControlsPanel extends GridPane {
 
-    private final MainFrame mainFrame;
+    private final SimulationScene scene;
     private final SimulationConfig simulationConfig;
     private final IntUnaryOperator speedFunction = i -> 1000 - 100 * i;
     private Button playPauseButton;
@@ -22,8 +22,8 @@ public class ControlsPanel extends GridPane {
     private Label mousePositionLabel;
     private boolean paused = false;
 
-    public ControlsPanel(MainFrame mainFrame, SimulationConfig simulationConfig) {
-        this.mainFrame = mainFrame;
+    public ControlsPanel(SimulationScene scene, SimulationConfig simulationConfig) {
+        this.scene = scene;
         this.simulationConfig = simulationConfig;
         initComponents();
     }
@@ -63,7 +63,7 @@ public class ControlsPanel extends GridPane {
         singleStepButton.setDisable(true);
         singleStepButton.setOnAction(actionEvent -> {
             // TODO: advance one step - make AbstractDeliverService#runTick() public?
-            mainFrame.getSimulation().runCurrentTick();
+            scene.simulation.runCurrentTick();
         });
 
         // tickSpeedSlider.setToolTipText("");

@@ -4,14 +4,16 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import projekt.delivery.routing.Vehicle;
 
+import java.util.List;
+
 public class VehiclePanel extends BorderPane {
 
-    private final MainFrame mainFrame;
+    private final SimulationScene scene;
 
-    private ListView<Vehicle> selectionList;
+    public ListView<Vehicle> selectionList;
 
-    public VehiclePanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+    public VehiclePanel(SimulationScene scene) {
+        this.scene = scene;
         initComponents();
     }
 
@@ -39,7 +41,9 @@ public class VehiclePanel extends BorderPane {
         });*/
 
         selectionList.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, selected) -> mainFrame.setSelectedVehicle(selected));
+            (observable, oldValue, selected) -> {
+                scene.selectedVehicle = selected;
+            });
 
         // ------
         /*selectionList.setModel(new AbstractListModel<>() {
@@ -64,5 +68,9 @@ public class VehiclePanel extends BorderPane {
 
     public void setSelectedVehicle(Vehicle vehicle) {
         selectionList.getSelectionModel().select(vehicle);
+    }
+
+    public List<Vehicle> getVehicles() {
+        return selectionList.getItems();
     }
 }

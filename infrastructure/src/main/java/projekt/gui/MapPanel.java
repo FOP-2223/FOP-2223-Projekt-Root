@@ -46,12 +46,12 @@ public class MapPanel extends TitledPane {
     private static final double SCALE_IN = 1.1;
     private static final double SCALE_OUT = 1 / SCALE_IN;
     final AtomicReference<Point> lastPoint = new AtomicReference<>();
-    private final MainFrame mainFrame;
+    private final SimulationScene scene;
     private final AffineTransform transformation = new AffineTransform();
     private boolean alreadyCentered = false;
 
-    public MapPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+    public MapPanel(SimulationScene simulationScene) {
+        this.scene = simulationScene;
         initComponents();
     }
 
@@ -117,8 +117,8 @@ public class MapPanel extends TitledPane {
         var height = getHeight();
         var reverse = getReverseTransform();
         // scale view
-        var min = mainFrame.region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.POINT_MIN);
-        var max = mainFrame.region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.POINT_MAX);
+        var min = scene.region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.POINT_MIN);
+        var max = scene.region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.POINT_MAX);
         reverse.transform(min, min);
         reverse.transform(max, max);
         var currentWidth = max.getY() - min.getY();
@@ -130,7 +130,7 @@ public class MapPanel extends TitledPane {
         reverse = getReverseTransform();
         var center = new Point2D.Double(width / 2d, height / 2d);
         reverse.transform(center, center);
-        var nodeCenter = mainFrame.region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.center());
+        var nodeCenter = scene.region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.center());
         transformation.translate(center.getX() - nodeCenter.getX(), center.getY() - nodeCenter.getY());
         alreadyCentered = true;
     }
@@ -168,7 +168,7 @@ public class MapPanel extends TitledPane {
      * @return the list of vehicles
      */
     private List<Vehicle> getVehicles(Point2D position) {
-        return mainFrame.vehicleManager.getVehicles()
+        return scene.vehicleManager.getVehicles()
             .stream()
             .filter(v -> Utils.midPoint(v).distance(position) < 1).toList();
     }
@@ -178,7 +178,7 @@ public class MapPanel extends TitledPane {
      */
     private void updateLocation() {
         var location = getCurrentLocation();
-        mainFrame.getControlsPanel().getMousePositionLabel().setText(
+        scene.controlsPanel.getMousePositionLabel().setText(
             String.format("(x: %d, y: %d)", location.getX(), location.getY()));
     }
 
@@ -189,7 +189,7 @@ public class MapPanel extends TitledPane {
         var vehicles = getVehicles(getCurrentPoint());
         if (!vehicles.isEmpty()) {
             var firstVehicle = vehicles.get(0);
-            mainFrame.setSelectedVehicle(mainFrame.getSelectedVehicle() != firstVehicle ? firstVehicle : null);
+            scene.selectedVehicle = (scene.selectedVehicle != firstVehicle ? firstVehicle : null);
         }
     }
 
@@ -224,7 +224,7 @@ public class MapPanel extends TitledPane {
      */
     private void paintVehicle(Vehicle vehicle) {
         var img = CAR_SELECTED;
-        if (mainFrame.getSelectedVehicle() != null && mainFrame.getSelectedVehicle() != vehicle) {
+        if (scene.selectedVehicle != null && scene.selectedVehicle != vehicle) {
             img = CAR;
         }
         paintImage(midPoint(vehicle), img);
@@ -353,9 +353,9 @@ public class MapPanel extends TitledPane {
     private void paintMap() {
         // Background
         drawGrid(50, 50, true);
-        mainFrame.region.getEdges().forEach(this::drawEdge);
-        mainFrame.getRegion().getNodes().forEach(this::drawNode);
-        mainFrame.vehicleManager.getVehicles().forEach(this::paintVehicle);
+        scene.region.getEdges().forEach(this::drawEdge);
+        scene.region.getNodes().forEach(this::drawNode);
+        scene.vehicleManager.getVehicles().forEach(this::paintVehicle);
     }
 
     public void resetCenterLocation() {

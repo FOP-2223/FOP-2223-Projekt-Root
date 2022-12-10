@@ -10,20 +10,20 @@ import java.awt.*;
 
 public class InfoPanel extends GridPane {
 
-    private final MainFrame mainFrame;
+    private final SimulationScene scene;
 
     private VehiclePanel detailsPanel;
     private CurrentTimePanel currentTimePanel;
     private OrdersPanel ordersPanel;
 
-    public InfoPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+    public InfoPanel(SimulationScene scene) {
+        this.scene = scene;
 
         initComponents();
     }
 
     public void initComponents() {
-        currentTimePanel = new CurrentTimePanel(mainFrame);
+        currentTimePanel = new CurrentTimePanel(scene);
 
 
 
