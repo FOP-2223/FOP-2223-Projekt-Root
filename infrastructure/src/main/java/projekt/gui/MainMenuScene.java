@@ -1,7 +1,5 @@
 package projekt.gui;
 
-import com.sun.javafx.collections.ObservableListWrapper;
-import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,15 +7,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.layout.*;
-import javafx.stage.Stage;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import projekt.Main;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -53,7 +52,12 @@ public class MainMenuScene extends Scene implements ControlledScene<MainMenuScen
         root.setCenter(buttonsVbox);
 
         final var startGameButton = new Button("Start Simulation");
-        startGameButton.setOnAction((e) -> new GUIRunner(controller.getStage()).run(Main.problemGroup, Main.simulationConfig, 10));
+        startGameButton.setOnAction((e) -> {
+            //Execute the GUIRunner in a separate Thread to prevent it from blocking the GUI
+            new Thread(() -> {
+                new GUIRunner(controller.getStage()).run(Main.problemGroup, Main.simulationConfig, 10);
+            }).start();
+        });
         buttonsVbox.getChildren().add(startGameButton);
 
         final HBox regionHBox = new HBox();

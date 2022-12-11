@@ -1,5 +1,6 @@
 package projekt.gui;
 
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import projekt.delivery.archetype.ProblemGroup;
 import projekt.delivery.rating.RatingCriteria;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class GUIRunner implements Runner {
 
@@ -34,17 +37,43 @@ public class GUIRunner implements Runner {
 
         for (int i = 0; i < simulationRuns; i++) {
             for (Simulation simulation : simulations) {
-                SimulationScene scene = (SimulationScene) SceneSwitcher.loadScene(SceneSwitcher.SceneType.SIMULATION, stage);
-                scene.init(simulation);
+
+                //store the SimulationScene
+                AtomicReference<SimulationScene> simulationScene = new AtomicReference<>();
+                //CountDownLatch to check if the SimulationScene got created
+                CountDownLatch countDownLatch = new CountDownLatch(1);
+                //execute the scene switching on the javafx application thread
+                Platform.runLater(() -> {
+                    //switch to the SimulationScene and set everything up
+                    SimulationScene scene = (SimulationScene) SceneSwitcher.loadScene(SceneSwitcher.SceneType.SIMULATION, stage);
+                    scene.init(simulation);
+                    simulation.addListener(scene);
+                    simulationScene.set(scene);
+                    countDownLatch.countDown();
+                });
+
+                try {
+                    //wait for the SimulationScene to be set
+                    countDownLatch.await();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
                 simulation.runSimulation();
+
+                simulation.removeListener(simulationScene.get());
+
                 results.replaceAll((criteria, rating) -> results.get(criteria) + simulation.getRatingForCriterion(criteria));
             }
         }
 
         results.replaceAll((criteria, rating) -> (results.get(criteria) / (simulationRuns * problemGroup.problems().size())));
 
-        RaterScene raterScene = (RaterScene) SceneSwitcher.loadScene(SceneSwitcher.SceneType.RATING, stage);
-        raterScene.init(results);
+        //execute the scene switching on the javafx thread
+        Platform.runLater(() -> {
+            RaterScene raterScene = (RaterScene) SceneSwitcher.loadScene(SceneSwitcher.SceneType.RATING, stage);
+            raterScene.init(results);
+        });
 
         return results;
     }

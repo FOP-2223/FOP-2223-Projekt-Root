@@ -1,8 +1,9 @@
 package projekt.gui;
 
+import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import projekt.delivery.event.Event;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
@@ -18,7 +19,7 @@ public class SimulationScene extends Scene implements SimulationListener, Contro
     public Region region;
     public VehiclePanel vehicleManager;
     public Vehicle selectedVehicle;
-    private Pane root;
+    private BorderPane root;
     public InfoPanel infoPanel;
     public MapPanel mapPanel;
     public ControlsPanel controlsPanel;
@@ -27,13 +28,14 @@ public class SimulationScene extends Scene implements SimulationListener, Contro
     public SimulationScene() {
         super(new BorderPane());
         controller = new SimulationSceneController();
-        root = (Pane) getRoot();
+        root = (BorderPane) getRoot();
+        root.setPrefSize(500, 500);
+        root.setTop(new Label("SIMULATION"));
     }
 
     public void init(Simulation simulation) {
 
         this.simulation = simulation;
-        this.simulation.addListener(this);
 
         infoPanel = new InfoPanel(this);
         mapPanel = new MapPanel(this);
@@ -43,12 +45,17 @@ public class SimulationScene extends Scene implements SimulationListener, Contro
         bp.setCenter(mapPanel);
         bp.setLeft(infoPanel);
         bp.setBottom(controlsPanel);
-        //root = bp;
+        bp.setPrefSize(500, 500);
+        setRoot(bp);
+        root = bp;
     }
 
     @Override
     public void onTick(List<Event> events, long tick) {
-
+        //Execute GUI updates on the javafx application thread
+        Platform.runLater(() -> {
+            root.setTop(new Label("OnTick"));
+        });
     }
 
     @Override
