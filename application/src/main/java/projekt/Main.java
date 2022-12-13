@@ -179,11 +179,8 @@ public class Main {
             .build());
 
         //ProblemArchetype
-        ProblemArchetype problemArchetype1 = new ProblemArchetypeImpl(orderGeneratorFactory1, vehicleManager1, raterFactoryMap1, simulationLength);
-        ProblemArchetype problemArchetype2 = new ProblemArchetypeImpl(orderGeneratorFactory2, vehicleManager2, raterFactoryMap2, simulationLength);
-
-        //layer 3 - DeliveryService
-        DeliveryService deliveryService = new BasicDeliveryService(vehicleManager1);
+        ProblemArchetype problemArchetype1 = new ProblemArchetypeImpl(orderGeneratorFactory1, vehicleManager1, raterFactoryMap1, simulationLength, "problem 1");
+        ProblemArchetype problemArchetype2 = new ProblemArchetypeImpl(orderGeneratorFactory2, vehicleManager2, raterFactoryMap2, simulationLength, "problem 2");
 
         // SimulationConfig
         SimulationConfig simulationConfig = new SimulationConfig(0);
@@ -191,7 +188,7 @@ public class Main {
         //ProblemGroup
         ProblemGroup problemGroup = new ProblemGroupImpl(List.of(problemArchetype1, problemArchetype2), new ArrayList<>(raterFactoryMap1.keySet()));
 
-        Map<RatingCriteria, Double> result = new BasicRunner().run(problemGroup, simulationConfig, 10);
+        Map<RatingCriteria, Double> result = new BasicRunner().run(problemGroup, simulationConfig, 10, BasicDeliveryService::new);
 
         System.out.println("IN_TIME: " + result.get(RatingCriteria.IN_TIME));
 

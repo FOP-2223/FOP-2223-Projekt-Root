@@ -3,13 +3,7 @@ package projekt.delivery.routing;
 import org.jetbrains.annotations.Nullable;
 import projekt.base.Location;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 class RegionImpl implements Region {
 
@@ -60,11 +54,11 @@ class RegionImpl implements Region {
             throw new IllegalArgumentException("Edge %s has incorrect region".formatted(edge.toString()));
         }
         if (edge.getNodeA() == null) {
-            throw new IllegalArgumentException("NodeA %s has incorrect region".formatted(edge.getLocationA().toString()));
+            throw new IllegalArgumentException("NodeA %s has incorrect region".formatted(edge.getNodeA().toString()));
         }
 
         if (edge.getNodeB() == null) {
-            throw new IllegalArgumentException("NodeB %s has incorrect region".formatted(edge.getLocationB().toString()));
+            throw new IllegalArgumentException("NodeB %s has incorrect region".formatted(edge.getNodeB().toString()));
         }
 
         edges.computeIfAbsent(

@@ -1,6 +1,6 @@
 package projekt.delivery.routing;
 
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import projekt.base.Location;
 
 import java.util.Comparator;
@@ -69,7 +69,7 @@ class EdgeImpl implements Region.Edge {
     }
 
     @Override
-    public int compareTo(Region.Edge o) {
+    public int compareTo(Region.@NotNull Edge o) {
         return COMPARATOR.compare(this, o);
     }
 
@@ -96,10 +96,10 @@ class EdgeImpl implements Region.Edge {
     @Override
     public String toString() {
         return "EdgeImpl(" +
-            "name='" + name + '\'' +
-            ", locationA=" + locationA +
-            ", locationB=" + locationB +
-            ", duration=" + duration +
-            ')';
+            "name='" + getName() + "'"
+            + ", locationA='" + getLocationA() + "'"
+            + ", locationB='" + getLocationB() + "'"
+            + ", duration='" + getDuration() + "'"
+            + ')';
     }
 }

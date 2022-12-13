@@ -79,14 +79,14 @@ public class ConfirmedOrder implements Serializable {
 
     @Override
     public String toString() {
-        return String.format(
-            "%d, %d, %d, %s, %s, %s",
-            getX(),
-            getY(),
-            orderID,
-            deliveryInterval,
-            deliveryInterval,
-            foodList.toString()
-        );
+        return "ConfirmedOrder{" +
+            "location=" + location +
+            ", orderID=" + orderID +
+            ", deliveryInterval=" + deliveryInterval +
+            ", foodList=" + foodList +
+            ", weight=" + weight +
+            ", restaurant=" + restaurant +
+            ", actualDeliveryTick=" + actualDeliveryTick +
+            '}';
     }
 }

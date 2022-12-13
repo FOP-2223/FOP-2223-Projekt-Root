@@ -5,10 +5,7 @@ import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 /**
  * A very simple delivery service that distributes orders to compatible vehicles in a FIFO manner.
@@ -43,12 +40,33 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                     ListIterator<ConfirmedOrder> it = pendingOrders.listIterator();
                     while (it.hasNext()) {
                         final ConfirmedOrder order = it.next();
+
+                        //if the order does not belong to the current restaurant don't load it onto the vehicle
+                        if (!order.getRestaurant().equals(restaurant)) {
+                            continue;
+                        }
+
+                        //if the vehicle can load the order, load it and add the location to the moveQueue of the vehicle
                         if (order.getTotalWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()) {
                             loadedAtLeastOneOrderOnVehicle = true;
                             restaurant.loadOrder(vehicle, order, currentTick);
-                            vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v ->
-                                vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied().getComponent()).deliverOrder(v, order, currentTick));
                             it.remove();
+
+                            //don't add the location of the order to the queue if the vehicle already visites the location
+                            if (vehicle.getPaths().stream()
+                                .map(path -> path.getNodes().peekLast())
+                                .filter(Objects::nonNull)
+                                .map(Region.Node::getLocation)
+                                .toList().contains(order.getLocation())) {
+                                continue;
+                            }
+
+                            vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v -> {
+                                //deliver every possible order
+                                for (ConfirmedOrder deliveredOrder : v.getOrders().stream().filter(o -> o.getLocation().equals(order.getLocation())).toList()) {
+                                    vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied().getComponent()).deliverOrder(v, deliveredOrder, currentTick);
+                                }
+                            });
                         }
                     }
 

@@ -19,7 +19,6 @@ class VehicleManagerImpl implements VehicleManager {
     private final List<VehicleImpl> vehiclesToSpawn = new ArrayList<>();
     private final List<VehicleImpl> vehicles = new ArrayList<>();
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
-    private final Set<AbstractOccupied<?>> allOccupied;
     private final EventBus eventBus = new EventBus();
 
     VehicleManagerImpl(
@@ -30,7 +29,6 @@ class VehicleManagerImpl implements VehicleManager {
         this.pathCalculator = pathCalculator;
         occupiedNodes = toOccupiedNodes(region.getNodes());
         occupiedEdges = toOccupiedEdges(region.getEdges());
-        allOccupied = getAllOccupied();
 
         if (getOccupiedRestaurants().size() == 0) {
             throw new IllegalArgumentException("At least one restaurant is required to create a VehicleManager");
