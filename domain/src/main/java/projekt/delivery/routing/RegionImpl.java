@@ -1,17 +1,9 @@
 package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
-import projekt.base.DistanceCalculator;
-import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 class RegionImpl implements Region {
 
@@ -20,15 +12,6 @@ class RegionImpl implements Region {
     private final List<EdgeImpl> allEdges = new ArrayList<>();
     private final Collection<Node> unmodifiableNodes = Collections.unmodifiableCollection(nodes.values());
     private final Collection<Edge> unmodifiableEdges = Collections.unmodifiableCollection(allEdges);
-    private final DistanceCalculator distanceCalculator;
-
-    public RegionImpl() {
-        this(new EuclideanDistanceCalculator());
-    }
-
-    public RegionImpl(DistanceCalculator distanceCalculator) {
-        this.distanceCalculator = distanceCalculator;
-    }
 
     @Override
     public @Nullable Node getNode(Location location) {
@@ -59,11 +42,6 @@ class RegionImpl implements Region {
         return unmodifiableEdges;
     }
 
-    @Override
-    public DistanceCalculator getDistanceCalculator() {
-        return distanceCalculator;
-    }
-
     void putNode(NodeImpl node) {
         if (this != node.getRegion()) {
             throw new IllegalArgumentException("Node %s has incorrect region".formatted(node.toString()));
@@ -76,11 +54,11 @@ class RegionImpl implements Region {
             throw new IllegalArgumentException("Edge %s has incorrect region".formatted(edge.toString()));
         }
         if (edge.getNodeA() == null) {
-            throw new IllegalArgumentException("NodeA %s has incorrect region".formatted(edge.getLocationA().toString()));
+            throw new IllegalArgumentException("NodeA %s has incorrect region".formatted(edge.getNodeA().toString()));
         }
 
         if (edge.getNodeB() == null) {
-            throw new IllegalArgumentException("NodeB %s has incorrect region".formatted(edge.getLocationB().toString()));
+            throw new IllegalArgumentException("NodeB %s has incorrect region".formatted(edge.getNodeB().toString()));
         }
 
         edges.computeIfAbsent(

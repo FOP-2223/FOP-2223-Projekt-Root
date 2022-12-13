@@ -15,4 +15,6 @@ public interface ProblemArchetype {
     Map<RatingCriteria, Rater.Factory> raterFactoryMap();
 
     long simulationLength();
+
+    String name();
 }

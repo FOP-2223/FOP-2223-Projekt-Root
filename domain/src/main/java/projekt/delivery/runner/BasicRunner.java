@@ -2,25 +2,25 @@ package projekt.delivery.runner;
 
 import projekt.delivery.archetype.ProblemGroup;
 import projekt.delivery.rating.RatingCriteria;
-import projekt.delivery.service.BasicDeliveryService;
-import projekt.delivery.simulation.BasicDeliverySimulation;
+import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.service.DeliveryService;
 import projekt.delivery.simulation.Simulation;
 import projekt.delivery.simulation.SimulationConfig;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
-public class BasicRunner implements Runner {
+public class BasicRunner extends AbstractRunner {
 
     @Override
-    public Map<RatingCriteria, Double> run(
-        ProblemGroup problemGroup,
-        SimulationConfig simulationConfig,
-        int simulationRuns) {
+    public Map<RatingCriteria, Double> run(ProblemGroup problemGroup,
+                                           SimulationConfig simulationConfig,
+                                           int simulationRuns,
+                                           Function<VehicleManager, DeliveryService> deliveryServiceFactory) {
 
-        List<Simulation> simulations = createSimulations(problemGroup, simulationConfig);
+        List<Simulation> simulations = createSimulations(problemGroup, simulationConfig, deliveryServiceFactory);
         Map<RatingCriteria, Double> results = new HashMap<>();
 
         for (RatingCriteria criteria : problemGroup.ratingCriteria()) {
@@ -37,21 +37,5 @@ public class BasicRunner implements Runner {
         results.replaceAll((criteria, rating) -> (results.get(criteria) / (simulationRuns * problemGroup.problems().size())));
 
         return results;
-    }
-
-    private List<Simulation> createSimulations(
-        ProblemGroup problemGroup,
-        SimulationConfig simulationConfig) {
-
-        List<Simulation> simulations = new ArrayList<>();
-
-        problemGroup.problems().forEach(problem -> simulations.add(new BasicDeliverySimulation(
-            simulationConfig,
-            problem.raterFactoryMap(),
-            new BasicDeliveryService(problem.vehicleManager()),
-            problem.orderGeneratorFactory(),
-            problem.simulationLength())));
-
-        return simulations;
     }
 }

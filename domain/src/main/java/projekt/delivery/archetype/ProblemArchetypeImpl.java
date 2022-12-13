@@ -10,6 +10,11 @@ public record ProblemArchetypeImpl(
     OrderGenerator.Factory orderGeneratorFactory,
     VehicleManager vehicleManager,
     Map<RatingCriteria, Rater.Factory> raterFactoryMap,
-    long simulationLength) implements ProblemArchetype {
+    long simulationLength,
+    String name) implements ProblemArchetype {
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

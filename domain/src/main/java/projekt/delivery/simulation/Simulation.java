@@ -7,7 +7,6 @@ import projekt.delivery.rating.RatingCriteria;
 import java.util.List;
 
 public interface Simulation {
-    void onTick();
 
     /**
      * Start the simulation of the food delivery.
@@ -34,8 +33,6 @@ public interface Simulation {
 
     boolean isRunning();
 
-    double getCurrentRating();
-
     double getRatingForCriterion(RatingCriteria criterion);
 
     SimulationConfig getSimulationConfig();
@@ -43,8 +40,6 @@ public interface Simulation {
     DeliveryService getDeliveryService();
 
     long getCurrentTick();
-
-    List<Event> getLastEvents();
 
     void runCurrentTick();
 

@@ -47,7 +47,7 @@ public class InTimeRater implements Rater {
                     throw new AssertionError("DeliverOrderEvent before OrderReceivedEvent");
                 }
 
-                long ticksOff = Math.max(Math.min(order.getActualDeliveryTick() - order.getDeliveryInterval().getEnd() - ignoredTicksOff, 15), 0);
+                long ticksOff = Math.max(Math.min(order.getActualDeliveryTick() - order.getDeliveryInterval().getEnd() - ignoredTicksOff, maxTicksOff), 0);
                 totalTicksOff += ticksOff;
 
                 ordersDelivered++;
