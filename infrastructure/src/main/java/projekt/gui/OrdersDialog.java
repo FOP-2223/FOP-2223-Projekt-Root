@@ -3,10 +3,17 @@ package projekt.gui;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
+import projekt.base.Location;
+import projekt.base.TickInterval;
 import projekt.delivery.routing.ConfirmedOrder;
+import projekt.delivery.routing.VehicleManager;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 
 class OrdersDialog extends Dialog<ConfirmedOrder> {
 
@@ -18,11 +25,14 @@ class OrdersDialog extends Dialog<ConfirmedOrder> {
     private final ListView<String> foodList = new ListView<>();
     //private final ScrollPane foodListPane = new ScrollPane(foodList);
     private final Button removeFoodButton = new Button("Remove Food");
+    ButtonType buttonTypeOk = new ButtonType("Submit order", ButtonBar.ButtonData.OK_DONE);
     private final Button okButton = new Button("Submit order");
     private final Button cancelButton = new Button("Cancel");
 
-    private final MainFrame mainFrame;
+    private final SimulationScene scene;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
+    private Integer[] coordinates;
+
     /*
     private final Map<String, List<Pair<JCheckBox, Extra<?>>>> extraCheckboxes = FoodTypes.ALL
         .entrySet()
@@ -44,21 +54,29 @@ class OrdersDialog extends Dialog<ConfirmedOrder> {
             entry -> entry.getValue().getFoodVariants().stream().map(Food.Variant::getName).toList()
         ));
 */
-    OrdersDialog(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+    OrdersDialog(SimulationScene scene) {
+        this.scene = scene;
+        setHeaderText("Order dialog");
+        setTitle("Order Title");
 
-        this.getGraphic().minHeight(600);
-        this.getGraphic().minWidth(600);
-        this.getGraphic().maxHeight(600);
-        this.getGraphic().maxWidth(600);
+        getDialogPane().getButtonTypes().add(buttonTypeOk);
         //setMinimumSize(new Dimension(600, 500));
         //setMaximumSize(new Dimension(600, 600));
         // ignored for whatever reason... ask your favorite higher being as to why
+        deliveryTimeSpinner = new Spinner<>(new SpinnerValueFactory<Long>() {
+            @Override
+            public void decrement(int steps) {
+                setValue(getValue() - steps);
+            }
 
-
-        deliveryTimeSpinner = new Spinner<>(mainFrame.getSimulation().getCurrentTick(), Long.MAX_VALUE, 1);
-        deliveryTimeSpinner.getValueFactory().setValue(mainFrame.getSimulation().getCurrentTick());
+            @Override
+            public void increment(int steps) {
+                setValue(getValue() + steps);
+            }
+        });
+        deliveryTimeSpinner.getValueFactory().setValue(scene.simulation.getCurrentTick());
         //TODO in LocalDateTime umrechnen?
+
 
         foodList.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> {
@@ -73,26 +91,21 @@ class OrdersDialog extends Dialog<ConfirmedOrder> {
         removeFoodButton.setDisable(true);
         removeFoodButton.setOnAction(actionEvent -> foodList.getItems().remove(foodList.getSelectionModel().getSelectedItem()));
 
-        okButton.setOnAction(actionEvent -> {
-            Integer[] coordinates = Arrays.stream(locationTextField.getText().replaceAll("\\(?\\)?", "").split(","))
-                .map(String::trim)
-                .map(Integer::parseInt)
-                .toArray(Integer[]::new);
+        coordinates = new Integer[2];
 
-            /* TODO Wie orders submitten ohne pizzeria?
-            ConfirmedOrder order = mainFrame.pizzeria.submitOrder(
-                coordinates[0],
-                coordinates[1],
-                LocalDateTime.parse(((String) deliveryTimeSelector.getValue()).substring(0, 16), dateTimeFormatter).toInstant(ZoneOffset.UTC),
-                IntStream.range(0, foodListModel.getSize()).mapToObj(foodListModel::getElementAt).toList()
-            );*/
+        okButton.setOnAction(actionEvent -> {
+
+
+
 //            ordersPanel.addOrder(textField1.getText());
-            //mainFrame.getControlsPanel().unpause();
+            //scene.getControlsPanel().unpause();
             okButton.setVisible(false);
+
+            okButton.setDefaultButton(true);
         });
 
         cancelButton.setOnAction(actionEvent -> {
-            //mainFrame.getControlsPanel().unpause();
+            //scene.getControlsPanel().unpause();
             cancelButton.setVisible(false);
         });
 
@@ -126,6 +139,41 @@ class OrdersDialog extends Dialog<ConfirmedOrder> {
         grid.add(cancelButton, 2, 5, 2, 1);
 
         getDialogPane().setContent(grid);
+
+        setResultConverter(new Callback<ButtonType, ConfirmedOrder>() {
+            @Override
+            public ConfirmedOrder call(ButtonType buttonType) {
+
+                if (buttonType == buttonTypeOk) {
+
+                    coordinates = Arrays.stream(locationTextField.getText().replaceAll("\\(?\\)?", "").split(","))
+                        .map(String::trim)
+                        .map(Integer::parseInt)
+                        .toArray(Integer[]::new);
+
+                    var tick = deliveryTimeSpinner.getValue();
+                    //var t = (String) deliveryTimeSelector.getValue());
+                    //IntStream.range(0, foodListModel.getSize()).mapToObj(foodListModel::getElementAt).toList();
+                    var deliveryTime = LocalDateTime.parse(tick + "", dateTimeFormatter).toInstant(ZoneOffset.UTC);
+                    final TickInterval tickInterval = new TickInterval(0, tick);
+                    var location = new Location(coordinates[0], coordinates[1]);
+                    var deliveryService = scene.simulation.getDeliveryService();
+                    List<VehicleManager.OccupiedRestaurant> restaurants = deliveryService.getVehicleManager().getOccupiedRestaurants().stream().toList();
+                    List<String> foodItems = List.of("");
+                    return new ConfirmedOrder(location, restaurants.get(0), tickInterval, foodItems, 0.0);
+
+                    /* TODO Wie orders submitten ohne pizzeria?
+                    ConfirmedOrder order = scene.pizzeria.submitOrder(
+                        coordinates[0],
+                        coordinates[1],
+                        LocalDateTime.parse(((String) deliveryTimeSelector.getValue()).substring(0, 16), dateTimeFormatter).toInstant(ZoneOffset.UTC),
+                        IntStream.range(0, foodListModel.getSize()).mapToObj(foodListModel::getElementAt).toList()
+                    );*/
+
+                }
+                return null;
+            }
+        });
     }
 
     void showAddOrderDialog() {
@@ -136,8 +184,13 @@ class OrdersDialog extends Dialog<ConfirmedOrder> {
 
         locationTextField.setText("(0, 0)");
         deliveryTimeSpinner.getValueFactory().
-            setValue(mainFrame.getSimulation().getCurrentTick());
+            setValue(scene.simulation.getCurrentTick());
         getDialogPane().setVisible(true);
+        var result = showAndWait();
+        ConfirmedOrder selected;
+        if (result.isPresent()) {
+            selected = result.get();
+        }
     }
 
     void showEditOrderDialog(ConfirmedOrder order) {
@@ -154,7 +207,7 @@ class OrdersDialog extends Dialog<ConfirmedOrder> {
 
     private void resetFields() {
         locationTextField.setText("(0, 0)");
-        deliveryTimeSpinner.getValueFactory().setValue(mainFrame.getSimulation().getCurrentTick());
+        deliveryTimeSpinner.getValueFactory().setValue(scene.simulation.getCurrentTick());
         foodTextField.setText("");
     }
 }

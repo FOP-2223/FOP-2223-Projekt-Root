@@ -1,15 +1,18 @@
 package projekt.gui;
 
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import projekt.delivery.simulation.SimulationConfig;
 
 import java.util.function.IntUnaryOperator;
 
-public class ControlsPanel extends GridPane {
+public class ControlsPanel extends BorderPane {
 
     private final SimulationScene scene;
     private final SimulationConfig simulationConfig;
@@ -29,10 +32,6 @@ public class ControlsPanel extends GridPane {
     }
 
     private void initComponents() {
-        //setLayout(new GridLayout(1, 6, 6, 6));
-        //setBorder(new TitledBorder("Controls"));
-        final Label title = new Label("Controls");
-        getChildren().add(title);
         // setBorder(new CompoundBorder(new TitledBorder("Controls"), new
         // EmptyBorder(12, 0, 0, 0))); // More space up top
         playPauseButton = new Button();
@@ -76,21 +75,21 @@ public class ControlsPanel extends GridPane {
             simulationConfig.setMillisecondsPerTick(speedFunction.applyAsInt((int) tickIntervalSlider.getValue()));
             updateText();
         });
+        var slider = new VBox(tickIntervalSlider, tickIntervalSliderLabel);
 
         updateText();
-
-        getChildren().add(playPauseButton);
-        getChildren().add(stopButton);
-        getChildren().add(singleStepButton);
-        getChildren().add(tickIntervalSlider);
-        getChildren().add(tickIntervalSliderLabel);
-        getChildren().add(mousePositionLabel);
+        setPadding(new Insets(5));
+        final HBox buttons = new HBox(playPauseButton, stopButton, singleStepButton,
+            slider, mousePositionLabel);
+        buttons.setPadding(new Insets(0, 10, 0, 10));
+        buttons.setSpacing(10);
+        setCenter(buttons);
     }
 
     private void updateText() {
         tickIntervalSliderLabel.setText(
             String.format(
-                "Tick interval: %d ms %s",
+                "   Tick interval: %d ms %s",
                 speedFunction.applyAsInt((int) tickIntervalSlider.getValue()),
                 paused ? "(paused)" : ""
             )

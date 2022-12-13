@@ -1,14 +1,11 @@
 package projekt.gui;
 
-import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
-import javafx.scene.image.Image;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +14,9 @@ import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
 import java.awt.*;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -26,7 +25,7 @@ import static projekt.gui.TUColors.COLOR_0D;
 import static projekt.gui.Utils.getDifference;
 import static projekt.gui.Utils.midPoint;
 
-public class MapPanel extends TitledPane {
+public class MapPanel extends Pane {
 
     public static final float OUTER_TICKS_WIDTH = .5f;
     public static final float FIVE_TICKS_WIDTH = .125f;
@@ -56,11 +55,8 @@ public class MapPanel extends TitledPane {
     }
 
     private void initComponents() {
-        //final Label map = new Label("Map");
-        setText("Map");
-        setCollapsible(false);
-        var bgf = new BackgroundFill(Color.BLACK, new CornerRadii(0), new javafx.geometry.Insets(0));
-        setBackground(new Background(bgf));
+        //var bgf = new BackgroundFill(Color.BLACK, new CornerRadii(0), new javafx.geometry.Insets(0));
+        //setBackground(new Background(bgf));
 
         //setBorder(new TitledBorder("Map"));
 
@@ -105,6 +101,8 @@ public class MapPanel extends TitledPane {
 
         // mouse pressed
         this.setOnMouseClicked(e -> updateVehicleSelection());
+        //paintMap();
+        drawGrid(500, 500, true);
     }
 
     /**
@@ -295,32 +293,29 @@ public class MapPanel extends TitledPane {
     private void drawGrid(int width, int height, boolean drawMinors) {
         var color = convert(COLOR_0D);
 
+        var step = 10;
         // Vertical Lines
-        for (int i = 0, x = -width / 2; x < width / 2; i++, x += 1) {
+        for (int i = 0, x = 0; x <= width; i++, x += step) {
             Float strokeWidth = getStrokeWidth(drawMinors, i);
             if (strokeWidth == null) continue;
-            var line = new Line(x, -height / 2f, x, height / 2f);
+            var line = new Line(x, 0, x, height);
             line.setStrokeWidth(strokeWidth);
             getChildren().add(line);
         }
 
         // Horizontal Lines
-        for (int i = 0, y = -height / 2; y < height / 2; i++, y += 1) {
+        for (int i = 0, y = 0; y <= height; i++, y += step) {
             Float strokeWidth = getStrokeWidth(drawMinors, i);
             if (strokeWidth == null) continue;
 
-            var line = new Line(-width / 2f, y, width / 2f, y);
+            var line = new Line(0, y, width, y);
             line.setStrokeWidth(strokeWidth);
             getChildren().add(line);
         }
 
-        var border = new Rectangle(
-            (int) (-width / 2 - OUTER_TICKS_WIDTH / 2),
-            (int) (-height / 2 - OUTER_TICKS_WIDTH / 2),
-            (int) (width + OUTER_TICKS_WIDTH),
-            (int) (height + OUTER_TICKS_WIDTH));
+        var border = new Rectangle(0, 0, (width + OUTER_TICKS_WIDTH), (height + OUTER_TICKS_WIDTH));
         border.setStrokeWidth(OUTER_TICKS_WIDTH);
-        getChildren().add(border);
+        //getChildren().add(border);
     }
 
     @Nullable

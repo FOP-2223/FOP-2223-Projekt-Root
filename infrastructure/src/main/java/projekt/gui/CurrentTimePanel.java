@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 public class CurrentTimePanel extends Pane {
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
-    //private final JLabel currentTimeLabel = new JLabel();
     private final Text currentTimeLabel = new Text();
 
     CurrentTimePanel(SimulationScene scene) {
