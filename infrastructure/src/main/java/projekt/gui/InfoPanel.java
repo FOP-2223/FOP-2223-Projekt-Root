@@ -22,7 +22,7 @@ public class InfoPanel extends GridPane {
     }
 
     public void initComponents() {
-        detailsPanel = new VehiclePanel(scene);
+        VehiclePanel detailsPanel = new VehiclePanel(scene);
         currentTimePanel = new CurrentTimePanel(scene);
         scene.vehicleManager = new VehiclePanel(scene);
         ordersPanel = new OrdersPanel(scene);
