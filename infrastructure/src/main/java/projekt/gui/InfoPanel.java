@@ -1,8 +1,8 @@
 package projekt.gui;
 
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.layout.BorderPane;
+import javafx.geometry.Insets;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import projekt.delivery.routing.Vehicle;
 
@@ -11,10 +11,9 @@ import java.awt.*;
 public class InfoPanel extends GridPane {
 
     private final SimulationScene scene;
-
-    private VehiclePanel detailsPanel;
     private CurrentTimePanel currentTimePanel;
     private OrdersPanel ordersPanel;
+    public TitledPane titledOrdersPane;
 
     public InfoPanel(SimulationScene scene) {
         this.scene = scene;
@@ -25,13 +24,10 @@ public class InfoPanel extends GridPane {
     public void initComponents() {
         detailsPanel = new VehiclePanel(scene);
         currentTimePanel = new CurrentTimePanel(scene);
+        scene.vehicleManager = new VehiclePanel(scene);
+        ordersPanel = new OrdersPanel(scene);
 
-
-
-        //detailsPanel = makeDetailsPane(mainFrame);
-            //= new VehiclePanel(mainFrame);
-        //ordersPanel = new OrdersPanel(mainFrame);
-
+        setPadding(new Insets(10, 0, 0, 0));
         //setLayout(new GridBagLayout());
         final GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -43,44 +39,24 @@ public class InfoPanel extends GridPane {
         constraints.gridy = 0;
         constraints.weightx = 1;
 
-        //getChildren().add(currentTimePanel);
+        add(currentTimePanel, 0, 0);
         //add(currentTimePanel, constraints);
 
         constraints.gridheight = 3;
         constraints.gridy = 1;
-        constraints.weighty = 1;
-        //getChildren().add(detailsPanel);
-        //add(detailsPanel, constraints);
+        constraints.weighty = 1; // height3, y1, wy 1
+
+        add(new ScrollPane(scene.vehicleManager), 0, 1);
 
         constraints.gridy = 4;
         //add(ordersPanel, constraints);
-        //getChildren().add(ordersPanel);
-    }
-
-    private BorderPane makeDetailsPane(MainFrame mainFrame) {
-        var lst = new ListView<Vehicle>();
-        // cell Renderer
-        // @Override getVehicle()
-        // component text = "Vehicle %d" + value.getId()
-        // selection mode = single
-        lst.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        var selectedVehicle = lst.getSelectionModel().getSelectedItem();
-        // setModel new
-        // vehicles = null
-        // getSize = mainframe.vehicles.getSize
-        // getElementAt(i) return vehicle i
-        // addSelectionListener -> mainframe.setSelected = value
-
-        // onUpdate updateComponentTreeUI
-        // setSelected(vehicle) = lst.setSelected(vehicle)
-        var sm = SelectionMode.SINGLE;
-        final BorderPane borderPane = new BorderPane(lst);
-        // Title
-        return borderPane;
+        titledOrdersPane = new TitledPane("Orders:", ordersPanel);
+        titledOrdersPane.setExpanded(true);
+        add(titledOrdersPane, 0, 2);
     }
 
     public VehiclePanel getDetailsPanel() {
-        return detailsPanel;
+        return scene.vehicleManager;
     }
 
     public OrdersPanel getOrdersPanel() {
@@ -92,10 +68,10 @@ public class InfoPanel extends GridPane {
     }
 
     public void onUpdate() {
-        detailsPanel.onUpdate();
+        scene.vehicleManager.onUpdate();
     }
 
     public void setSelectedVehicle(Vehicle selectedVehicle) {
-        detailsPanel.setSelectedVehicle(selectedVehicle);
+        scene.vehicleManager.setSelectedVehicle(selectedVehicle);
     }
 }

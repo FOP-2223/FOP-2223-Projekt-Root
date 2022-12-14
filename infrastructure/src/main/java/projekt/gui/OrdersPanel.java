@@ -1,40 +1,44 @@
 package projekt.gui;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.text.Font;
+import javafx.scene.layout.BorderPane;
+import javafx.util.Callback;
 import projekt.base.TickInterval;
 import projekt.delivery.routing.ConfirmedOrder;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
-public class OrdersPanel extends TableView<ConfirmedOrder> {
+public class OrdersPanel extends BorderPane {
 
-    private final MainFrame mainFrame;
+    private final SimulationScene scene;
     private final OrdersControlPanel ordersControlPanel;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
+    private TableView<ConfirmedOrder> table;
 
-    public OrdersPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
-        this.ordersControlPanel = new OrdersControlPanel(mainFrame, this);
+    public OrdersPanel(SimulationScene scene) {
+        this.scene = scene;
+        this.ordersControlPanel = new OrdersControlPanel(scene, this);
         initComponents();
     }
 
     private void initComponents() {
+
         //setBorder(new TitledBorder("Orders"));
-        final var label = new Label("Orders");
-        label.setFont(new Font("Arial", 20));
-        getChildren().add(label); // TODO: wrong place?
-        setEditable(false);
+
+        table = new TableView<ConfirmedOrder>();
+        table.setEditable(false);
+
         // Row Selection Event Handler:
-        setOnMouseClicked(e -> {
-            var selectedRow = getSelectionModel().getSelectedIndex();
+        table.setOnMouseClicked(e -> {
+            var selectedRow = table.getSelectionModel().getSelectedIndex();
             ordersControlPanel.editOrderButton.setDisable(selectedRow < 0);
             ordersControlPanel.removeOrderButton.setDisable(selectedRow < 0);
         });
@@ -43,33 +47,54 @@ public class OrdersPanel extends TableView<ConfirmedOrder> {
 
         var intColumn = new TableColumn<ConfirmedOrder, Integer>("Order ID");
         intColumn.setCellValueFactory(new PropertyValueFactory<>("orderID"));
-        var dateColumn = new TableColumn<ConfirmedOrder, Date>("Delivery Time");
-        dateColumn.setCellValueFactory(param -> {
-            // TODO: set PropertyValueFactories to change deliveryTick to Date?
-            var tick = param.getValue().getActualDeliveryTick();
-            return (ObservableValue<Date>) new Date(tick);
+        var dateColumn = new TableColumn<ConfirmedOrder, Long>("Delivery Time");
+        dateColumn.setCellFactory(new Callback<>() {
+            @Override
+            public TableCell<ConfirmedOrder, Long> call(TableColumn<ConfirmedOrder, Long> param) {
+                return new TableCell<>() {
+                    @Override
+                    protected void updateItem(Long item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                        } else {
+                            LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(item), ZoneId.systemDefault());
+                            setText(dateTime.format(dateTimeFormatter));
+                        }
+                    }
+                };
+            }
         });
-        getColumns().addAll(intColumn, dateColumn);
+
+        /*
+        // TODO: set PropertyValueFactories to change deliveryTick to Date?
+        var tick = param.getValue().getActualDeliveryTick();
+        return new SimpleObjectProperty<>(new Date(tick)); */
+        table.getColumns().addAll(intColumn, dateColumn);
 
         //tableModel.addRow(new Object[]{0, "19:15 05.03.2022"});
         //var now = LocalDateTime.now().format(dateTimeFormatter);
-        var tickInterval = new TickInterval(0, 0);
-        getItems().add(new ConfirmedOrder(0, 0, null,  tickInterval, new ArrayList<>(), 0));
+        var tickInterval = new TickInterval(0, 5);
+        table.getItems().add(new ConfirmedOrder(0, 0, null,  tickInterval, new ArrayList<>(), 0));
 
-        var orders = mainFrame.vehicleManager.getVehicles().stream().flatMap(vehicle -> vehicle.getOrders().stream()).toList();
-        getItems().addAll(orders);
-        //add(ordersControlPanel, BorderLayout.SOUTH);
-        getChildren().add(ordersControlPanel);
+        var orders = scene.vehicleManager.getVehicles().stream()
+            .flatMap(vehicle -> vehicle.getOrders().stream()).toList();
+        table.getItems().addAll(orders);
+        table.getSelectionModel().select(0);
+        setCenter(table);
+
+        setBottom(ordersControlPanel);
     }
 
     void removeSelected() {
-        var selectedOrder = getSelectionModel().getSelectedItem();
-        getItems().remove(selectedOrder);
+        var selectedOrder = table.getSelectionModel().getSelectedItem();
+        table.getItems().remove(selectedOrder);
+        table.getSelectionModel().select(0);
         //table.updateUI();
     }
 
     ConfirmedOrder getSelectedOrder() {
-        return getSelectionModel().getSelectedItem();
+        return table.getSelectionModel().getSelectedItem();
     }
 
     /*private class OrderTableModel extends DefaultTableModel {

@@ -1,14 +1,14 @@
 package projekt.gui;
 
-import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
-import javafx.scene.image.Image;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +17,9 @@ import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 
 import java.awt.*;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -26,7 +28,7 @@ import static projekt.gui.TUColors.COLOR_0D;
 import static projekt.gui.Utils.getDifference;
 import static projekt.gui.Utils.midPoint;
 
-public class MapPanel extends TitledPane {
+public class MapPanel extends Pane {
 
     public static final float OUTER_TICKS_WIDTH = .5f;
     public static final float FIVE_TICKS_WIDTH = .125f;
@@ -49,6 +51,8 @@ public class MapPanel extends TitledPane {
     private final SimulationScene scene;
     private final AffineTransform transformation = new AffineTransform();
     private boolean alreadyCentered = false;
+    private static final int factor = 50;
+    private static final int offset = 100;
 
     public MapPanel(SimulationScene simulationScene) {
         this.scene = simulationScene;
@@ -57,9 +61,6 @@ public class MapPanel extends TitledPane {
     }
 
     private void initComponents() {
-        //final Label map = new Label("Map");
-        setText("Map");
-        setCollapsible(false);
         var bgf = new BackgroundFill(Color.BLACK, new CornerRadii(0), new javafx.geometry.Insets(0));
         setBackground(new Background(bgf));
 
@@ -106,6 +107,8 @@ public class MapPanel extends TitledPane {
 
         // mouse pressed
         this.setOnMouseClicked(e -> updateVehicleSelection());
+        paintMap();
+        drawGrid(true);
     }
 
     /**
@@ -256,14 +259,14 @@ public class MapPanel extends TitledPane {
      */
     private void drawNode(Region.Node node) {
         var n = node.getLocation();
-        var circle = new Ellipse(n.getX() - NODE_DIAMETER / 2f, n.getY() - NODE_DIAMETER / 2f,
+        var circle = new Ellipse(n.getX() * factor + offset - NODE_DIAMETER / 2f, n.getY() * factor + offset - NODE_DIAMETER / 2f,
             NODE_DIAMETER, NODE_DIAMETER);
         circle.setFill(convert(NODE_COLOR));
         circle.setStrokeWidth(0.1);
         circle.setStroke(convert(EDGE_COLOR));
         getChildren().add(circle);
 
-        var text = new Text(n.getX() + .5, n.getY() - .5, node.getName());
+        var text = new Text(n.getX() * factor + offset + .5, n.getY() * factor + offset - .5, node.getName());
         text.setStroke(convert(COLOR_0A));
         getChildren().add(text);
     }
@@ -275,14 +278,14 @@ public class MapPanel extends TitledPane {
     private void drawEdge(Region.Edge edge) {
         var a = edge.getNodeA().getLocation();
         var b = edge.getNodeB().getLocation();
-        var line = new Line(a.getX(), a.getY(), b.getX(), b.getY());
+        var line = new Line(a.getX() * factor + offset, a.getY() * factor + offset, b.getX() * factor + offset, b.getY() * factor + offset);
 
         line.setStroke(convert(EDGE_COLOR));
-        line.setStrokeWidth(0.1); // TODO: verify width
+        line.setStrokeWidth(1); // TODO: verify width
         getChildren().add(line);
 
         var mid = midPoint(edge);
-        var text = new Text(mid.getX(), mid.getY(), edge.getName());
+        var text = new Text(mid.getX() * factor + offset, mid.getY() * factor + offset, edge.getName());
         text.setStroke(convert(COLOR_0A));
         getChildren().add(text);
     }
@@ -290,39 +293,36 @@ public class MapPanel extends TitledPane {
     /**
      * Draws a Grid to help With Positioning
      *
-     * @param width total width of grid
-     * @param height total height of grid
      * @param drawMinors should all lines be drawn?
      */
-    private void drawGrid(int width, int height, boolean drawMinors) {
+    private void drawGrid(boolean drawMinors) {
         var color = convert(COLOR_0D);
 
+        var step = 10;
         // Vertical Lines
-        for (int i = 0, x = -width / 2; x < width / 2; i++, x += 1) {
+        for (int i = 0, x = 0; x <= 500; i++, x += step) {
             Float strokeWidth = getStrokeWidth(drawMinors, i);
             if (strokeWidth == null) continue;
-            var line = new Line(x, -height / 2f, x, height / 2f);
+            var line = new Line(x, 0, x, 500);
             line.setStrokeWidth(strokeWidth);
+            line.setStroke(color);
             getChildren().add(line);
         }
 
         // Horizontal Lines
-        for (int i = 0, y = -height / 2; y < height / 2; i++, y += 1) {
+        for (int i = 0, y = 0; y <= 500; i++, y += step) {
             Float strokeWidth = getStrokeWidth(drawMinors, i);
             if (strokeWidth == null) continue;
 
-            var line = new Line(-width / 2f, y, width / 2f, y);
+            var line = new Line(0, y, 500, y);
             line.setStrokeWidth(strokeWidth);
+            line.setStroke(color);
             getChildren().add(line);
         }
 
-        var border = new Rectangle(
-            (int) (-width / 2 - OUTER_TICKS_WIDTH / 2),
-            (int) (-height / 2 - OUTER_TICKS_WIDTH / 2),
-            (int) (width + OUTER_TICKS_WIDTH),
-            (int) (height + OUTER_TICKS_WIDTH));
+        var border = new Rectangle(0, 0, (500 + OUTER_TICKS_WIDTH), (500 + OUTER_TICKS_WIDTH));
         border.setStrokeWidth(OUTER_TICKS_WIDTH);
-        getChildren().add(border);
+        //getChildren().add(border);
     }
 
     @Nullable
@@ -354,7 +354,7 @@ public class MapPanel extends TitledPane {
      */
     private void paintMap() {
         // Background
-        drawGrid(50, 50, true);
+        drawGrid(true);
         scene.region.getEdges().forEach(this::drawEdge);
         scene.region.getNodes().forEach(this::drawNode);
         scene.vehicleManager.getVehicles().forEach(this::paintVehicle);

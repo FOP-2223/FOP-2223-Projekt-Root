@@ -42,8 +42,9 @@ public class GUIRunner extends AbstractRunner {
             results.put(criteria, 0.0);
         }
 
-        for (int i = 0; i < simulationRuns; i++) {
-            for (Simulation simulation : simulations) {
+        for (int i = 0; i < 1; i++) {
+            //for (Simulation simulation : simulations) {
+            var simulation = simulations.get(0);
 
                 //store the SimulationScene
                 AtomicReference<SimulationScene> simulationScene = new AtomicReference<>();
@@ -71,18 +72,22 @@ public class GUIRunner extends AbstractRunner {
                 simulation.removeListener(simulationScene.get());
 
                 results.replaceAll((criteria, rating) -> results.get(criteria) + simulation.getRatingForCriterion(criteria));
-            }
+            //}
         }
 
         results.replaceAll((criteria, rating) -> (results.get(criteria) / (simulationRuns * problemGroup.problems().size())));
 
+        //switchToRaterScene(results);
+
+        return results;
+    }
+
+    private void switchToRaterScene(Map<RatingCriteria, Double> results) {
         //execute the scene switching on the javafx thread
         Platform.runLater(() -> {
             RaterScene raterScene = (RaterScene) SceneSwitcher.loadScene(SceneSwitcher.SceneType.RATING, stage);
             raterScene.init(results, problemGroup.problems());
         });
-
-        return results;
     }
 
 }

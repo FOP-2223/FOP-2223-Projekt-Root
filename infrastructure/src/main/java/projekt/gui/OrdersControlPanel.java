@@ -1,20 +1,20 @@
 package projekt.gui;
 
 import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
-public class OrdersControlPanel extends GridPane {
+public class OrdersControlPanel extends HBox {
     final Button addOrderButton;
     final Button editOrderButton;
     final Button removeOrderButton;
-    private final MainFrame mainFrame;
+    private final SimulationScene scene;
     private final OrdersPanel ordersPanel;
     private final OrdersDialog ordersDialog;
 
-    public OrdersControlPanel(MainFrame mainFrame, OrdersPanel ordersPanel) {
-        this.mainFrame = mainFrame;
+    public OrdersControlPanel(SimulationScene scene, OrdersPanel ordersPanel) {
+        this.scene = scene;
         this.ordersPanel = ordersPanel;
-        this.ordersDialog = new OrdersDialog(mainFrame);
+        this.ordersDialog = new OrdersDialog(scene);
 
         addOrderButton = new Button("Add");
         editOrderButton = new Button("Edit");
@@ -24,21 +24,17 @@ public class OrdersControlPanel extends GridPane {
 
     private void initComponents() {
         addOrderButton.setOnAction(event -> {
-            mainFrame.getControlsPanel().pause();
+            scene.controlsPanel.pause();
             ordersDialog.showAddOrderDialog();
         });
         editOrderButton.setDisable(false);
         editOrderButton.setOnAction(event -> {
-            mainFrame.getControlsPanel().pause();
+            scene.controlsPanel.pause();
             ordersDialog.showEditOrderDialog(ordersPanel.getSelectedOrder());
         });
         removeOrderButton.setDisable(true);
         removeOrderButton.setOnAction(event -> ordersPanel.removeSelected());
 
-        //setLayout(new GridLayout(1, 3, 6, 6));
-        // TODO: match gridlayout
-        add(addOrderButton, 0, 0, 2, 2);
-        add(editOrderButton, 0, 1, 2, 2);
-        add(removeOrderButton, 0, 2, 2, 2);
+        getChildren().addAll(addOrderButton, editOrderButton, removeOrderButton);
     }
 }
