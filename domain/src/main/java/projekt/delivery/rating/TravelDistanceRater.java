@@ -78,8 +78,8 @@ public class TravelDistanceRater implements Rater {
 
     public static class Factory implements Rater.Factory {
 
-        private final VehicleManager vehicleManager;
-        private final double factor;
+        public final VehicleManager vehicleManager;
+        public final double factor;
 
         Factory(VehicleManager vehicleManager, double factor) {
             this.vehicleManager = vehicleManager;
@@ -95,8 +95,8 @@ public class TravelDistanceRater implements Rater {
 
     public static class FactoryBuilder implements Rater.FactoryBuilder {
 
-        private VehicleManager vehicleManager;
-        private double factor = 0.5;
+        public VehicleManager vehicleManager;
+        public double factor = 0.5;
 
         @Override
         public Rater.Factory build() {

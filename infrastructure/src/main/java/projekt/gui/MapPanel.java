@@ -53,6 +53,7 @@ public class MapPanel extends TitledPane {
     public MapPanel(SimulationScene simulationScene) {
         this.scene = simulationScene;
         initComponents();
+        paintComponent();
     }
 
     private void initComponents() {
@@ -213,7 +214,8 @@ public class MapPanel extends TitledPane {
         try {
             return getTransform().createInverse();
         } catch (NoninvertibleTransformException e) {
-            throw new IllegalStateException("transformation is not invertible");
+            return transformation;
+//            throw new IllegalStateException("transformation is not invertible");
         }
     }
 

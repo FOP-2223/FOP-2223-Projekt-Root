@@ -1,6 +1,8 @@
 package projekt.delivery.routing;
 
 import org.jetbrains.annotations.Nullable;
+import projekt.base.DistanceCalculator;
+import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
 
 import java.util.*;
@@ -12,6 +14,15 @@ class RegionImpl implements Region {
     private final List<EdgeImpl> allEdges = new ArrayList<>();
     private final Collection<Node> unmodifiableNodes = Collections.unmodifiableCollection(nodes.values());
     private final Collection<Edge> unmodifiableEdges = Collections.unmodifiableCollection(allEdges);
+    private final DistanceCalculator distanceCalculator;
+
+    public RegionImpl() {
+        this(new EuclideanDistanceCalculator());
+    }
+
+    public RegionImpl(DistanceCalculator distanceCalculator) {
+        this.distanceCalculator = distanceCalculator;
+    }
 
     @Override
     public @Nullable Node getNode(Location location) {
@@ -40,6 +51,11 @@ class RegionImpl implements Region {
     @Override
     public Collection<Edge> getEdges() {
         return unmodifiableEdges;
+    }
+
+    @Override
+    public DistanceCalculator getDistanceCalculator() {
+        return distanceCalculator;
     }
 
     void putNode(NodeImpl node) {

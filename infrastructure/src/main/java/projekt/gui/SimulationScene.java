@@ -36,10 +36,14 @@ public class SimulationScene extends Scene implements SimulationListener, Contro
     public void init(Simulation simulation) {
 
         this.simulation = simulation;
+        this.region = simulation.getDeliveryService().getVehicleManager().getRegion();
+
 
         infoPanel = new InfoPanel(this);
+        vehicleManager = infoPanel.getDetailsPanel();
         mapPanel = new MapPanel(this);
         controlsPanel = new ControlsPanel(this, simulation.getSimulationConfig());
+
 
         final BorderPane bp = new BorderPane(new MyMenuBar(this));
         bp.setCenter(mapPanel);

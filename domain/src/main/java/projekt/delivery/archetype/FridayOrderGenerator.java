@@ -63,7 +63,7 @@ public class FridayOrderGenerator implements OrderGenerator {
             actualMaxWeight);
     }
 
-    private static class Factory implements OrderGenerator.Factory {
+    public static class Factory implements OrderGenerator.Factory {
 
         public final int orderCount;
         public final VehicleManager vehicleManager;

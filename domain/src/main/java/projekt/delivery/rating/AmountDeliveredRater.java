@@ -64,7 +64,7 @@ public class AmountDeliveredRater implements Rater {
 
     public static class Factory implements Rater.Factory {
 
-        private final double factor;
+        public final double factor;
 
         Factory(double factor) {
             this.factor = factor;

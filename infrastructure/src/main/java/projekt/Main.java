@@ -11,7 +11,10 @@ import projekt.delivery.service.BasicDeliveryService;
 import projekt.delivery.service.DeliveryService;
 import projekt.delivery.simulation.SimulationConfig;
 import projekt.gui.MainFrameFX;
+import projekt.io.ProblemArchetypeIO;
+import projekt.io.VehicleManagerIO;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +24,7 @@ public class Main {
     public static ProblemGroup problemGroup;
     public static SimulationConfig simulationConfig;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         // layer 1 - Region
         Region region1 = Region.builder()
@@ -128,25 +131,27 @@ public class Main {
             .addVehicle(new Location(10, 8), 2)
             .build();
 
-        final int simulationLength = 1000;
+        final int simulationLength = 700;
 
         //OrderGenerator
         OrderGenerator.Factory orderGeneratorFactory1 = new FridayOrderGenerator.FactoryBuilder()
-            .setOrderCount(200)
+            .setOrderCount(300)
             .setDeliveryInterval(15)
             .setVariance(0.5)
             .setMaxWeight(0.5)
             .setVehicleManager(vehicleManager1)
             .setLastTick(400)
+            .setSeed(0)
             .build();
 
         OrderGenerator.Factory orderGeneratorFactory2 = new FridayOrderGenerator.FactoryBuilder()
-            .setOrderCount(200)
+            .setOrderCount(300)
             .setDeliveryInterval(15)
             .setVariance(0.5)
             .setMaxWeight(0.5)
             .setVehicleManager(vehicleManager2)
             .setLastTick(400)
+            .setSeed(0)
             .build();
 
         //Rater
@@ -157,7 +162,7 @@ public class Main {
             .build());
 
         raterFactoryMap1.put(RatingCriteria.TRAVEL_DISTANCE, new TravelDistanceRater.FactoryBuilder()
-            .setFactor(0.75)
+            .setFactor(0.9)
             .setVehicleManager(vehicleManager1)
             .build());
 
@@ -172,7 +177,7 @@ public class Main {
             .build());
 
         raterFactoryMap2.put(RatingCriteria.TRAVEL_DISTANCE, new TravelDistanceRater.FactoryBuilder()
-            .setFactor(0.75)
+            .setFactor(0.9)
             .setVehicleManager(vehicleManager2)
             .build());
 
@@ -181,8 +186,8 @@ public class Main {
             .build());
 
         //ProblemArchetype
-        ProblemArchetype problemArchetype1 = new ProblemArchetypeImpl(orderGeneratorFactory1, vehicleManager1, raterFactoryMap1, simulationLength);
-        ProblemArchetype problemArchetype2 = new ProblemArchetypeImpl(orderGeneratorFactory2, vehicleManager2, raterFactoryMap2, simulationLength);
+        ProblemArchetype problemArchetype1 = new ProblemArchetypeImpl(orderGeneratorFactory1, vehicleManager1, raterFactoryMap1, simulationLength, "problem 1");
+        ProblemArchetype problemArchetype2 = new ProblemArchetypeImpl(orderGeneratorFactory2, vehicleManager2, raterFactoryMap2, simulationLength, "problem 2");
 
         //layer 3 - DeliveryService
         DeliveryService deliveryService = new BasicDeliveryService(vehicleManager1);

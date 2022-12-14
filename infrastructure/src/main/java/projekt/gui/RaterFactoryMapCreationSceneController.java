@@ -2,11 +2,11 @@ package projekt.gui;
 
 import javafx.event.ActionEvent;
 
-public class RaterSceneController extends SceneController {
+public class RaterFactoryMapCreationSceneController extends SceneController {
 
     @Override
     public String getTitle() {
-        return "Rater";
+        return "Create new Raters";
     }
 
     /**

@@ -41,14 +41,15 @@
     -fx-background-color: black;
 }
 
-/*.choice-box {*/
-/*    -fx-font-size: 1.1em;*/
-/*}*/
-
-.column-header {
-    /*-fx-background-color: radial-gradient(center 50% 50%, radius 100%, #fb8c00, #e65100);*/
-}
-
 #Title {
     -fx-font-size: 50;
 }
+
+.chart-vertical-grid-lines {
+    -fx-stroke: white;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: white;
+}
+

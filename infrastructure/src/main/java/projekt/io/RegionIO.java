@@ -10,15 +10,18 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class RegionIO {
 
     private static final Map<String, Class<? extends DistanceCalculator>> DESERIALIZED_DISTANCE_CALCULATOR = Map.of(
         CachedPathCalculator.class.getSimpleName(), ChessboardDistanceCalculator.class,
-        EuclideanDistanceCalculator.class.getName(), EuclideanDistanceCalculator.class,
-        ManhattanDistanceCalculator.class.getName(), ManhattanDistanceCalculator.class
+        EuclideanDistanceCalculator.class.getSimpleName(), EuclideanDistanceCalculator.class,
+        ManhattanDistanceCalculator.class.getSimpleName(), ManhattanDistanceCalculator.class
     );
 
     public static Region readRegion(BufferedReader reader) {
@@ -26,13 +29,29 @@ public class RegionIO {
 
         try {
 
-            String line;
+            String line = reader.readLine();
+
+            if (!line.equals("START REGION")) {
+                throw new RuntimeException("input does not start with \"START REGION\"");
+            }
+
             while (!Objects.equals(line = reader.readLine(), "END REGION")) {
 
                 if (line.startsWith("N ")) {
                     String[] serializedNode = line.substring(2).split(",", 3);
                     builder.addNode(serializedNode[0], parseLocation(serializedNode[1], serializedNode[2]));
+                } else if (line.startsWith("NH ")) {
+                    String[] serializedNode = line.substring(2).split(",", 4);
+                    builder.addNeighborhood(serializedNode[0], parseLocation(serializedNode[1], serializedNode[2]), Double.parseDouble(serializedNode[3]));
+                } else if (line.startsWith("R ")) {
+                    String[] serializedNode = line.substring(2).split(",");
 
+                    List<String> availableFood = new ArrayList<>();
+                    for (int i = 3; i < serializedNode.length; i++) {
+                        availableFood.add(serializedNode[3]);
+                    }
+
+                    builder.addRestaurant(parseLocation(serializedNode[1], serializedNode[2]), new Region.Restaurant.Preset(serializedNode[0], availableFood));
                 } else if (line.startsWith("E ")) {
                     String[] serializedEdge = line.substring(2).split(",", 5);
                     builder.addEdge(serializedEdge[0],
@@ -54,17 +73,26 @@ public class RegionIO {
 
     public static void writeRegion(BufferedWriter writer, Region region) {
         try {
+            writer.write("START REGION\n");
+
             for (Region.Node node : region.getNodes()) {
-                writer.write("N %s\n".formatted(serializeNode(node)));
+
+                if (node instanceof Region.Neighborhood neighborhood) {
+                    writer.write("NH %s\n".formatted(serializeNeighborhood(neighborhood)));
+                } else if (node instanceof Region.Restaurant restaurant) {
+                    writer.write("R %s\n".formatted(serializeRestaurant(restaurant)));
+                } else {
+                    writer.write("N %s\n".formatted(serializeNode(node)));
+                }
             }
 
             for (Region.Edge edge : region.getEdges()) {
                 writer.write("E %s\n".formatted(serializeEdge(edge)));
             }
 
-            writer.write("D %s".formatted(region.getDistanceCalculator().getClass().getSimpleName()));
+            writer.write("D %s\n".formatted(region.getDistanceCalculator().getClass().getSimpleName()));
 
-            writer.write("END REGION");
+            writer.write("END REGION\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -72,6 +100,23 @@ public class RegionIO {
 
     private static String serializeNode(Region.Node node) {
         return "%s,%d,%d".formatted(node.getName(), node.getLocation().getX(), node.getLocation().getY());
+    }
+
+    private static String serializeNeighborhood(Region.Neighborhood neighborhood) {
+        return "%s,%d,%d,%f".formatted(
+            neighborhood.getName(),
+            neighborhood.getLocation().getX(),
+            neighborhood.getLocation().getY(),
+            neighborhood.getDistance());
+    }
+
+    private static String serializeRestaurant(Region.Restaurant restaurant) {
+        return "%s,%d,%d,%s".formatted(
+            restaurant.getName(),
+            restaurant.getLocation().getX(),
+            restaurant.getLocation().getY(),
+            String.join(",", restaurant.getAvailableFood())
+           );
     }
 
     private static String serializeEdge(Region.Edge edge) {
@@ -92,6 +137,8 @@ public class RegionIO {
         } catch (InstantiationException | NoSuchMethodException | IllegalAccessException |
                  InvocationTargetException e) {
             throw new RuntimeException(e);
+        } catch (NullPointerException e) {
+            throw new RuntimeException("unknown name of distanceCalculator: %s".formatted(serializedDistanceCalculator));
         }
     }
 }

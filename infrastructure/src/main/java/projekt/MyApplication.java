@@ -5,6 +5,8 @@ import javafx.stage.Stage;
 import projekt.gui.MainMenuScene;
 import projekt.gui.SceneSwitcher;
 
+import java.util.ArrayList;
+
 public class MyApplication extends javafx.application.Application {
 
     public static void launch(String[] args) {
@@ -14,6 +16,7 @@ public class MyApplication extends javafx.application.Application {
 
     @Override
     public void start(Stage primaryStage) {
-        SceneSwitcher.loadScene(SceneSwitcher.SceneType.MAIN_MENU, primaryStage);
+        MainMenuScene scene = (MainMenuScene) SceneSwitcher.loadScene(SceneSwitcher.SceneType.MAIN_MENU, primaryStage);
+        scene.init(new ArrayList<>(Main.problemGroup.problems()));
     }
 }

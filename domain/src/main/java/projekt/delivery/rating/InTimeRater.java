@@ -67,8 +67,8 @@ public class InTimeRater implements Rater {
 
     public static class Factory implements Rater.Factory {
 
-        private final long ignoredTicksOff;
-        private final long maxTicksOff;
+        public final long ignoredTicksOff;
+        public final long maxTicksOff;
 
         Factory(long ignoredTicksOff, long maxTicksOff) {
             this.ignoredTicksOff = ignoredTicksOff;

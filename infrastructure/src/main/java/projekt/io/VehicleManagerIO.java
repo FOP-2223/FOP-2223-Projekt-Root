@@ -16,18 +16,21 @@ public class VehicleManagerIO {
         DijkstraPathCalculator.class.getSimpleName(), DijkstraPathCalculator.class
     );
 
-    public static VehicleManager readVehicleManager(BufferedReader reader) {
+    public static VehicleManager readVehicleManager(BufferedReader reader, Region region) {
 
         VehicleManager.Builder builder = VehicleManager.builder();
+        builder.region(region);
 
         try {
+            String line = reader.readLine();
 
-            String line;
+            if (!line.equals("START VEHICLE MANAGER")) {
+                throw new RuntimeException("input does not start with \"START VEHICLE MANAGER\"");
+            }
+
             while (!Objects.equals(line = reader.readLine(), "END VEHICLE MANAGER")) {
 
-                if (line.startsWith("R ")) {
-                    builder.region(RegionIO.readRegion(reader));
-                } else if (line.startsWith("V ")) {
+                if (line.startsWith("V ")) {
                     String[] splitSerializedVehicle = line.substring(2).split(",", 3);
                     builder.addVehicle(parseLocation(splitSerializedVehicle[0], splitSerializedVehicle[1]),
                         Double.parseDouble(splitSerializedVehicle[2]));
@@ -47,16 +50,15 @@ public class VehicleManagerIO {
     public static void writeVehicleManager(BufferedWriter writer, VehicleManager vehicleManager) {
 
         try {
-            writer.write("R ");
-            RegionIO.writeRegion(writer, vehicleManager.getRegion());
+            writer.write("START VEHICLE MANAGER\n");
 
             for (Vehicle vehicle : vehicleManager.getAllVehicles()) {
-                writer.write("V %s".formatted(serializeVehicle(vehicle)));
+                writer.write("V %s\n".formatted(serializeVehicle(vehicle)));
             }
 
-            writer.write("P %s".formatted(vehicleManager.getPathCalculator().getClass().getSimpleName()));
+            writer.write("P %s\n".formatted(serializePathCalculator(vehicleManager.getPathCalculator())));
 
-            writer.write("END VEHICLE MANAGER");
+            writer.write("END VEHICLE MANAGER\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -65,7 +67,7 @@ public class VehicleManagerIO {
     private static String serializeVehicle(Vehicle vehicle) {
         return "%d,%d,%f".formatted(
             vehicle.getStartingNode().getComponent().getLocation().getX(),
-            vehicle.getStartingNode().getComponent().getLocation().getX(),
+            vehicle.getStartingNode().getComponent().getLocation().getY(),
             vehicle.getCapacity());
 
     }
@@ -93,7 +95,10 @@ public class VehicleManagerIO {
             currentPC = DESERIALIZED_PATH_CALCULATOR.get(split[split.length - 1]).getDeclaredConstructor().newInstance();
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
+        } catch (NullPointerException e) {
+            throw new RuntimeException("unknown name of pathCalculator: %s".formatted(serializedPathCalculator));
         }
+
         PathCalculator returnPC = currentPC;
 
         //handle cached Path Calculators
