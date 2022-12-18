@@ -2,6 +2,7 @@ package projekt.gui;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import projekt.gui.scene.SimulationScene;
 
 import java.time.format.DateTimeFormatter;
 

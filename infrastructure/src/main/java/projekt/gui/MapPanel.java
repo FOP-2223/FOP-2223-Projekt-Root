@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import projekt.base.Location;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
+import projekt.gui.scene.SimulationScene;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;

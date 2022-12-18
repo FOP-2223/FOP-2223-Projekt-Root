@@ -2,6 +2,7 @@ package projekt.gui;
 
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import projekt.gui.scene.SimulationScene;
 
 public class OrdersControlPanel extends HBox {
     final Button addOrderButton;

@@ -9,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import projekt.delivery.simulation.SimulationConfig;
+import projekt.gui.scene.SimulationScene;
 
 import java.util.function.IntUnaryOperator;
 

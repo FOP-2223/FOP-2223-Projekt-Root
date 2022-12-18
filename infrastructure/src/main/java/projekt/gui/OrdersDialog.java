@@ -8,6 +8,7 @@ import projekt.base.Location;
 import projekt.base.TickInterval;
 import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.VehicleManager;
+import projekt.gui.scene.SimulationScene;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;

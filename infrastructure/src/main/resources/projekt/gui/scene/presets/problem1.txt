@@ -60,5 +60,5 @@ R TRAVEL_DISTANCE projekt.delivery.rating.TravelDistanceRater$Factory 0.900000
 R AMOUNT_DELIVERED projekt.delivery.rating.AmountDeliveredRater$Factory 0.990000
 END RATER
 L 700
-N problem 1
+N problem1
 END PROBLEM ARCHETYPE

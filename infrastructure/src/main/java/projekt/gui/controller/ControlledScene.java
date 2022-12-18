@@ -1,4 +1,4 @@
-package projekt.gui;
+package projekt.gui.controller;
 
 /**
  * An interface for a controlled scene.

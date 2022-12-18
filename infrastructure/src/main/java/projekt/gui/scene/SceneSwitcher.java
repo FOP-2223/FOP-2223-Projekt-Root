@@ -1,9 +1,11 @@
-package projekt.gui;
+package projekt.gui.scene;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.Nullable;
+import projekt.gui.controller.SceneAndController;
+import projekt.gui.controller.SceneController;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -21,10 +23,6 @@ public final class SceneSwitcher {
     public enum SceneType {
         // --Enum Constants-- //
 
-        /**
-         * The main menu scene.
-         */
-        //MAIN_MENU(() -> getFXMLScene("/h13/view.gui/mainMenuScene.fxml")),
         MAIN_MENU(() -> SceneAndController.fromScene(new MainMenuScene())),
 
         PROBLEM_CREATION(() -> SceneAndController.fromScene(new ProblemCreationScene())),
@@ -37,25 +35,6 @@ public final class SceneSwitcher {
         SIMULATION(() -> SceneAndController.fromScene(new SimulationScene())),
 
         RATING(() -> SceneAndController.fromScene(new RaterScene()));
-        /**
-         * The about scene.
-         */
-        //ABOUT(() -> getFXMLScene("/h13/view.gui/aboutScene.fxml")),
-        //ABOUT(() -> SceneAndController.fromScene(new AboutScene())),
-        /**
-         * The settings scene.
-         */
-        //SETTINGS(() -> getFXMLScene("/h13/view.gui/settingsScene.fxml")),
-        //SETTINGS(() -> SceneAndController.fromScene(new SettingsScene())),
-        /**
-         * The highscore scene.
-         */
-        //HIGHSCORE(() -> getFXMLScene("/h13/view.gui/highscoreScene.fxml")),
-        //HIGHSCORE(() -> SceneAndController.fromScene(new HighscoreScene())),
-        /**
-         * The game scene.
-         */
-        //GAME(() -> SceneAndController.fromScene(new GameScene()));
 
         // --Variables-- //
         /**

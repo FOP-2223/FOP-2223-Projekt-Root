@@ -10,11 +10,7 @@ import projekt.delivery.routing.VehicleManager;
 import projekt.delivery.service.BasicDeliveryService;
 import projekt.delivery.service.DeliveryService;
 import projekt.delivery.simulation.SimulationConfig;
-import projekt.gui.MainFrameFX;
-import projekt.io.ProblemArchetypeIO;
-import projekt.io.VehicleManagerIO;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +20,7 @@ public class Main {
     public static ProblemGroup problemGroup;
     public static SimulationConfig simulationConfig;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         // layer 1 - Region
         Region region1 = Region.builder()
@@ -186,8 +182,8 @@ public class Main {
             .build());
 
         //ProblemArchetype
-        ProblemArchetype problemArchetype1 = new ProblemArchetypeImpl(orderGeneratorFactory1, vehicleManager1, raterFactoryMap1, simulationLength, "problem 1");
-        ProblemArchetype problemArchetype2 = new ProblemArchetypeImpl(orderGeneratorFactory2, vehicleManager2, raterFactoryMap2, simulationLength, "problem 2");
+        ProblemArchetype problemArchetype1 = new ProblemArchetypeImpl(orderGeneratorFactory1, vehicleManager1, raterFactoryMap1, simulationLength, "problem1");
+        ProblemArchetype problemArchetype2 = new ProblemArchetypeImpl(orderGeneratorFactory2, vehicleManager2, raterFactoryMap2, simulationLength, "problem2");
 
         //layer 3 - DeliveryService
         DeliveryService deliveryService = new BasicDeliveryService(vehicleManager1);

@@ -1,4 +1,4 @@
-package projekt.gui;
+package projekt.gui.controller;
 
 public class SimulationSceneController extends SceneController {
 

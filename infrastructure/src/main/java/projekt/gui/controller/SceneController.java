@@ -1,9 +1,10 @@
-package projekt.gui;
+package projekt.gui.controller;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.Nullable;
+import projekt.gui.scene.SceneSwitcher;
 
 /**
  * A SceneController is responsible for dynamically managing a {@link Scene} and its {@link Stage}.

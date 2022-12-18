@@ -5,6 +5,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import projekt.delivery.routing.Vehicle;
+import projekt.gui.scene.SimulationScene;
 
 import java.awt.*;
 

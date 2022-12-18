@@ -6,6 +6,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import projekt.delivery.routing.Vehicle;
+import projekt.gui.scene.SimulationScene;
 
 import java.util.List;
 

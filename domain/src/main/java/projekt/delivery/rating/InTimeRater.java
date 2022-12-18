@@ -83,8 +83,8 @@ public class InTimeRater implements Rater {
 
     public static class FactoryBuilder implements Rater.FactoryBuilder {
 
-        private long ignoredTicksOff = 5;
-        private long maxTicksOff = 25;
+        public long ignoredTicksOff = 5;
+        public long maxTicksOff = 25;
 
 
         public FactoryBuilder setIgnoredTicksOff(long ignoredTicksOff) {

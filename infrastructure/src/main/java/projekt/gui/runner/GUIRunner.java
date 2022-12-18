@@ -1,4 +1,4 @@
-package projekt.gui;
+package projekt.gui.runner;
 
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -6,14 +6,13 @@ import projekt.delivery.archetype.ProblemGroup;
 import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.VehicleManager;
 import projekt.delivery.runner.AbstractRunner;
-import projekt.delivery.runner.Runner;
-import projekt.delivery.service.BasicDeliveryService;
 import projekt.delivery.service.DeliveryService;
-import projekt.delivery.simulation.BasicDeliverySimulation;
 import projekt.delivery.simulation.Simulation;
 import projekt.delivery.simulation.SimulationConfig;
+import projekt.gui.scene.RaterScene;
+import projekt.gui.scene.SceneSwitcher;
+import projekt.gui.scene.SimulationScene;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +86,7 @@ public class GUIRunner extends AbstractRunner {
         //execute the scene switching on the javafx thread
         Platform.runLater(() -> {
             RaterScene raterScene = (RaterScene) SceneSwitcher.loadScene(SceneSwitcher.SceneType.RATING, stage);
-            raterScene.init(results, problemGroup.problems());
+            raterScene.init(problemGroup.problems(), results);
         });
     }
 

@@ -1,13 +1,9 @@
-package projekt.gui;
+package projekt.gui.controller;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 
-public class MainMenuSceneController extends SceneController{
-
-    @Override
-    public String getTitle() {
-        return "Lieferdienst Simulation - Main Menu";
-    }
+public abstract class MenuSceneController extends SceneController {
 
     /**
      * Called when the user clicks the "Quit" button.
@@ -15,6 +11,6 @@ public class MainMenuSceneController extends SceneController{
      * @param e The {@link ActionEvent} that triggered this method.
      */
     public void quit(final ActionEvent e) {
-        getStage().close();
+        Platform.exit();
     }
 }

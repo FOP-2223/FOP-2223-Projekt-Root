@@ -79,7 +79,7 @@ public class AmountDeliveredRater implements Rater {
 
     public static class FactoryBuilder implements Rater.FactoryBuilder {
 
-        private double factor = 0.99;
+        public double factor = 0.99;
 
         @Override
         public Rater.Factory build() {

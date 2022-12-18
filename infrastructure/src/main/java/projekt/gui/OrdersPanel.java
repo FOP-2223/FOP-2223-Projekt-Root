@@ -9,6 +9,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
 import projekt.base.TickInterval;
 import projekt.delivery.routing.ConfirmedOrder;
+import projekt.gui.scene.SimulationScene;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

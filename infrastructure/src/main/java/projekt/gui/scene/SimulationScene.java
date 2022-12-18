@@ -1,4 +1,4 @@
-package projekt.gui;
+package projekt.gui.scene;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -10,6 +10,9 @@ import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.simulation.Simulation;
 import projekt.delivery.simulation.SimulationListener;
+import projekt.gui.*;
+import projekt.gui.controller.ControlledScene;
+import projekt.gui.controller.SimulationSceneController;
 
 import java.util.List;
 

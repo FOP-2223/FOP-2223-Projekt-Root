@@ -2,8 +2,8 @@ package projekt;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import projekt.gui.MainMenuScene;
-import projekt.gui.SceneSwitcher;
+import projekt.gui.scene.MainMenuScene;
+import projekt.gui.scene.SceneSwitcher;
 
 import java.util.ArrayList;
 

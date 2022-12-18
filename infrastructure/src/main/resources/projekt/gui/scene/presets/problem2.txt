@@ -60,5 +60,5 @@ R IN_TIME projekt.delivery.rating.InTimeRater$Factory 5 25
 R TRAVEL_DISTANCE projekt.delivery.rating.TravelDistanceRater$Factory 0.900000
 END RATER
 L 700
-N problem 2
+N problem2
 END PROBLEM ARCHETYPE
