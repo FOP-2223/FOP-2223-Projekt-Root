@@ -15,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
 import projekt.base.Location;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
+import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.simulation.Simulation;
 import projekt.gui.scene.SimulationScene;
 
 import java.awt.*;
@@ -26,7 +28,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static projekt.gui.TUColors.COLOR_0A;
 import static projekt.gui.TUColors.COLOR_0D;
-import static projekt.gui.Utils.getDifference;
 import static projekt.gui.Utils.midPoint;
 
 public class MapPanel extends Pane {
@@ -49,16 +50,29 @@ public class MapPanel extends Pane {
     private static final double SCALE_IN = 1.1;
     private static final double SCALE_OUT = 1 / SCALE_IN;
     final AtomicReference<Point> lastPoint = new AtomicReference<>();
-    private final SimulationScene scene;
+    private SimulationScene scene;
+    private Region region;
+    private Simulation simulation;
     private final AffineTransform transformation = new AffineTransform();
     private boolean alreadyCentered = false;
     private static int factor = 50;
+    private VehicleManager vehicleManager;
     private static final int offset = 200;
+    private double xOffset = 200;
+    private double yOffset = 200;
 
     public MapPanel(SimulationScene simulationScene) {
+        this(simulationScene.simulation);
         this.scene = simulationScene;
         initComponents();
         paintComponent();
+    }
+
+    public MapPanel(Simulation simulation) {
+        this.simulation = simulation;
+        this.region = simulation.getDeliveryService().getVehicleManager().getRegion();
+        this.vehicleManager = simulation.getDeliveryService().getVehicleManager();
+
     }
 
     private void initComponents() {
@@ -67,33 +81,23 @@ public class MapPanel extends Pane {
         //setBorder(new TitledBorder("Map"));
 
         this.setOnMouseDragged(actionEvent -> {
-            try {
-                var lastTransformed = transformation.inverseTransform(lastPoint.get(), null);
-
-                var point = new Point((int) actionEvent.getX(), (int) actionEvent.getY());
-                var currentTransformed = transformation.inverseTransform(point, null);
-                var difference = getDifference(currentTransformed, lastTransformed);
-                transformation.translate(difference.getX(), difference.getY());
-                //repaint();
-                lastPoint.set(point);
-                updateLocation();
-                paintMap();
-            } catch (NoninvertibleTransformException e) {
-                throw new IllegalStateException();
-            }
+            xOffset = actionEvent.getX();
+            yOffset = actionEvent.getY();
+            scene.updateLocation(this);
+            paintMap();
         }
         );
 
         this.setOnMouseMoved(actionEvent -> {
             var point = new Point((int) actionEvent.getX(), (int) actionEvent.getY());
             lastPoint.set(point);
-            updateLocation();
+            scene.updateLocation(this);
         });
 
         this.setOnScroll(event -> {
-            var scale = event.getDeltaX() > 0 ? SCALE_OUT : SCALE_IN;
+            var scale = event.getDeltaY() > 0 ? SCALE_OUT : SCALE_IN;
             factor *= scale;
-            updateLocation();
+            scene.updateLocation(this);
             paintMap();
         });
 
@@ -114,8 +118,8 @@ public class MapPanel extends Pane {
         var height = getHeight();
         var reverse = getReverseTransform();
         // scale view
-        var min = scene.region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.POINT_MIN);
-        var max = scene.region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.POINT_MAX);
+        var min = region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.POINT_MIN);
+        var max = region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.POINT_MAX);
         reverse.transform(min, min);
         reverse.transform(max, max);
         var currentWidth = max.getY() - min.getY();
@@ -127,7 +131,7 @@ public class MapPanel extends Pane {
         reverse = getReverseTransform();
         var center = new Point2D.Double(width / 2d, height / 2d);
         reverse.transform(center, center);
-        var nodeCenter = scene.region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.center());
+        var nodeCenter = region.getNodes().stream().map(Utils::midPoint).collect(Utils.Collectors.center());
         transformation.translate(center.getX() - nodeCenter.getX(), center.getY() - nodeCenter.getY());
         alreadyCentered = true;
     }
@@ -165,18 +169,9 @@ public class MapPanel extends Pane {
      * @return the list of vehicles
      */
     private List<Vehicle> getVehicles(Point2D position) {
-        return scene.vehicleManager.getAllVehicles()
+        return vehicleManager.getAllVehicles()
             .stream()
             .filter(v -> Utils.midPoint(v).distance(position) < 1).toList();
-    }
-
-    /**
-     * Updates the location information in the main frame.
-     */
-    private void updateLocation() {
-        var location = getCurrentLocation();
-        scene.controlsPanel.getMousePositionLabel().setText(
-            String.format("(x: %d, y: %d)", location.getX(), location.getY()));
     }
 
     /**
@@ -232,15 +227,16 @@ public class MapPanel extends Pane {
     }
 
     private void paintImage(Point2D midPoint, javafx.scene.image.Image img) {
-        var x = midPoint.getX() * factor + offset - IMAGE_SIZE/2;
-        var y = midPoint.getY() * factor + offset - IMAGE_SIZE/2;
+        var zoomedSize = IMAGE_SIZE; // TODO: scale with zoom lvl
+        var x = midPoint.getX() * factor + xOffset - zoomedSize/2;
+        var y = midPoint.getY() * factor + yOffset - zoomedSize/2;
 
         var imageView = new ImageView();
         imageView.setImage(img);
         imageView.setTranslateX(x);
         imageView.setTranslateY(y);
-        imageView.scaleXProperty().set(IMAGE_SIZE);
-        imageView.scaleYProperty().set(IMAGE_SIZE);
+        imageView.scaleXProperty().set(zoomedSize);
+        imageView.scaleYProperty().set(zoomedSize);
         getChildren().add(imageView);
     }
 
@@ -251,14 +247,15 @@ public class MapPanel extends Pane {
      */
     private void drawNode(Region.Node node) {
         var n = node.getLocation();
-        var circle = new Ellipse(n.getX() * factor + offset - NODE_DIAMETER / 2f, n.getY() * factor + offset - NODE_DIAMETER / 2f,
+        var circle = new Ellipse(n.getX() * factor + xOffset - NODE_DIAMETER / 2f,
+                n.getY() * factor + yOffset - NODE_DIAMETER / 2f,
             NODE_DIAMETER, NODE_DIAMETER);
         circle.setFill(convert(NODE_COLOR));
         circle.setStrokeWidth(0.1);
         circle.setStroke(convert(EDGE_COLOR));
         getChildren().add(circle);
 
-        var text = new Text(n.getX() * factor + offset + .5, n.getY() * factor + offset - .5, node.getName());
+        var text = new Text(n.getX() * factor + xOffset + .5, n.getY() * factor + yOffset - .5, node.getName());
         text.setStroke(convert(COLOR_0A));
         getChildren().add(text);
     }
@@ -270,14 +267,14 @@ public class MapPanel extends Pane {
     private void drawEdge(Region.Edge edge) {
         var a = edge.getNodeA().getLocation();
         var b = edge.getNodeB().getLocation();
-        var line = new Line(a.getX() * factor + offset, a.getY() * factor + offset, b.getX() * factor + offset, b.getY() * factor + offset);
+        var line = new Line(a.getX() * factor + xOffset, a.getY() * factor + yOffset, b.getX() * factor + offset, b.getY() * factor + offset);
 
         line.setStroke(convert(EDGE_COLOR));
         line.setStrokeWidth(1); // TODO: verify width
         getChildren().add(line);
 
         var mid = midPoint(edge);
-        var text = new Text(mid.getX() * factor + offset, mid.getY() * factor + offset, edge.getName());
+        var text = new Text(mid.getX() * factor + xOffset, mid.getY() * factor + yOffset, edge.getName());
         text.setStroke(convert(COLOR_0A));
         getChildren().add(text);
     }
@@ -352,9 +349,9 @@ public class MapPanel extends Pane {
         setBackground(new Background(bgf));
         getChildren().clear();
         drawGrid(true);
-        scene.region.getEdges().forEach(this::drawEdge);
-        scene.region.getNodes().forEach(this::drawNode);
-        scene.vehicleManager.getAllVehicles().forEach(this::paintVehicle);
+        region.getEdges().forEach(this::drawEdge);
+        region.getNodes().forEach(this::drawNode);
+        vehicleManager.getAllVehicles().forEach(this::paintVehicle);
     }
 
     public void resetCenterLocation() {

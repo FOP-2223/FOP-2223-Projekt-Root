@@ -41,7 +41,9 @@ public class VehiclePanel extends BorderPane {
         var vehicleManager = scene.vehicleManager;
         var vehicles = FXCollections.observableArrayList(vehicleManager.getAllVehicles());
         selectionList = new ListView<>(vehicles);
-        setCenter(new ScrollPane(selectionList));
+        final ScrollPane scrollPane = new ScrollPane(selectionList);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        setCenter(scrollPane);
         selectionList.setCellFactory((ListView<Vehicle> l) -> new RenderCell());
 
         selectionList.getSelectionModel().selectedItemProperty().addListener(

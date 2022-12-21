@@ -38,7 +38,7 @@ public class MainFrame extends Stage implements SimulationListener {
         setTitle("Mainframe");
 
         infoPanel = new InfoPanel(null);
-        mapPanel = new MapPanel(null);
+        //mapPanel = new MapPanel();
         controlsPanel = new ControlsPanel(null, simulation.getSimulationConfig());
 
         //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

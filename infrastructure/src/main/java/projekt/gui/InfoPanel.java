@@ -18,7 +18,6 @@ public class InfoPanel extends GridPane {
     }
 
     public void initComponents() {
-        VehiclePanel detailsPanel = new VehiclePanel(scene);
         //currentTimePanel = new CurrentTimePanel(scene);
         vehiclePanel = new VehiclePanel(scene);
         ordersPanel = new OrdersPanel(scene);
@@ -28,6 +27,7 @@ public class InfoPanel extends GridPane {
 
         final TitledPane titledVehiclesPane = new TitledPane("Vehicles:", vehiclePanel);
         titledVehiclesPane.setExpanded(true);
+
         add(titledVehiclesPane, 0, 1);
 
         titledOrdersPane = new TitledPane("Orders:", ordersPanel);

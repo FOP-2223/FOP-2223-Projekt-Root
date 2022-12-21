@@ -80,4 +80,15 @@ public class SimulationScene extends Scene implements SimulationListener, Contro
     public SimulationSceneController getController() {
         return controller;
     }
+
+    /**
+     * Updates the location information in the main frame.
+     *
+     * @param mapPanel
+     */
+    public void updateLocation(MapPanel mapPanel) {
+        var location = mapPanel.getCurrentLocation();
+        controlsPanel.getMousePositionLabel().setText(
+            String.format("(x: %d, y: %d)", location.getX(), location.getY()));
+    }
 }
