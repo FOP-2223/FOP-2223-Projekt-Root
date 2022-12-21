@@ -1,19 +1,20 @@
 package projekt.io;
 
-import projekt.base.DistanceCalculator;
 import projekt.base.Location;
 import projekt.delivery.routing.*;
 
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class VehicleManagerIO {
 
-    private static final Map<String, Class<? extends PathCalculator>> DESERIALIZED_PATH_CALCULATOR = Map.of(
-        CachedPathCalculator.class.getSimpleName(), CachedPathCalculator.class,
-        DijkstraPathCalculator.class.getSimpleName(), DijkstraPathCalculator.class
+    private static final Map<String, Function<Object, ? extends PathCalculator>> DESERIALIZED_PATH_CALCULATOR = Map.of(
+        CachedPathCalculator.class.getSimpleName(), pathCalculator -> new CachedPathCalculator((PathCalculator) pathCalculator),
+        DijkstraPathCalculator.class.getSimpleName(), ignored -> new DijkstraPathCalculator()
     );
 
     public static VehicleManager readVehicleManager(BufferedReader reader, Region region) {
@@ -92,9 +93,7 @@ public class VehicleManagerIO {
         String[] split = serializedPathCalculator.split(",");
         PathCalculator currentPC;
         try {
-            currentPC = DESERIALIZED_PATH_CALCULATOR.get(split[split.length - 1]).getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            currentPC = DESERIALIZED_PATH_CALCULATOR.get(split[split.length - 1]).apply(null);
         } catch (NullPointerException e) {
             throw new RuntimeException("unknown name of pathCalculator: %s".formatted(serializedPathCalculator));
         }
@@ -104,12 +103,7 @@ public class VehicleManagerIO {
         //handle cached Path Calculators
         for (int i = split.length - 2; i >= 0; i--) {
             PathCalculator PC;
-            try {
-                PC = DESERIALIZED_PATH_CALCULATOR.get(split[i]).getDeclaredConstructor(PathCalculator.class).newInstance(currentPC);
-            } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-
+            PC = DESERIALIZED_PATH_CALCULATOR.get(split[i]).apply(currentPC);
             currentPC = PC;
         }
 

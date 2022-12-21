@@ -6,6 +6,10 @@ import projekt.base.Location;
 import java.util.Comparator;
 import java.util.Objects;
 
+/**
+ * Represents a weighted edge in a graph.
+ */
+@SuppressWarnings("ClassCanBeRecord")
 class EdgeImpl implements Region.Edge {
 
     private final static Comparator<Region.Edge> COMPARATOR =
@@ -17,6 +21,14 @@ class EdgeImpl implements Region.Edge {
     private final Location locationB;
     private final long duration;
 
+    /**
+     * Creates a new {@link EdgeImpl} instance.
+     * @param region The {@link Region} this {@link EdgeImpl} belongs to.
+     * @param name The name of this {@link EdgeImpl}.
+     * @param locationA The start of this {@link EdgeImpl}.
+     * @param locationB The end of this {@link EdgeImpl}.
+     * @param duration The length of this {@link EdgeImpl}.
+     */
     EdgeImpl(
         Region region,
         String name,
@@ -35,10 +47,18 @@ class EdgeImpl implements Region.Edge {
         this.duration = duration;
     }
 
+    /**
+     * Returns the start of this {@link EdgeImpl}.
+     * @return The start of this {@link EdgeImpl}.
+     */
     public Location getLocationA() {
         return locationA;
     }
 
+    /**
+     * Returns the end of this {@link EdgeImpl}.
+     * @return The end of this {@link EdgeImpl}.
+     */
     public Location getLocationB() {
         return locationB;
     }

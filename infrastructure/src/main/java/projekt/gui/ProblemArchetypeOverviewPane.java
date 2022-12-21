@@ -6,10 +6,10 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import projekt.delivery.archetype.EmptyOrderGenerator;
-import projekt.delivery.archetype.FridayOrderGenerator;
-import projekt.delivery.archetype.OrderGenerator;
 import projekt.delivery.archetype.ProblemArchetype;
+import projekt.delivery.generator.EmptyOrderGenerator;
+import projekt.delivery.generator.FridayOrderGenerator;
+import projekt.delivery.generator.OrderGenerator;
 import projekt.delivery.rating.*;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
@@ -52,7 +52,7 @@ public class ProblemArchetypeOverviewPane extends Pane {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setContent(box);
-        scrollPane.setPrefSize(320, 500);
+        scrollPane.setPrefSize(320, 450);
 
         getChildren().add(scrollPane);
     }
@@ -178,7 +178,7 @@ public class ProblemArchetypeOverviewPane extends Pane {
 
     private static OrderGenerator.FactoryBuilder orderGeneratorFactoryToFactoryBuilder(OrderGenerator.Factory factory) {
         if (factory instanceof FridayOrderGenerator.Factory fridayOrderGenerator) {
-            return new FridayOrderGenerator.FactoryBuilder()
+            return FridayOrderGenerator.Factory.builder()
                 .setOrderCount(fridayOrderGenerator.orderCount)
                 .setDeliveryInterval(fridayOrderGenerator.deliveryInterval)
                 .setMaxWeight(fridayOrderGenerator.maxWeight)
@@ -195,14 +195,14 @@ public class ProblemArchetypeOverviewPane extends Pane {
 
         for (Map.Entry<RatingCriteria, Rater.Factory> entry : raterFactoryMap.entrySet()) {
             if (entry.getValue() instanceof InTimeRater.Factory inTimeRater) {
-                raterFactoryBuilderMap.put(entry.getKey(), new InTimeRater.FactoryBuilder()
+                raterFactoryBuilderMap.put(entry.getKey(), InTimeRater.Factory.builder()
                     .setIgnoredTicksOff(inTimeRater.ignoredTicksOff)
                     .setMaxTicksOff(inTimeRater.maxTicksOff));
             } else if (entry.getValue() instanceof AmountDeliveredRater.Factory amountDeliveredFactory) {
-                raterFactoryBuilderMap.put(entry.getKey(), new AmountDeliveredRater.FactoryBuilder()
+                raterFactoryBuilderMap.put(entry.getKey(), AmountDeliveredRater.Factory.builder()
                     .setFactor(amountDeliveredFactory.factor));
             } else if (entry.getValue() instanceof TravelDistanceRater.Factory travelDistanceFactory) {
-                raterFactoryBuilderMap.put(entry.getKey(), new TravelDistanceRater.FactoryBuilder()
+                raterFactoryBuilderMap.put(entry.getKey(), TravelDistanceRater.Factory.builder()
                     .setFactor(travelDistanceFactory.factor));
             }
         }

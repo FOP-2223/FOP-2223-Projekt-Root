@@ -1,22 +1,22 @@
 package projekt.io;
 
-import projekt.delivery.archetype.EmptyOrderGenerator;
-import projekt.delivery.archetype.FridayOrderGenerator;
-import projekt.delivery.archetype.OrderGenerator;
+import projekt.delivery.generator.EmptyOrderGenerator;
+import projekt.delivery.generator.FridayOrderGenerator;
+import projekt.delivery.generator.OrderGenerator;
 import projekt.delivery.routing.VehicleManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class OrderGeneratorFactoryIO {
 
-    private static final Map<String, Class<? extends OrderGenerator.FactoryBuilder>> DESERIALIZED_ORDER_GENERATOR_FACTORY_BUILDER = Map.of(
-        EmptyOrderGenerator.Factory.class.getName(), EmptyOrderGenerator.FactoryBuilder.class,
-        FridayOrderGenerator.Factory.class.getName(), FridayOrderGenerator.FactoryBuilder.class
+    private static final Map<String, Supplier<? extends OrderGenerator.FactoryBuilder>> DESERIALIZED_ORDER_GENERATOR_FACTORY_BUILDER = Map.of(
+        EmptyOrderGenerator.Factory.class.getName(), EmptyOrderGenerator.FactoryBuilder::new,
+        FridayOrderGenerator.Factory.class.getName(), FridayOrderGenerator.Factory::builder
     );
 
     public static OrderGenerator.Factory readOrderGeneratorFactory(BufferedReader reader, VehicleManager vehicleManager) {
@@ -34,9 +34,7 @@ public class OrderGeneratorFactoryIO {
                 if (line.startsWith("O ")) {
                     String[] serializedOrderGenerator = line.substring(2).split(" ");
                     try {
-                        builder = DESERIALIZED_ORDER_GENERATOR_FACTORY_BUILDER.get(serializedOrderGenerator[0]).getDeclaredConstructor().newInstance();
-                    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                        throw new RuntimeException(e);
+                        builder = DESERIALIZED_ORDER_GENERATOR_FACTORY_BUILDER.get(serializedOrderGenerator[0]).get();
                     } catch (NullPointerException e) {
                         throw new RuntimeException("unknown name of OrderGeneratorFactory: %s".formatted(serializedOrderGenerator[0]));
                     }
@@ -47,7 +45,9 @@ public class OrderGeneratorFactoryIO {
                         fridayBuilder.setMaxWeight(Double.parseDouble(serializedOrderGenerator[3]));
                         fridayBuilder.setVariance(Double.parseDouble(serializedOrderGenerator[4]));
                         fridayBuilder.setLastTick(Integer.parseInt(serializedOrderGenerator[5]));
-                        fridayBuilder.setSeed(Integer.parseInt(serializedOrderGenerator[6]));
+                        if (Integer.parseInt(serializedOrderGenerator[6]) >= 0){
+                            fridayBuilder.setSeed(Integer.parseInt(serializedOrderGenerator[6]));
+                        }
                         fridayBuilder.setVehicleManager(vehicleManager);
                     }
 

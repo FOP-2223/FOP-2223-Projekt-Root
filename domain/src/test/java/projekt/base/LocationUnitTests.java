@@ -4,10 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import projekt.ComparableUnitTests;
 import projekt.ObjectUnitTests;
-import projekt.base.Location;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 public class LocationUnitTests {

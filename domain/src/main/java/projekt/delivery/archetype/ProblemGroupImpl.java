@@ -8,6 +8,12 @@ import java.util.List;
 public record ProblemGroupImpl(List<ProblemArchetype> problems,
                                List<RatingCriteria> ratingCriteria) implements ProblemGroup {
 
+    /**
+     * Creates a new {@link ProblemGroupImpl} instance.
+     * @param problems The problems of this {@link ProblemGroupImpl}.
+     * @param ratingCriteria The {@link RatingCriteria}s used to evaluate the problems in this {@link ProblemGroupImpl}.
+     */
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public ProblemGroupImpl {
 
         for (ProblemArchetype problem : problems) {

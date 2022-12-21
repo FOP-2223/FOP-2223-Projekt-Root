@@ -36,9 +36,9 @@ class RegionBuilderImpl implements Region.Builder {
     }
 
     @Override
-    public Region.Builder addNeighborhood(String name, Location location, double distance) {
+    public Region.Builder addNeighborhood(String name, Location location) {
         addName(name);
-        if (nodes.putIfAbsent(location, new NeighborhoodBuilder(name, location, distance)) != null) {
+        if (nodes.putIfAbsent(location, new NeighborhoodBuilder(name, location)) != null) {
             allNames.remove(name);
             throw new IllegalArgumentException("Duplicate node at location " + location);
         }
@@ -121,17 +121,14 @@ class RegionBuilderImpl implements Region.Builder {
 
     private static class NeighborhoodBuilder extends NodeBuilder {
 
-        protected final double distance;
-
-        public NeighborhoodBuilder(String name, Location location, double distance) {
+        public NeighborhoodBuilder(String name, Location location) {
             super(name, location);
-            this.distance = distance;
         }
 
         @Override
         NeighborhoodImpl build(Region region) {
             // may only be used once as the backing map for connections is not copied
-            return new NeighborhoodImpl(region, name, location, Collections.unmodifiableSet(connections), distance);
+            return new NeighborhoodImpl(region, name, location, Collections.unmodifiableSet(connections));
         }
     }
 

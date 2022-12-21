@@ -1,13 +1,24 @@
 package projekt.delivery.event;
 
-import projekt.delivery.routing.Vehicle;
-
+/**
+ * An event that indicates that something occurred during a simulation at a specific tick.
+ */
 public interface Event {
 
-    static Event of(long tick, Vehicle vehicle) {
-        return new VehicleEventImpl(tick, vehicle);
+
+    /**
+     * Constructs a new {@link Event} for the given tick.
+     * @param tick The tick of the created {@link Event}.
+     * @return The created {@link Event}.
+     */
+    static Event of(long tick) {
+        return new EventImpl(tick);
     }
 
+    /**
+     * Returns the tick at which the {@link Event} occurred.
+     * @return The tick at which the {@link Event} occurred.
+     */
     long getTick();
 
 }

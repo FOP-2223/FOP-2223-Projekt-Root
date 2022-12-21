@@ -1,19 +1,18 @@
 package projekt.delivery.simulation;
 
-import projekt.delivery.archetype.OrderGenerator;
-import projekt.delivery.service.DeliveryService;
 import projekt.delivery.event.Event;
+import projekt.delivery.generator.OrderGenerator;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.rating.RatingCriteria;
+import projekt.delivery.service.DeliveryService;
 
 import java.util.*;
 
 public class BasicDeliverySimulation implements Simulation {
 
-    List<SimulationListener> listeners = new ArrayList<>();
+    protected final List<SimulationListener> listeners = new ArrayList<>();
     private final DeliveryService deliveryService;
     protected final SimulationConfig simulationConfig;
-    private final long simulationLength;
     protected final Map<RatingCriteria, Rater.Factory> raterFactoryMap;
     protected final Map<RatingCriteria, Rater> currentRaterMap = new HashMap<>();
     private final OrderGenerator.Factory orderGeneratorFactory;
@@ -23,15 +22,21 @@ public class BasicDeliverySimulation implements Simulation {
     protected List<Event> lastEvents;
     protected boolean isRunning = false;
 
+    /**
+     * Creates a new {@link BasicDeliverySimulation} instance.
+     *
+     * @param simulationConfig The used {@link SimulationConfig}.
+     * @param raterFactoryMap The {@link Rater.Factory}s that are used to rate this {@link BasicDeliverySimulation} based on the corresponding {@link RatingCriteria}.
+     * @param deliveryService The simulated {@link DeliveryService}.
+     * @param orderGeneratorFactory The {@link OrderGenerator.Factory} used to generate orders during this {@link BasicDeliverySimulation}.
+     */
     public BasicDeliverySimulation(SimulationConfig simulationConfig,
                                    Map<RatingCriteria, Rater.Factory> raterFactoryMap,
                                    DeliveryService deliveryService,
-                                   OrderGenerator.Factory orderGeneratorFactory,
-                                   long simulationLength) {
+                                   OrderGenerator.Factory orderGeneratorFactory) {
         this.simulationConfig = simulationConfig;
         this.raterFactoryMap = raterFactoryMap;
         this.orderGeneratorFactory = orderGeneratorFactory;
-        this.simulationLength = simulationLength;
         this.deliveryService = deliveryService;
     }
 
@@ -40,7 +45,7 @@ public class BasicDeliverySimulation implements Simulation {
         setupNewSimulation();
         isRunning = true;
 
-        while (!terminationRequested && currentTick <= simulationLength) {
+        while (!terminationRequested) {
             if (simulationConfig.isPaused()) {
                 try {
                     //noinspection BusyWait
@@ -126,12 +131,19 @@ public class BasicDeliverySimulation implements Simulation {
         currentTick++;
     }
 
+    @Override
     public void addListener(SimulationListener listener) {
         listeners.add(listener);
     }
 
+    @Override
     public boolean removeListener(SimulationListener listener) {
         return listeners.remove(listener);
+    }
+
+    @Override
+    public DeliveryService getDeliveryService() {
+        return deliveryService;
     }
 
     private void setupNewSimulation() {
@@ -141,6 +153,7 @@ public class BasicDeliverySimulation implements Simulation {
         setupRaters();
         setupOrderGenerator();
     }
+
     private void setupRaters() {
         for (Rater rater : currentRaterMap.values()) {
             removeListener(rater);
@@ -157,10 +170,5 @@ public class BasicDeliverySimulation implements Simulation {
 
     private void setupOrderGenerator() {
         currentOrderGenerator = orderGeneratorFactory.create();
-    }
-
-    @Override
-    public DeliveryService getDeliveryService() {
-        return deliveryService;
     }
 }

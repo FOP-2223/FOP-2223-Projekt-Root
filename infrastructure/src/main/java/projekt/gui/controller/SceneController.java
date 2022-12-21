@@ -54,40 +54,4 @@ public abstract class SceneController {
     public Scene loadMainMenuScene(final @Nullable ActionEvent e) {
         return SceneSwitcher.loadScene(SceneSwitcher.SceneType.MAIN_MENU, getStage());
     }
-
-    /**
-     * Called when the user clicks the "About" button.
-     *
-     * @param e The {@link ActionEvent} that triggered this method.
-     */
-//    public Scene loadAboutScene(final @Nullable ActionEvent e) {
-//        return SceneSwitcher.loadScene(SceneSwitcher.SceneType.ABOUT, getStage());
-//    }
-
-    /**
-     * Called when the user clicks the "Settings" button.
-     *
-     * @param e The {@link ActionEvent} that triggered this method.
-     */
-//    public Scene loadSettingsScene(final @Nullable ActionEvent e) {
-//        return SceneSwitcher.loadScene(SceneSwitcher.SceneType.SETTINGS, getStage());
-//    }
-
-    /**
-     * Called when the user clicks the "High Scores" button.
-     *
-     * @param e The {@link ActionEvent} that triggered this method.
-     */
-//    public Scene loadHighscoreScene(final @Nullable ActionEvent e) {
-//        return SceneSwitcher.loadScene(SceneSwitcher.SceneType.HIGHSCORE, getStage());
-//    }
-
-    /**
-     * Called when the user clicks the "Start Game" button.
-     *
-     * @param e The {@link ActionEvent} that triggered this method.
-     */
-//    public Scene loadGameScene(final @Nullable ActionEvent e) {
-//        return SceneSwitcher.loadScene(SceneSwitcher.SceneType.GAME, getStage());
-//    }
 }

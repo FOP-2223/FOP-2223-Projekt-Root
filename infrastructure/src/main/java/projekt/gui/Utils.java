@@ -13,11 +13,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
-import java.util.function.BiPredicate;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collector;
 
 import static projekt.delivery.routing.VehicleManager.Occupied;
@@ -45,7 +41,7 @@ public interface Utils {
 
     static javafx.scene.image.Image loadImage2(String s, Color carColor) {
         try {
-            return new Image(Utils.class.getClassLoader().getResource(s).openStream());
+            return new Image(Objects.requireNonNull(Utils.class.getClassLoader().getResource(s)).openStream());
         } catch (IOException e) {
             System.err.println("Could not load Image: "+s);
             e.printStackTrace();

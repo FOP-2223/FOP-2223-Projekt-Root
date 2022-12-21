@@ -7,21 +7,18 @@ import projekt.delivery.routing.Region;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.function.Supplier;
 
 public class RegionIO {
 
-    private static final Map<String, Class<? extends DistanceCalculator>> DESERIALIZED_DISTANCE_CALCULATOR = Map.of(
-        CachedPathCalculator.class.getSimpleName(), ChessboardDistanceCalculator.class,
-        EuclideanDistanceCalculator.class.getSimpleName(), EuclideanDistanceCalculator.class,
-        ManhattanDistanceCalculator.class.getSimpleName(), ManhattanDistanceCalculator.class
+    private static final Map<String, Supplier<? extends DistanceCalculator>> DESERIALIZED_DISTANCE_CALCULATOR = Map.of(
+        CachedPathCalculator.class.getSimpleName(), ChessboardDistanceCalculator::new,
+        EuclideanDistanceCalculator.class.getSimpleName(), EuclideanDistanceCalculator::new,
+        ManhattanDistanceCalculator.class.getSimpleName(), ManhattanDistanceCalculator::new
     );
 
     public static Region readRegion(BufferedReader reader) {
@@ -41,8 +38,8 @@ public class RegionIO {
                     String[] serializedNode = line.substring(2).split(",", 3);
                     builder.addNode(serializedNode[0], parseLocation(serializedNode[1], serializedNode[2]));
                 } else if (line.startsWith("NH ")) {
-                    String[] serializedNode = line.substring(2).split(",", 4);
-                    builder.addNeighborhood(serializedNode[0], parseLocation(serializedNode[1], serializedNode[2]), Double.parseDouble(serializedNode[3]));
+                    String[] serializedNode = line.substring(2).split(",", 3);
+                    builder.addNeighborhood(serializedNode[0], parseLocation(serializedNode[1], serializedNode[2]));
                 } else if (line.startsWith("R ")) {
                     String[] serializedNode = line.substring(2).split(",");
 
@@ -103,11 +100,10 @@ public class RegionIO {
     }
 
     private static String serializeNeighborhood(Region.Neighborhood neighborhood) {
-        return "%s,%d,%d,%f".formatted(
+        return "%s,%d,%d".formatted(
             neighborhood.getName(),
             neighborhood.getLocation().getX(),
-            neighborhood.getLocation().getY(),
-            neighborhood.getDistance());
+            neighborhood.getLocation().getY());
     }
 
     private static String serializeRestaurant(Region.Restaurant restaurant) {
@@ -130,13 +126,8 @@ public class RegionIO {
     }
 
     private static DistanceCalculator parseDistanceCalculator(String serializedDistanceCalculator) {
-        Class<? extends DistanceCalculator> distanceCalculatorClass =
-            DESERIALIZED_DISTANCE_CALCULATOR.get(serializedDistanceCalculator);
         try {
-            return distanceCalculatorClass.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException |
-                 InvocationTargetException e) {
-            throw new RuntimeException(e);
+            return DESERIALIZED_DISTANCE_CALCULATOR.get(serializedDistanceCalculator).get();
         } catch (NullPointerException e) {
             throw new RuntimeException("unknown name of distanceCalculator: %s".formatted(serializedDistanceCalculator));
         }

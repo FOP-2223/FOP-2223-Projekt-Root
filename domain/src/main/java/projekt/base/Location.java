@@ -1,5 +1,7 @@
 package projekt.base;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Comparator;
 
 /**
@@ -68,7 +70,7 @@ public final class Location implements Comparable<Location> {
     }
 
     @Override
-    public int compareTo(Location o) {
+    public int compareTo(@NotNull Location o) {
         return COMPARATOR.compare(this, o);
     }
 

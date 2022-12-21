@@ -7,27 +7,20 @@ import java.util.Set;
 
 class NeighborhoodImpl extends NodeImpl implements Region.Neighborhood {
 
-    private final double distance;
-
+    /**
+     * Creates a new {@link NeighborhoodImpl} instance.
+     * @param region The {@link Region} this {@link NeighborhoodImpl} belongs to.
+     * @param name The name of this {@link RestaurantImpl}.
+     * @param location The {@link Location} of this {@link RestaurantImpl}.
+     * @param connections All {@link Location}s this {@link NeighborhoodImpl} has an {@link Region.Edge} to.
+     */
     NeighborhoodImpl(
         Region region,
         String name,
         Location location,
-        Set<Location> connections,
-        double distance
+        Set<Location> connections
     ) {
         super(region, name, location, connections);
-        this.distance = distance;
-    }
-
-    @Override
-    public double getDistance() {
-        return distance;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), distance);
     }
 
     @Override
@@ -38,18 +31,20 @@ class NeighborhoodImpl extends NodeImpl implements Region.Neighborhood {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (!super.equals(o)) {
+        NeighborhoodImpl that = (NeighborhoodImpl) o;
+        if (hashCode() != that.hashCode()) {
             return false;
         }
-        NeighborhoodImpl that = (NeighborhoodImpl) o;
-        return Double.compare(that.distance, distance) == 0;
+
+        return Objects.equals(name, that.name)
+            && Objects.equals(location, that.location)
+            && Objects.equals(connections, that.connections);
     }
 
     @Override
     public String toString() {
         return "NeighborhoodImpl(name='" + getName()
             + ", location=" + getLocation()
-            + ", distance=" + getDistance()
             + ", connections=" + connections
             + ')';
     }

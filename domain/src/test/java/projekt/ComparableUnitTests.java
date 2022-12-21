@@ -32,6 +32,7 @@ public class ComparableUnitTests<T extends Comparable<? super T>> {
         }
     }
 
+    @SuppressWarnings("EqualsWithItself")
     public void testAsBigAs() {
         for (T testObject : testObjects) {
             Assertions.assertEquals(0, testObject.compareTo(testObject));

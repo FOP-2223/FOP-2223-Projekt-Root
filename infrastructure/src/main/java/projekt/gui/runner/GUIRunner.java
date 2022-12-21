@@ -2,6 +2,7 @@ package projekt.gui.runner;
 
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import projekt.delivery.archetype.ProblemArchetype;
 import projekt.delivery.archetype.ProblemGroup;
 import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.VehicleManager;
@@ -14,7 +15,6 @@ import projekt.gui.scene.SceneSwitcher;
 import projekt.gui.scene.SimulationScene;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -34,17 +34,17 @@ public class GUIRunner extends AbstractRunner {
                                            int simulationRuns,
                                            Function<VehicleManager, DeliveryService> deliveryServiceFactory) {
 
-        List<Simulation> simulations = createSimulations(problemGroup, simulationConfig, deliveryServiceFactory);
+        Map<ProblemArchetype, Simulation> simulations = createSimulations(problemGroup, simulationConfig, deliveryServiceFactory);
         Map<RatingCriteria, Double> results = new HashMap<>();
 
         for (RatingCriteria criteria : problemGroup.ratingCriteria()) {
             results.put(criteria, 0.0);
         }
 
-        //for (int i = 0; i < simulationRuns; i++) {//TODO re add running multiple simulations
-        for (int i = 0; i < 1; i++) {
-            //for (Simulation simulation : simulations) {
-            var simulation = simulations.get(0);
+        for (int i = 0; i < simulationRuns; i++) {
+            for (Map.Entry<ProblemArchetype, Simulation> entry : simulations.entrySet()) {
+
+                Simulation simulation = entry.getValue();
 
                 //store the SimulationScene
                 AtomicReference<SimulationScene> simulationScene = new AtomicReference<>();
@@ -67,17 +67,17 @@ public class GUIRunner extends AbstractRunner {
                     throw new RuntimeException(e);
                 }
 
-                simulation.runSimulation();
+                simulation.runSimulation(entry.getKey().simulationLength());
 
                 simulation.removeListener(simulationScene.get());
 
-                results.replaceAll((criteria, rating) -> results.get(criteria) + simulation.getRatingForCriterion(criteria));
-            //}
+                results.replaceAll((criteria, rating) -> results.get(criteria) + entry.getValue().getRatingForCriterion(criteria));
+            }
         }
 
         results.replaceAll((criteria, rating) -> (results.get(criteria) /*/ (simulationRuns * problemGroup.problems().size())*/));
 
-        //switchToRaterScene(results, problemGroup);
+        switchToRaterScene(results, problemGroup);
 
         return results;
     }

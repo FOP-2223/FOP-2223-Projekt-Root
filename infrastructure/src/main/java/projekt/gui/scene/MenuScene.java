@@ -17,9 +17,7 @@ import projekt.gui.controller.MenuSceneController;
 import projekt.io.ProblemArchetypeIO;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -58,9 +56,7 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
         buttons.getChildren().add(returnButton);
 
         quitButton = new Button("Quit");
-        quitButton.setOnAction(e -> {
-            getController().quit(e);
-        });
+        quitButton.setOnAction(e -> getController().quit(e));
         buttons.getChildren().add(quitButton);
 
         root.setBottom(buttons);

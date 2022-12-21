@@ -6,17 +6,17 @@ import projekt.delivery.routing.VehicleManager;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class RaterFactoryMapIO {
 
-    private static final Map<String, Class<? extends Rater.FactoryBuilder>> DESERIALIZED_RATER_FACTORY_BUILDER = Map.of(
-        InTimeRater.Factory.class.getName(), InTimeRater.FactoryBuilder.class,
-        AmountDeliveredRater.Factory.class.getName(), AmountDeliveredRater.FactoryBuilder.class,
-        TravelDistanceRater.Factory.class.getName(), TravelDistanceRater.FactoryBuilder.class
+    private static final Map<String, Supplier<? extends Rater.FactoryBuilder>> DESERIALIZED_RATER_FACTORY_BUILDER = Map.of(
+        InTimeRater.Factory.class.getName(), InTimeRater.Factory::builder,
+        AmountDeliveredRater.Factory.class.getName(), AmountDeliveredRater.Factory::builder,
+        TravelDistanceRater.Factory.class.getName(), TravelDistanceRater.Factory::builder
     );
 
     public static Map<RatingCriteria, Rater.Factory> readRaterFactoryMap(BufferedReader reader, VehicleManager vehicleManager) {
@@ -34,16 +34,13 @@ public class RaterFactoryMapIO {
 
 
                 if (line.startsWith("R ")) {
-                    Rater.FactoryBuilder builder = null;
+                    Rater.FactoryBuilder builder;
                     String[] serializedRater = line.substring(2).split(" ");
 
                     RatingCriteria ratingCriteria = RatingCriteria.valueOf(serializedRater[0]);
 
                     try {
-                        builder = DESERIALIZED_RATER_FACTORY_BUILDER.get(serializedRater[1]).getDeclaredConstructor().newInstance();
-                    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
-                             InvocationTargetException e) {
-                        throw new RuntimeException(e);
+                        builder = DESERIALIZED_RATER_FACTORY_BUILDER.get(serializedRater[1]).get();
                     } catch (NullPointerException e) {
                         throw new RuntimeException("unknown name of RaterFactory: %s".formatted(serializedRater[1]));
                     }

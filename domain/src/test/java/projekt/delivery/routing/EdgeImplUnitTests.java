@@ -69,9 +69,9 @@ public class EdgeImplUnitTests {
         objectUnitTests = new ObjectUnitTests<>(testObjectFactory, o ->
             "EdgeImpl(" +
                 "name='" + o.getName() + '\'' +
-                ", locationA=" + o.getNodeA().getLocation() +
-                ", locationB=" + o.getNodeB().getLocation() +
-                ", duration=" + o.getDuration() +
+                ", locationA='" + o.getNodeA().getLocation() + "'" +
+                ", locationB='" + o.getNodeB().getLocation() + "'" +
+                ", duration='" + o.getDuration() + "'" +
                 ')');
         comparableUnitTests = new ComparableUnitTests<>(testObjectFactory);
 

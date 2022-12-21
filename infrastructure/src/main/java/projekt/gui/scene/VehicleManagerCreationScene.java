@@ -1,7 +1,7 @@
 package projekt.gui.scene;
 
-import projekt.delivery.archetype.OrderGenerator;
 import projekt.delivery.archetype.ProblemArchetype;
+import projekt.delivery.generator.OrderGenerator;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.VehicleManager;

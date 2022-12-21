@@ -1,19 +1,19 @@
 START PROBLEM ARCHETYPE
 RE
 START REGION
-NH Gross-Gerau,0,5,0.200000
-NH Langen,6,0,0.250000
+NH Gross-Gerau,0,5
+NH Langen,6,0
 N Wiesbadener Kreuz,-4,-5
 N Dreieck Mainz,-10,-1
-NH Wiesbaden,-9,-4,0.750000
-NH Darmstadt,6,8,0.500000
-NH Frankfurt,8,-8,1.000000
-NH Offenbach,10,-7,0.350000
-NH Mainz,-8,0,0.600000
+NH Wiesbaden,-9,-4
+NH Darmstadt,6,8
+NH Frankfurt,8,-8
+NH Offenbach,10,-7
+NH Mainz,-8,0
 N Frankfurter Kreuz,4,-4
 N Mainspitzdreieck,-5,0
 R Los Fopbots Hermanos,3,-1,Pizza Margherita,Spaghetti Bolognese,Rigatoni
-NH Ruesselsheim,-2,0,0.350000
+NH Ruesselsheim,-2,0
 N Moenchhof-Dreieck,1,-2
 E A643,-10,-1,-9,-4
 E A60,-10,-1,-8,0
@@ -51,7 +51,7 @@ P DijkstraPathCalculator
 END VEHICLE MANAGER
 O
 START ORDER GENERATOR
-O projekt.delivery.archetype.FridayOrderGenerator$Factory 300 15 0.500000 0.500000 400 0
+O projekt.delivery.generator.FridayOrderGenerator$Factory 300 15 0.500000 0.500000 400 0
 END ORDER GENERATOR
 RA
 START RATER

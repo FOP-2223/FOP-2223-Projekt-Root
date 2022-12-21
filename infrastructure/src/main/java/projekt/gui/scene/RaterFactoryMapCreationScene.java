@@ -7,8 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import projekt.delivery.archetype.OrderGenerator;
 import projekt.delivery.archetype.ProblemArchetype;
+import projekt.delivery.generator.OrderGenerator;
 import projekt.delivery.rating.*;
 import projekt.delivery.routing.VehicleManager;
 import projekt.gui.controller.RaterFactoryMapCreationSceneController;
@@ -70,15 +70,15 @@ public class RaterFactoryMapCreationScene extends MenuScene<RaterFactoryMapCreat
 
             if (inTimeCheckBox.isSelected()) {
                 newRaterFactoryMap.put(RatingCriteria.IN_TIME,
-                    new InTimeRater.FactoryBuilder().setIgnoredTicksOff(ignoredTicksOff).setMaxTicksOff(maxTicksOff));
+                    InTimeRater.Factory.builder().setIgnoredTicksOff(ignoredTicksOff).setMaxTicksOff(maxTicksOff));
             }
             if (amountDeliveredCheckBox.isSelected()) {
                 newRaterFactoryMap.put(RatingCriteria.AMOUNT_DELIVERED,
-                    new AmountDeliveredRater.FactoryBuilder().setFactor(amountDeliveredFactor));
+                    AmountDeliveredRater.Factory.builder().setFactor(amountDeliveredFactor));
             }
             if (travelDistanceCheckBox.isSelected()) {
                 newRaterFactoryMap.put(RatingCriteria.TRAVEL_DISTANCE,
-                    new TravelDistanceRater.FactoryBuilder().setFactor(travelDistanceFactor));
+                    TravelDistanceRater.Factory.builder().setFactor(travelDistanceFactor));
             }
 
             ProblemCreationScene scene = (ProblemCreationScene) SceneSwitcher.loadScene(SceneSwitcher.SceneType.PROBLEM_CREATION, getController().getStage());

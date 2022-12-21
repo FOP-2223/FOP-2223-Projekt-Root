@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import projekt.ObjectUnitTests;
-import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
 
 import java.util.HashSet;
@@ -22,11 +21,22 @@ public class RegionImplUnitTests {
         Function<Integer, Region> testObjectFactory = i -> {
             RegionImpl region = new RegionImpl();
 
-            Location nodeBLocation = i == 0 ? new Location(-1, -1) : new Location(2 * i, 2 * i);
-            NodeImpl A = new NodeImpl(region, "node: " + i, new Location(i,i), Set.of(nodeBLocation));
-            NodeImpl B = new NodeImpl(region, "node: " + i, nodeBLocation, Set.of(new Location(i,i)));
+            NodeImpl A;
+            NodeImpl B;
+            EdgeImpl AB;
 
-            EdgeImpl AB = new EdgeImpl(region, "edge: " + i, A.getLocation(), nodeBLocation, 1);
+            if (i == 0) {
+                A = new NodeImpl(region, "node: " + i, new Location(i,i), Set.of(new Location(-1, -1)));
+                B = new NodeImpl(region, "node: " + i, new Location(-1, -1), Set.of(new Location(i,i)));
+
+                AB = new EdgeImpl(region, "edge: " + i, B.getLocation(), A.getLocation(), 1);
+            } else {
+                A = new NodeImpl(region, "node: " + i, new Location(i,i), Set.of(new Location(2 * i, 2 * i)));
+                B = new NodeImpl(region, "node: " + i, new Location(2 * i, 2 * i), Set.of(new Location(i,i)));
+
+                AB = new EdgeImpl(region, "edge: " + i, A.getLocation(), B.getLocation(), 1);
+            }
+
 
             region.putNode(A);
             region.putNode(B);
@@ -112,15 +122,13 @@ public class RegionImplUnitTests {
 
         RegionImpl region2 = new RegionImpl();
 
-        NodeImpl D = new NodeImpl(region2, "D", new Location(4,0), new HashSet<>());
         EdgeImpl AD = new EdgeImpl(region, "AD", new Location(0,0), new Location(4, 0), 1);
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> region.putEdge(AD), "NodeB D has incorrect region");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> region.putEdge(AD), "NodeB (4, 0) has incorrect region");
 
-        NodeImpl E = new NodeImpl(region2, "E", new Location(-1, 0), new HashSet<>());
         EdgeImpl EA = new EdgeImpl(region, "EA", new Location(-1,0), new Location(0, 0), 1);
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> region.putEdge(EA), "NodeA D has incorrect region");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> region.putEdge(EA), "NodeA (-1, 0) has incorrect region");
 
         EdgeImpl AC = new EdgeImpl(region2, "AC", new Location(0, 0), new Location(2, 0), 1);
 

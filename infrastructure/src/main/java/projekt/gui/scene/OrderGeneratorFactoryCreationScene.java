@@ -5,10 +5,10 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import projekt.delivery.archetype.EmptyOrderGenerator;
-import projekt.delivery.archetype.FridayOrderGenerator;
-import projekt.delivery.archetype.OrderGenerator;
 import projekt.delivery.archetype.ProblemArchetype;
+import projekt.delivery.generator.EmptyOrderGenerator;
+import projekt.delivery.generator.FridayOrderGenerator;
+import projekt.delivery.generator.OrderGenerator;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.VehicleManager;
@@ -81,7 +81,7 @@ public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGenerator
         applyButton.setOnAction(e -> {
             OrderGenerator.FactoryBuilder newOrderGenerator;
             if (choiceBox.getValue().equals("Friday Order Generator")) {
-                newOrderGenerator = new FridayOrderGenerator.FactoryBuilder()
+                newOrderGenerator = FridayOrderGenerator.Factory.builder()
                     .setOrderCount((Integer) values.get("orderCount"))
                     .setDeliveryInterval((Integer) values.get("deliveryInterval"))
                     .setMaxWeight((Double) values.get("maxWeight"))

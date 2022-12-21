@@ -1,5 +1,6 @@
 package projekt.delivery.runner;
 
+import projekt.delivery.archetype.ProblemArchetype;
 import projekt.delivery.archetype.ProblemGroup;
 import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.VehicleManager;
@@ -8,10 +9,12 @@ import projekt.delivery.simulation.Simulation;
 import projekt.delivery.simulation.SimulationConfig;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * A basic {@link Runner} that only executes the simulation and returns the result.
+ */
 public class BasicRunner extends AbstractRunner {
 
     @Override
@@ -20,7 +23,7 @@ public class BasicRunner extends AbstractRunner {
                                            int simulationRuns,
                                            Function<VehicleManager, DeliveryService> deliveryServiceFactory) {
 
-        List<Simulation> simulations = createSimulations(problemGroup, simulationConfig, deliveryServiceFactory);
+        Map<ProblemArchetype, Simulation> simulations = createSimulations(problemGroup, simulationConfig, deliveryServiceFactory);
         Map<RatingCriteria, Double> results = new HashMap<>();
 
         for (RatingCriteria criteria : problemGroup.ratingCriteria()) {
@@ -28,9 +31,9 @@ public class BasicRunner extends AbstractRunner {
         }
 
         for (int i = 0; i < simulationRuns; i++) {
-            for (Simulation simulation : simulations) {
-                simulation.runSimulation();
-                results.replaceAll((criteria, rating) -> results.get(criteria) + simulation.getRatingForCriterion(criteria));
+            for (Map.Entry<ProblemArchetype, Simulation> entry : simulations.entrySet()) {
+                entry.getValue().runSimulation(entry.getKey().simulationLength());
+                results.replaceAll((criteria, rating) -> results.get(criteria) + entry.getValue().getRatingForCriterion(criteria));
             }
         }
 

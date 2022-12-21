@@ -99,13 +99,13 @@ class VehicleManagerImpl implements VehicleManager {
     }
 
     @Override
-    public OccupiedRestaurant getOccupiedRestaurant(Region.Node component) {
-        Objects.requireNonNull(component, "component is null!");
-        final @Nullable OccupiedNodeImpl<?> node = occupiedNodes.get(component);
-        if (node instanceof OccupiedRestaurant) {
-            return (OccupiedRestaurant) node;
+    public OccupiedRestaurant getOccupiedRestaurant(Region.Node node) {
+        Objects.requireNonNull(node, "Node is null!");
+        final @Nullable OccupiedNodeImpl<? extends Region.Node> occupiedNode = occupiedNodes.get(node);
+        if (occupiedNode instanceof OccupiedRestaurant) {
+            return (OccupiedRestaurant) occupiedNode;
         } else {
-            throw new IllegalArgumentException("Component " + component + " is not a restaurant");
+            throw new IllegalArgumentException("Node " + occupiedNode + " is not a restaurant");
         }
     }
 
@@ -138,13 +138,13 @@ class VehicleManagerImpl implements VehicleManager {
     }
 
     @Override
-    public OccupiedNeighborhood getOccupiedNeighborhood(Region.Node component) {
-        Objects.requireNonNull(component, "component is null!");
-        final @Nullable OccupiedNodeImpl<?> node = occupiedNodes.get(component);
-        if (node instanceof OccupiedNeighborhood) {
-            return (OccupiedNeighborhood) node;
+    public OccupiedNeighborhood getOccupiedNeighborhood(Region.Node node) {
+        Objects.requireNonNull(node, "Node is null!");
+        final @Nullable OccupiedNodeImpl<?> occupiedNode = occupiedNodes.get(node);
+        if (occupiedNode instanceof OccupiedNeighborhood) {
+            return (OccupiedNeighborhood) occupiedNode;
         } else {
-            throw new IllegalArgumentException("Component " + component + " is not a neighborhood");
+            throw new IllegalArgumentException("Node " + occupiedNode + " is not a neighborhood");
         }
     }
 
@@ -196,6 +196,7 @@ class VehicleManagerImpl implements VehicleManager {
         vehicles.clear();
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     Vehicle addVehicle(
         Location startingLocation,
         double capacity

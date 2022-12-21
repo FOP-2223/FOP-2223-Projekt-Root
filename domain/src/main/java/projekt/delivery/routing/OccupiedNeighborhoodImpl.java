@@ -4,8 +4,14 @@ import projekt.delivery.event.ArrivedAtNeighborhoodEvent;
 import projekt.delivery.event.DeliverOrderEvent;
 
 class OccupiedNeighborhoodImpl extends OccupiedNodeImpl<Region.Neighborhood> implements VehicleManager.OccupiedNeighborhood {
-    OccupiedNeighborhoodImpl(Region.Neighborhood component, VehicleManager vehicleManager) {
-        super(component, vehicleManager);
+
+    /**
+     * Creates a new {@link OccupiedNeighborhoodImpl} instance.
+     * @param neighborhood The represented {@link Region.Neighborhood}.
+     * @param vehicleManager the corresponding {@link VehicleManager}.
+     */
+    OccupiedNeighborhoodImpl(Region.Neighborhood neighborhood, VehicleManager vehicleManager) {
+        super(neighborhood, vehicleManager);
     }
 
     @Override

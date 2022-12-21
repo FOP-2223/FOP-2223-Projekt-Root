@@ -2,7 +2,12 @@ package projekt;
 
 import projekt.base.EuclideanDistanceCalculator;
 import projekt.base.Location;
-import projekt.delivery.archetype.*;
+import projekt.delivery.archetype.ProblemArchetype;
+import projekt.delivery.archetype.ProblemArchetypeImpl;
+import projekt.delivery.archetype.ProblemGroup;
+import projekt.delivery.archetype.ProblemGroupImpl;
+import projekt.delivery.generator.FridayOrderGenerator;
+import projekt.delivery.generator.OrderGenerator;
 import projekt.delivery.rating.*;
 import projekt.delivery.routing.DijkstraPathCalculator;
 import projekt.delivery.routing.Region;
@@ -16,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("DuplicatedCode")
 public class Main {
     public static ProblemGroup problemGroup;
     public static SimulationConfig simulationConfig;
@@ -24,14 +30,14 @@ public class Main {
 
         // layer 1 - Region
         Region region1 = Region.builder()
-            .addNeighborhood("Wiesbaden", new Location(-9, -4), 0.75)
-            .addNeighborhood("Mainz", new Location(-8, 0), 0.6)
-            .addNeighborhood("Frankfurt", new Location(8, -8), 1)
-            .addNeighborhood("Darmstadt", new Location(6, 8), 0.5)
-            .addNeighborhood("Ruesselsheim", new Location(-2, 0), 0.35)
-            .addNeighborhood("Gross-Gerau", new Location(0, 5), 0.2)
-            .addNeighborhood("Langen", new Location(6, 0), 0.25)
-            .addNeighborhood("Offenbach", new Location(10, -7), 0.35)
+            .addNeighborhood("Wiesbaden", new Location(-9, -4))
+            .addNeighborhood("Mainz", new Location(-8, 0))
+            .addNeighborhood("Frankfurt", new Location(8, -8))
+            .addNeighborhood("Darmstadt", new Location(6, 8))
+            .addNeighborhood("Ruesselsheim", new Location(-2, 0))
+            .addNeighborhood("Gross-Gerau", new Location(0, 5))
+            .addNeighborhood("Langen", new Location(6, 0))
+            .addNeighborhood("Offenbach", new Location(10, -7))
             .addRestaurant(new Location(3, -1), Region.Restaurant.LOS_FOPBOTS_HERMANOS)
             .addNode("Mainspitzdreieck", new Location(-5, 0))
             .addNode("Wiesbadener Kreuz", new Location(-4, -5))
@@ -59,14 +65,14 @@ public class Main {
             .build();
 
         Region region2 = Region.builder()
-            .addNeighborhood("Wiesbaden", new Location(-9, -4), 0.75)
-            .addNeighborhood("Mainz", new Location(-8, 0), 0.6)
-            .addNeighborhood("Frankfurt", new Location(8, -8), 1)
-            .addNeighborhood("Darmstadt", new Location(6, 8), 0.5)
-            .addNeighborhood("Ruesselsheim", new Location(-2, 0), 0.35)
-            .addNeighborhood("Gross-Gerau", new Location(0, 5), 0.2)
-            .addNeighborhood("Langen", new Location(6, 0), 0.25)
-            .addNeighborhood("Offenbach", new Location(10, -7), 0.35)
+            .addNeighborhood("Wiesbaden", new Location(-9, -4))
+            .addNeighborhood("Mainz", new Location(-8, 0))
+            .addNeighborhood("Frankfurt", new Location(8, -8))
+            .addNeighborhood("Darmstadt", new Location(6, 8))
+            .addNeighborhood("Ruesselsheim", new Location(-2, 0))
+            .addNeighborhood("Gross-Gerau", new Location(0, 5))
+            .addNeighborhood("Langen", new Location(6, 0))
+            .addNeighborhood("Offenbach", new Location(10, -7))
             .addRestaurant(new Location(10, 8), Region.Restaurant.LOS_FOPBOTS_HERMANOS)
             .addNode("Mainspitzdreieck", new Location(-5, 0))
             .addNode("Wiesbadener Kreuz", new Location(-4, -5))
@@ -130,7 +136,7 @@ public class Main {
         final int simulationLength = 700;
 
         //OrderGenerator
-        OrderGenerator.Factory orderGeneratorFactory1 = new FridayOrderGenerator.FactoryBuilder()
+        OrderGenerator.Factory orderGeneratorFactory1 = FridayOrderGenerator.Factory.builder()
             .setOrderCount(300)
             .setDeliveryInterval(15)
             .setVariance(0.5)
@@ -140,7 +146,7 @@ public class Main {
             .setSeed(0)
             .build();
 
-        OrderGenerator.Factory orderGeneratorFactory2 = new FridayOrderGenerator.FactoryBuilder()
+        OrderGenerator.Factory orderGeneratorFactory2 = FridayOrderGenerator.Factory.builder()
             .setOrderCount(300)
             .setDeliveryInterval(15)
             .setVariance(0.5)
@@ -152,32 +158,32 @@ public class Main {
 
         //Rater
         Map<RatingCriteria, Rater.Factory> raterFactoryMap1 = new HashMap<>();
-        raterFactoryMap1.put(RatingCriteria.IN_TIME, new InTimeRater.FactoryBuilder()
+        raterFactoryMap1.put(RatingCriteria.IN_TIME, InTimeRater.Factory.builder()
             .setIgnoredTicksOff(5)
             .setMaxTicksOff(25)
             .build());
 
-        raterFactoryMap1.put(RatingCriteria.TRAVEL_DISTANCE, new TravelDistanceRater.FactoryBuilder()
+        raterFactoryMap1.put(RatingCriteria.TRAVEL_DISTANCE, TravelDistanceRater.Factory.builder()
             .setFactor(0.9)
             .setVehicleManager(vehicleManager1)
             .build());
 
-        raterFactoryMap1.put(RatingCriteria.AMOUNT_DELIVERED, new AmountDeliveredRater.FactoryBuilder()
+        raterFactoryMap1.put(RatingCriteria.AMOUNT_DELIVERED, AmountDeliveredRater.Factory.builder()
             .setFactor(0.99)
             .build());
 
         Map<RatingCriteria, Rater.Factory> raterFactoryMap2 = new HashMap<>();
-        raterFactoryMap2.put(RatingCriteria.IN_TIME, new InTimeRater.FactoryBuilder()
+        raterFactoryMap2.put(RatingCriteria.IN_TIME, InTimeRater.Factory.builder()
             .setIgnoredTicksOff(5)
             .setMaxTicksOff(25)
             .build());
 
-        raterFactoryMap2.put(RatingCriteria.TRAVEL_DISTANCE, new TravelDistanceRater.FactoryBuilder()
+        raterFactoryMap2.put(RatingCriteria.TRAVEL_DISTANCE, TravelDistanceRater.Factory.builder()
             .setFactor(0.9)
             .setVehicleManager(vehicleManager2)
             .build());
 
-        raterFactoryMap2.put(RatingCriteria.AMOUNT_DELIVERED, new AmountDeliveredRater.FactoryBuilder()
+        raterFactoryMap2.put(RatingCriteria.AMOUNT_DELIVERED, AmountDeliveredRater.Factory.builder()
             .setFactor(0.99)
             .build());
 

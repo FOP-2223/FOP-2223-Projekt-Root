@@ -81,9 +81,7 @@ public class MainMenuScene extends MenuScene<MainMenuSceneController> {
         buttonsVbox.getChildren().stream()
             .filter(Button.class::isInstance)
             .map(Button.class::cast)
-            .forEach(button -> {
-                button.setPrefSize(200, 50);
-            });
+            .forEach(button -> button.setPrefSize(200, 50));
     }
 
     @Override

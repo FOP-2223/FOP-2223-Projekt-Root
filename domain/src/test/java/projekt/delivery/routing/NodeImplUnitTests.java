@@ -6,12 +6,10 @@ import org.junit.jupiter.api.Test;
 import projekt.ComparableUnitTests;
 import projekt.ObjectUnitTests;
 import projekt.base.Location;
-import projekt.delivery.routing.Region;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class NodeImplUnitTests {
 
@@ -66,8 +64,8 @@ public class NodeImplUnitTests {
 
         objectUnitTests = new ObjectUnitTests<>(testObjectFactory, o ->
             "NodeImpl(name='" + o.getName() + "'"
-                + ", location=" + o.getLocation()
-                + ", connections=" + o.getConnections()
+                + ", location='" + o.getLocation() + "'"
+                + ", connections='" + o.getConnections() + "'"
                 + ')');
         comparableUnitTests = new ComparableUnitTests<>(testObjectFactory);
 

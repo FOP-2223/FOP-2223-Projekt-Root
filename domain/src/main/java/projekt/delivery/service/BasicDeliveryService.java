@@ -22,7 +22,7 @@ public class BasicDeliveryService extends AbstractDeliveryService {
     }
 
     @Override
-    List<Event> tick(long currentTick, List<ConfirmedOrder> newOrders) {
+    protected List<Event> tick(long currentTick, List<ConfirmedOrder> newOrders) {
         // Move vehicles forward.
         List<Event> events = vehicleManager.tick(currentTick);
 
@@ -30,7 +30,7 @@ public class BasicDeliveryService extends AbstractDeliveryService {
         pendingOrders.addAll(newOrders);
 
         // Prioritize orders according to their expected delivery times.
-        pendingOrders.sort(Comparator.comparing(order -> order.getDeliveryInterval().getStart()));
+        pendingOrders.sort(Comparator.comparing(order -> order.getDeliveryInterval().start()));
 
         // For each vehicle waiting in the pizzeria, load as many orders as possible on the vehicle and send it out.
         for (VehicleManager.OccupiedRestaurant restaurant : vehicleManager.getOccupiedRestaurants()) {
@@ -47,14 +47,14 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                         }
 
                         //if the vehicle can load the order, load it and add the location to the moveQueue of the vehicle
-                        if (order.getTotalWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()) {
+                        if (order.getWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()) {
                             loadedAtLeastOneOrderOnVehicle = true;
                             restaurant.loadOrder(vehicle, order, currentTick);
                             it.remove();
 
                             //don't add the location of the order to the queue if the vehicle already visites the location
                             if (vehicle.getPaths().stream()
-                                .map(path -> path.getNodes().peekLast())
+                                .map(path -> path.nodes().peekLast())
                                 .filter(Objects::nonNull)
                                 .map(Region.Node::getLocation)
                                 .toList().contains(order.getLocation())) {

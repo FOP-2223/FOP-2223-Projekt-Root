@@ -16,10 +16,16 @@ class RegionImpl implements Region {
     private final Collection<Edge> unmodifiableEdges = Collections.unmodifiableCollection(allEdges);
     private final DistanceCalculator distanceCalculator;
 
+    /**
+     * Creates a new, empty {@link RegionImpl} instance using a {@link EuclideanDistanceCalculator}.
+     */
     public RegionImpl() {
         this(new EuclideanDistanceCalculator());
     }
 
+    /**
+     * Creates a new, empty {@link RegionImpl} instance using the given {@link DistanceCalculator}.
+     */
     public RegionImpl(DistanceCalculator distanceCalculator) {
         this.distanceCalculator = distanceCalculator;
     }
@@ -58,6 +64,10 @@ class RegionImpl implements Region {
         return distanceCalculator;
     }
 
+    /**
+     * Adds the given {@link NodeImpl} to this {@link RegionImpl}.
+     * @param node the {@link NodeImpl} to add.
+     */
     void putNode(NodeImpl node) {
         if (this != node.getRegion()) {
             throw new IllegalArgumentException("Node %s has incorrect region".formatted(node.toString()));
@@ -65,16 +75,19 @@ class RegionImpl implements Region {
         nodes.put(node.getLocation(), node);
     }
 
+    /**
+     * Adds the given {@link EdgeImpl} to this {@link RegionImpl}.
+     * @param edge the {@link EdgeImpl} to add.
+     */
     void putEdge(EdgeImpl edge) {
         if (this != edge.getRegion()) {
             throw new IllegalArgumentException("Edge %s has incorrect region".formatted(edge.toString()));
         }
         if (edge.getNodeA() == null) {
-            throw new IllegalArgumentException("NodeA %s has incorrect region".formatted(edge.getNodeA().toString()));
+            throw new IllegalArgumentException("NodeA %s is not part of the region".formatted(edge.getLocationA().toString()));
         }
-
         if (edge.getNodeB() == null) {
-            throw new IllegalArgumentException("NodeB %s has incorrect region".formatted(edge.getNodeB().toString()));
+            throw new IllegalArgumentException("NodeB %s is not part of the region".formatted(edge.getLocationB().toString()));
         }
 
         edges.computeIfAbsent(

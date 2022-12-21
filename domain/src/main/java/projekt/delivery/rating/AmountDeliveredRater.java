@@ -4,11 +4,17 @@ import projekt.delivery.event.DeliverOrderEvent;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.OrderReceivedEvent;
 import projekt.delivery.routing.ConfirmedOrder;
+import projekt.delivery.simulation.Simulation;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Rates the observed {@link Simulation} based on the amount of delivered orders.<p>
+ *
+ * To create a new {@link AmountDeliveredRater} use {@code AmountDeliveredRater.Factory.builder()...build();}.
+ */
 public class AmountDeliveredRater implements Rater {
 
     public static final RatingCriteria RATING_CRITERIA = RatingCriteria.AMOUNT_DELIVERED;
@@ -18,7 +24,7 @@ public class AmountDeliveredRater implements Rater {
 
     private final double factor;
 
-    public AmountDeliveredRater(double factor) {
+    private AmountDeliveredRater(double factor) {
         this.factor = factor;
     }
 
@@ -27,7 +33,7 @@ public class AmountDeliveredRater implements Rater {
         long undeliveredOrders = pendingOrders.size();
         double maxUndeliveredOrders = ordersCount * (1 - factor);
 
-        if (undeliveredOrders > maxUndeliveredOrders) {
+        if (undeliveredOrders > maxUndeliveredOrders || maxUndeliveredOrders == 0) {
             return 0;
         }
 
@@ -62,11 +68,14 @@ public class AmountDeliveredRater implements Rater {
             });
     }
 
+    /**
+     * A {@link Rater.Factory} for creating a new {@link AmountDeliveredRater}.
+     */
     public static class Factory implements Rater.Factory {
 
         public final double factor;
 
-        Factory(double factor) {
+        private Factory(double factor) {
             this.factor = factor;
         }
 
@@ -75,11 +84,23 @@ public class AmountDeliveredRater implements Rater {
             return new AmountDeliveredRater(factor);
         }
 
+        /**
+         * Creates a new {@link AmountDeliveredRater.FactoryBuilder}.
+         * @return The created {@link AmountDeliveredRater.FactoryBuilder}.
+         */
+        public static AmountDeliveredRater.FactoryBuilder builder() {
+            return new AmountDeliveredRater.FactoryBuilder();
+        }
     }
 
+    /**
+     * A {@link Rater.FactoryBuilder} form constructing a new {@link AmountDeliveredRater.Factory}.
+     */
     public static class FactoryBuilder implements Rater.FactoryBuilder {
 
         public double factor = 0.99;
+
+        private FactoryBuilder() {}
 
         @Override
         public Rater.Factory build() {
