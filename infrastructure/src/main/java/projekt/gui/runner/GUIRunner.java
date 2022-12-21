@@ -77,7 +77,7 @@ public class GUIRunner extends AbstractRunner {
 
         results.replaceAll((criteria, rating) -> (results.get(criteria) /*/ (simulationRuns * problemGroup.problems().size())*/));
 
-        switchToRaterScene(results, problemGroup);
+        //switchToRaterScene(results, problemGroup);
 
         return results;
     }

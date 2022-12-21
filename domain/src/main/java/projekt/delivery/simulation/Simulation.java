@@ -1,10 +1,7 @@
 package projekt.delivery.simulation;
 
-import projekt.delivery.service.DeliveryService;
-import projekt.delivery.event.Event;
 import projekt.delivery.rating.RatingCriteria;
-
-import java.util.List;
+import projekt.delivery.service.DeliveryService;
 
 public interface Simulation {
 
@@ -47,4 +44,5 @@ public interface Simulation {
 
     boolean removeListener(SimulationListener listener);
 
+    boolean toggleRunning();
 }

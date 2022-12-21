@@ -78,7 +78,7 @@ public class OrdersPanel extends BorderPane {
         var tickInterval = new TickInterval(0, 5);
         table.getItems().add(new ConfirmedOrder(0, 0, null,  tickInterval, new ArrayList<>(), 0));
 
-        var orders = scene.vehicleManager.getVehicles().stream()
+        var orders = scene.vehicleManager.getAllVehicles().stream()
             .flatMap(vehicle -> vehicle.getOrders().stream()).toList();
         table.getItems().addAll(orders);
         table.getSelectionModel().select(0);

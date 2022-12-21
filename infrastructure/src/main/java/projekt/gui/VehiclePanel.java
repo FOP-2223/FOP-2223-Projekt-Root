@@ -3,8 +3,8 @@ package projekt.gui;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.text.Text;
 import projekt.delivery.routing.Vehicle;
 import projekt.gui.scene.SimulationScene;
 
@@ -37,15 +37,11 @@ public class VehiclePanel extends BorderPane {
     }
 
     public void initComponents() {
-        //setLayout(new GridLayout(0, 1));
-        //setBorder(new Title = "Vehicle Selection");
-        setTop(new Text("Vehicle Selection"));
-        //setBorder(new TitledBorder("Vehicle Selection"));
         // getcars:
-        var vehicleManager = scene.simulation.getDeliveryService().getVehicleManager();
-        var vehicles = FXCollections.observableArrayList(vehicleManager.getVehicles());
+        var vehicleManager = scene.vehicleManager;
+        var vehicles = FXCollections.observableArrayList(vehicleManager.getAllVehicles());
         selectionList = new ListView<>(vehicles);
-        setCenter(selectionList);
+        setCenter(new ScrollPane(selectionList));
         selectionList.setCellFactory((ListView<Vehicle> l) -> new RenderCell());
 
         selectionList.getSelectionModel().selectedItemProperty().addListener(

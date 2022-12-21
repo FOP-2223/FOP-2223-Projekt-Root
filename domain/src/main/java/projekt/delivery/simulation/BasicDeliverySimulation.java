@@ -94,6 +94,12 @@ public class BasicDeliverySimulation implements Simulation {
     }
 
     @Override
+    public boolean toggleRunning() {
+        isRunning = !isRunning();
+        return isRunning;
+    }
+
+    @Override
     public double getRatingForCriterion(RatingCriteria criterion) {
         return currentRaterMap.get(criterion).getScore();
     }

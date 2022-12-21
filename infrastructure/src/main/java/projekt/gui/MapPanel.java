@@ -52,8 +52,8 @@ public class MapPanel extends Pane {
     private final SimulationScene scene;
     private final AffineTransform transformation = new AffineTransform();
     private boolean alreadyCentered = false;
-    private static final int factor = 50;
-    private static final int offset = 100;
+    private static int factor = 50;
+    private static final int offset = 200;
 
     public MapPanel(SimulationScene simulationScene) {
         this.scene = simulationScene;
@@ -62,8 +62,7 @@ public class MapPanel extends Pane {
     }
 
     private void initComponents() {
-        var bgf = new BackgroundFill(Color.BLACK, new CornerRadii(0), new javafx.geometry.Insets(0));
-        setBackground(new Background(bgf));
+
 
         //setBorder(new TitledBorder("Map"));
 
@@ -78,6 +77,7 @@ public class MapPanel extends Pane {
                 //repaint();
                 lastPoint.set(point);
                 updateLocation();
+                paintMap();
             } catch (NoninvertibleTransformException e) {
                 throw new IllegalStateException();
             }
@@ -91,25 +91,17 @@ public class MapPanel extends Pane {
         });
 
         this.setOnScroll(event -> {
-            try {
-
-                var before = transformation.inverseTransform(lastPoint.get(), null);
-                var scale = event.getDeltaX() > 0 ? SCALE_OUT : SCALE_IN;
-                transformation.scale(scale, scale);
-                var after = transformation.inverseTransform(lastPoint.get(), null);
-                var difference = getDifference(after, before);
-                transformation.translate(difference.getX(), difference.getY());
-                //repaint();
-                updateLocation();
-            } catch (NoninvertibleTransformException e) {
-                throw new IllegalStateException("Cannot inverse location after scroll");
-            }
+            var scale = event.getDeltaX() > 0 ? SCALE_OUT : SCALE_IN;
+            factor *= scale;
+            updateLocation();
+            paintMap();
         });
+
+        setMinSize(500, 500);
 
         // mouse pressed
         this.setOnMouseClicked(e -> updateVehicleSelection());
         paintMap();
-        drawGrid(true);
     }
 
     /**
@@ -173,7 +165,7 @@ public class MapPanel extends Pane {
      * @return the list of vehicles
      */
     private List<Vehicle> getVehicles(Point2D position) {
-        return scene.vehicleManager.getVehicles()
+        return scene.vehicleManager.getAllVehicles()
             .stream()
             .filter(v -> Utils.midPoint(v).distance(position) < 1).toList();
     }
@@ -229,27 +221,26 @@ public class MapPanel extends Pane {
      * @param vehicle the vehicle to paint
      */
     private void paintVehicle(Vehicle vehicle) {
+        if (vehicle == null)
+            return;
         var img = CAR_SELECTED;
         if (scene.selectedVehicle != null && scene.selectedVehicle != vehicle) {
             img = CAR;
         }
         paintImage(midPoint(vehicle), img);
+        System.out.println("Painting car: "+vehicle.getId());
     }
 
     private void paintImage(Point2D midPoint, javafx.scene.image.Image img) {
-        var x = midPoint.getX();
-        var y = midPoint.getY();
-        /*var old = g.getTransform();
-        var transformation = new AffineTransform(old);
-        transformation.translate(x - IMAGE_SIZE / 2, y - IMAGE_SIZE / 2);
-        transformation.scale(IMAGE_SIZE, IMAGE_SIZE);*/
+        var x = midPoint.getX() * factor + offset - IMAGE_SIZE/2;
+        var y = midPoint.getY() * factor + offset - IMAGE_SIZE/2;
 
         var imageView = new ImageView();
         imageView.setImage(img);
-        imageView.setTranslateX(IMAGE_SIZE);
-        imageView.setTranslateY(IMAGE_SIZE);
-        imageView.scaleXProperty();
-        imageView.scaleYProperty();
+        imageView.setTranslateX(x);
+        imageView.setTranslateY(y);
+        imageView.scaleXProperty().set(IMAGE_SIZE);
+        imageView.scaleYProperty().set(IMAGE_SIZE);
         getChildren().add(imageView);
     }
 
@@ -299,29 +290,31 @@ public class MapPanel extends Pane {
     private void drawGrid(boolean drawMinors) {
         var color = convert(COLOR_0D);
 
-        var step = 10;
+        var step = 0.8;
+        var xDim = 500;
+        var yDim = 500;
         // Vertical Lines
-        for (int i = 0, x = 0; x <= 500; i++, x += step) {
+        for (int i = 0, x = 0; x <= xDim; i++, x += (int) (step * factor)) {
             Float strokeWidth = getStrokeWidth(drawMinors, i);
             if (strokeWidth == null) continue;
-            var line = new Line(x, 0, x, 500);
+            var line = new Line(x, 0, x, yDim);
             line.setStrokeWidth(strokeWidth);
             line.setStroke(color);
             getChildren().add(line);
         }
 
         // Horizontal Lines
-        for (int i = 0, y = 0; y <= 500; i++, y += step) {
+        for (int i = 0, y = 0; y <= yDim; i++, y += (int) (step * factor)) {
             Float strokeWidth = getStrokeWidth(drawMinors, i);
             if (strokeWidth == null) continue;
 
-            var line = new Line(0, y, 500, y);
+            var line = new Line(0, y, xDim, y);
             line.setStrokeWidth(strokeWidth);
             line.setStroke(color);
             getChildren().add(line);
         }
 
-        var border = new Rectangle(0, 0, (500 + OUTER_TICKS_WIDTH), (500 + OUTER_TICKS_WIDTH));
+        var border = new Rectangle(0, 0, (xDim + OUTER_TICKS_WIDTH), (yDim + OUTER_TICKS_WIDTH));
         border.setStrokeWidth(OUTER_TICKS_WIDTH);
         //getChildren().add(border);
     }
@@ -355,10 +348,13 @@ public class MapPanel extends Pane {
      */
     private void paintMap() {
         // Background
+        var bgf = new BackgroundFill(Color.valueOf("0c0e14"), new CornerRadii(0), new javafx.geometry.Insets(0));
+        setBackground(new Background(bgf));
+        getChildren().clear();
         drawGrid(true);
         scene.region.getEdges().forEach(this::drawEdge);
         scene.region.getNodes().forEach(this::drawNode);
-        scene.vehicleManager.getVehicles().forEach(this::paintVehicle);
+        scene.vehicleManager.getAllVehicles().forEach(this::paintVehicle);
     }
 
     public void resetCenterLocation() {
