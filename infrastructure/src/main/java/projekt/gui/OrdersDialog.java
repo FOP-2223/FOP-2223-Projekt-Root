@@ -199,7 +199,7 @@ class OrdersDialog extends Dialog<ConfirmedOrder> {
 
         // TODO: make okButton update actual order
         locationTextField.setText(order.getLocation().toString());
-        deliveryTimeSpinner.getValueFactory().setValue(order.getDeliveryInterval().getStart());
+        deliveryTimeSpinner.getValueFactory().setValue(order.getDeliveryInterval().start());
         //order.getFoodList().forEach(foodListModel::addElement);
 
         //pack();

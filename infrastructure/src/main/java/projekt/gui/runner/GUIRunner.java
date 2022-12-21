@@ -15,6 +15,7 @@ import projekt.gui.scene.SceneSwitcher;
 import projekt.gui.scene.SimulationScene;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -41,43 +42,43 @@ public class GUIRunner extends AbstractRunner {
             results.put(criteria, 0.0);
         }
 
-        for (int i = 0; i < simulationRuns; i++) {
-            for (Map.Entry<ProblemArchetype, Simulation> entry : simulations.entrySet()) {
+        //for (int i = 0; i < simulationRuns; i++) {//TODO re add running multiple simulations
+        for (int i = 0; i < 1; i++) {
+            //for (Simulation simulation : simulations) {
+            var simulation = simulations.values().stream().toList().get(0);
 
-                Simulation simulation = entry.getValue();
+            //store the SimulationScene
+            AtomicReference<SimulationScene> simulationScene = new AtomicReference<>();
+            //CountDownLatch to check if the SimulationScene got created
+            CountDownLatch countDownLatch = new CountDownLatch(1);
+            //execute the scene switching on the javafx application thread
+            Platform.runLater(() -> {
+                //switch to the SimulationScene and set everything up
+                SimulationScene scene = (SimulationScene) SceneSwitcher.loadScene(SceneSwitcher.SceneType.SIMULATION, stage);
+                scene.init(simulation);
+                simulation.addListener(scene);
+                simulationScene.set(scene);
+                countDownLatch.countDown();
+            });
 
-                //store the SimulationScene
-                AtomicReference<SimulationScene> simulationScene = new AtomicReference<>();
-                //CountDownLatch to check if the SimulationScene got created
-                CountDownLatch countDownLatch = new CountDownLatch(1);
-                //execute the scene switching on the javafx application thread
-                Platform.runLater(() -> {
-                    //switch to the SimulationScene and set everything up
-                    SimulationScene scene = (SimulationScene) SceneSwitcher.loadScene(SceneSwitcher.SceneType.SIMULATION, stage);
-                    scene.init(simulation);
-                    simulation.addListener(scene);
-                    simulationScene.set(scene);
-                    countDownLatch.countDown();
-                });
-
-                try {
-                    //wait for the SimulationScene to be set
-                    countDownLatch.await();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-
-                simulation.runSimulation(entry.getKey().simulationLength());
-
-                simulation.removeListener(simulationScene.get());
-
-                results.replaceAll((criteria, rating) -> results.get(criteria) + entry.getValue().getRatingForCriterion(criteria));
+            try {
+                //wait for the SimulationScene to be set
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+
+            simulation.runSimulation(simulations.keySet().stream().toList().get(0).simulationLength());
+
+            simulation.removeListener(simulationScene.get());
+
+            results.replaceAll((criteria, rating) -> results.get(criteria) + simulation.getRatingForCriterion(criteria));
+            //}
         }
 
         results.replaceAll((criteria, rating) -> (results.get(criteria) /*/ (simulationRuns * problemGroup.problems().size())*/));
 
-        switchToRaterScene(results, problemGroup);
+        //switchToRaterScene(results, problemGroup);
 
         return results;
     }

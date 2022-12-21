@@ -85,4 +85,11 @@ public interface Simulation {
     @SuppressWarnings("UnusedReturnValue")
     boolean removeListener(SimulationListener listener);
 
+    /**
+     * Toggles the running state of this {@link Simulation}.
+     * @return True, if the simulation is running after the toggling .
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    boolean toggleRunning();
+
 }
