@@ -1,5 +1,7 @@
 package projekt.gui.pane;
 
+import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -51,7 +53,7 @@ public class MapPane extends Pane {
     private final Map<Region.Node, LabeledNode> nodes = new HashMap<>();
     private final Map<Region.Edge, LabeledEdge> edges = new HashMap<>();
     private final Map<Vehicle, ImageView> vehicles = new HashMap<>();
-    private final List<Shape> grid = new ArrayList<>();
+    private final List<Node> grid = new ArrayList<>();
 
     private Region.Node selectedNode;
     private Consumer<Region.Node> nodeSelectionHandler;
@@ -126,11 +128,13 @@ public class MapPane extends Pane {
         });
 
         widthProperty().addListener((obs, oldValue, newValue) -> {
+            setClip(new Rectangle(0, 0, getWidth(), getHeight()));
             redrawGrid();
             redrawMap();
             drawPositionText();
         });
         heightProperty().addListener((obs, oldValue, newValue) -> {
+            setClip(new Rectangle(0, 0, getWidth(), getHeight()));
             redrawGrid();
             redrawMap();
             drawPositionText();
@@ -306,10 +310,7 @@ public class MapPane extends Pane {
         Text text = new Text(transformedPoint.getX(), transformedPoint.getY(), node.getName());
         text.setStroke(convert(COLOR_0A));
 
-        if (checkBounds(transformedPoint)) {
-            getChildren().add(ellipse);
-            getChildren().add(text);
-        }
+        getChildren().addAll(ellipse, text);
 
         ellipse.setOnMouseClicked(e -> handleNodeClick(ellipse, node));
         text.setOnMouseClicked(e -> handleNodeClick(ellipse, node));
@@ -366,9 +367,7 @@ public class MapPane extends Pane {
         Text text = new Text(mid.getX(), mid.getY(), edge.getName());
         text.setStroke(convert(COLOR_0A));
 
-        if (fitLine(line)) {
-            getChildren().addAll(line, text);
-        }
+        getChildren().addAll(line, text);
 
         line.setOnMouseClicked(e -> handleEdgeClick(line, edge));
         text.setOnMouseClicked(e -> handleEdgeClick(line, edge));
@@ -396,25 +395,6 @@ public class MapPane extends Pane {
         }
     }
 
-    private boolean fitLine(Line line) {
-        Point2D A = new Point2D.Double(line.getStartX(), line.getEndX());
-        Point2D B = new Point2D.Double(line.getStartY(), line.getEndY());
-
-
-        if (checkBounds(A) && checkBounds(B)) {
-            return true;
-        } else if (!checkBounds(A) || !checkBounds(B)) {
-            //TODO Don't hide whole line
-            return false;
-        }
-
-        return false;
-    }
-
-    private Point2D fitPoint(Point2D point) {
-        return new Point2D.Double(Math.max(0, Math.min(getWidth(), point.getX())), Math.max(0, Math.min(getHeight(), point.getY())));
-    }
-
     /**
      * Paints the given vehicle.
      *
@@ -434,10 +414,6 @@ public class MapPane extends Pane {
         getChildren().add(imageView);
 
         return imageView;
-    }
-
-    private boolean checkBounds(Point2D point) {
-        return point.getX() >= 0 && point.getX() < getWidth() && point.getY() >= 0 && point.getY() <= getHeight();
     }
 
     /**
@@ -534,12 +510,6 @@ public class MapPane extends Pane {
             getChildren().add(line);
             grid.add(line);
         }
-
-        Rectangle border = new Rectangle(0, 0, (700 + OUTER_TICKS_WIDTH), (700 + OUTER_TICKS_WIDTH));
-        border.setFill(null);
-        border.setStrokeWidth(OUTER_TICKS_WIDTH);
-        getChildren().add(border);
-        grid.add(border);
     }
 
     @Nullable
