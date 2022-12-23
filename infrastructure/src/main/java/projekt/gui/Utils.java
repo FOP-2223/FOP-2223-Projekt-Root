@@ -1,5 +1,6 @@
 package projekt.gui;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import projekt.base.Location;
 import projekt.delivery.routing.Region;
@@ -24,22 +25,22 @@ public interface Utils {
         return new Point2D.Double(p1.getX() - p2.getX(), p1.getY() - p2.getY());
     }
 
-    static BufferedImage loadImage(String name, Color color) {
+    static Image loadImage(String name, Color color) {
 
         try {
-            var image = ImageIO.read(Objects.requireNonNull(Utils.class.getClassLoader().getResource(name)));
+            BufferedImage image = ImageIO.read(Objects.requireNonNull(Utils.class.getClassLoader().getResource(name)));
             for (int x = 0; x < image.getWidth(); x++)
                 for (int y = 0; y < image.getHeight(); y++)
                     if (image.getRGB(x, y) == Color.BLACK.getRGB())
                         image.setRGB(x, y, color.getRGB());
-            return image;
+            return SwingFXUtils.toFXImage(image, null);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    static javafx.scene.image.Image loadImage2(String s, Color carColor) {
+    static Image loadImage2(String s, Color carColor) {
         try {
             return new Image(Objects.requireNonNull(Utils.class.getClassLoader().getResource(s)).openStream());
         } catch (IOException e) {

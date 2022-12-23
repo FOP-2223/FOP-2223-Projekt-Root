@@ -11,9 +11,10 @@ import projekt.delivery.archetype.ProblemArchetypeImpl;
 import projekt.delivery.generator.OrderGenerator;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.rating.RatingCriteria;
+import projekt.delivery.rating.TravelDistanceRater;
 import projekt.delivery.routing.VehicleManager;
-import projekt.gui.ProblemArchetypeOverviewPane;
 import projekt.gui.controller.ProblemCreationSceneController;
+import projekt.gui.pane.ProblemArchetypeOverviewPane;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,15 +64,12 @@ public class ProblemCreationScene extends MenuScene<ProblemCreationSceneControll
 
         setupProblemsPane();
 
-        buttonsVbox.getChildren().addAll(
-            createNameHBox(),
-            createSimulationLengthHBox(),
-            createNewOrderGeneratorButton(),
-            createNewRaterFactoryButton(),
-            createNewVehicleManagerButton(),
-            createCreateAndAddButton(),
-            problemsPane
-        );
+        buttonsVbox.getChildren().add(createNameHBox());
+        buttonsVbox.getChildren().add(createSimulationLengthHBox());
+        buttonsVbox.getChildren().add(createNewVehicleManagerButton());
+        buttonsVbox.getChildren().add(createNewOrderGeneratorButton());
+        buttonsVbox.getChildren().add(createNewRaterFactoryButton());
+        buttonsVbox.getChildren().add(createCreateAndAddButton());
 
         limitWidth(buttonsVbox.getChildren(), 200);
 
@@ -213,11 +211,8 @@ public class ProblemCreationScene extends MenuScene<ProblemCreationSceneControll
 
     private HBox createNameHBox() {
         HBox nameHBox = new HBox();
-        nameHBox.setAlignment(Pos.CENTER);
-        nameHBox.setSpacing(10);
 
         Label nameLabel = new Label("Name:");
-        nameHBox.getChildren().add(nameLabel);
 
         TextField nameTextField = new TextField();
         nameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -227,17 +222,14 @@ public class ProblemCreationScene extends MenuScene<ProblemCreationSceneControll
         nameTextField.setMaxWidth(200);
         nameTextField.setText(name);
 
-        nameHBox.getChildren().add(nameTextField);
+        nameHBox.getChildren().addAll(nameLabel, createIntermediateRegion(0), nameTextField);
         return nameHBox;
     }
 
     private HBox createSimulationLengthHBox() {
         HBox lengthHBox = new HBox();
-        lengthHBox.setAlignment(Pos.CENTER);
-        lengthHBox.setSpacing(10);
 
         Label lengthLabel = new Label("Length:");
-        lengthHBox.getChildren().add(lengthLabel);
 
         TextField lengthTextField = createLongTextField(value -> {
             simulationLength = value;
@@ -246,7 +238,7 @@ public class ProblemCreationScene extends MenuScene<ProblemCreationSceneControll
         lengthTextField.setMaxWidth(200);
         lengthTextField.setText(simulationLength.toString());
 
-        lengthHBox.getChildren().add(lengthTextField);
+        lengthHBox.getChildren().addAll(lengthLabel, createIntermediateRegion(0), lengthTextField);
         return lengthHBox;
     }
 
@@ -261,7 +253,12 @@ public class ProblemCreationScene extends MenuScene<ProblemCreationSceneControll
 
     private Map<RatingCriteria, Rater.Factory> raterFactoryBuilderMapToFactory(Map<RatingCriteria, Rater.FactoryBuilder> raterFactoryBuilderMap) {
         return raterFactoryBuilderMap.entrySet().stream()
-            .map(entry -> Map.entry(entry.getKey(), entry.getValue().build()))
+            .map(entry -> {
+                if (entry.getValue() instanceof TravelDistanceRater.FactoryBuilder travelDistanceRater) {
+                    travelDistanceRater.setVehicleManager(vehicleManager);
+                }
+                return Map.entry(entry.getKey(), entry.getValue().build());
+            })
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

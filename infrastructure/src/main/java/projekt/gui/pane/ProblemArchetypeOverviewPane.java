@@ -1,4 +1,4 @@
-package projekt.gui;
+package projekt.gui.pane;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;

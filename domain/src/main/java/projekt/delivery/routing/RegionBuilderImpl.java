@@ -36,6 +36,19 @@ class RegionBuilderImpl implements Region.Builder {
     }
 
     @Override
+    public boolean checkNode(String name, Location location) {
+        if (name == null || location == null) {
+            return false;
+        }
+
+        if (allNames.contains(name)) {
+            return false;
+        }
+
+        return !nodes.containsKey(location);
+    }
+
+    @Override
     public Region.Builder addNeighborhood(String name, Location location) {
         addName(name);
         if (nodes.putIfAbsent(location, new NeighborhoodBuilder(name, location)) != null) {
@@ -73,10 +86,57 @@ class RegionBuilderImpl implements Region.Builder {
     }
 
     @Override
+    public boolean checkEdge(String name, Location locationA, Location locationB) {
+        if (name == null || locationA == null || locationB == null) {
+            return false;
+        }
+
+        if (allNames.contains(name)) {
+            return false;
+        }
+
+        if (!nodes.containsKey(locationA) || !nodes.containsKey(locationB)) {
+            return false;
+        }
+
+        return edges.stream().noneMatch(edgeBuilder -> edgeBuilder.getLocationA().equals(locationA)
+            && edgeBuilder.getLocationB().equals(locationB));
+    }
+
+    @Override
+    public Region.Builder removeComponent(String name) {
+        if (!allNames.contains(name)) {
+            throw new IllegalArgumentException("No Component with this name exists");
+        }
+
+        allNames.remove(name);
+
+        for (NodeBuilder nodeBuilder : nodes.values()) {
+            if (nodeBuilder.name.equals(name)) {
+                nodes.remove(nodes.keySet().stream().filter(key -> nodes.get(key).equals(nodeBuilder)).findFirst()
+                    .orElseThrow());
+                return this;
+            }
+        }
+
+        for (EdgeBuilder edgeBuilder : edges) {
+            if (edgeBuilder.name.equals(name)) {
+                edges.remove(edgeBuilder);
+                return this;
+            }
+        }
+
+        throw new AssertionError("No component with the given name found but the name is in the allNames list");
+    }
+
+    @Override
     public Region build() {
         Objects.requireNonNull(distanceCalc, "distanceCalculator");
         RegionImpl region = new RegionImpl(distanceCalc);
-        nodes.forEach((l, n) -> region.putNode(n.build(region)));
+        nodes.forEach((l, n) -> {
+            n.connections = new HashSet<>(); //reset connection to not modify nodes created by previous calls to build()
+            region.putNode(n.build(region));
+        });
         edges.forEach(e -> {
 
             if (!nodes.containsKey(e.getLocationA()) || !nodes.containsKey(e.locationB)) {
@@ -102,7 +162,7 @@ class RegionBuilderImpl implements Region.Builder {
 
         protected final String name;
         protected final Location location;
-        protected final Set<Location> connections = new HashSet<>();
+        protected Set<Location> connections = new HashSet<>();
 
         private NodeBuilder(String name, Location location) {
             this.name = name;
@@ -114,7 +174,6 @@ class RegionBuilderImpl implements Region.Builder {
         }
 
         NodeImpl build(Region region) {
-            // may only be used once as the backing map for connections is not copied
             return new NodeImpl(region, name, location, Collections.unmodifiableSet(connections));
         }
     }
@@ -127,7 +186,6 @@ class RegionBuilderImpl implements Region.Builder {
 
         @Override
         NeighborhoodImpl build(Region region) {
-            // may only be used once as the backing map for connections is not copied
             return new NeighborhoodImpl(region, name, location, Collections.unmodifiableSet(connections));
         }
     }
@@ -143,7 +201,6 @@ class RegionBuilderImpl implements Region.Builder {
 
         @Override
         RestaurantImpl build(Region region) {
-            // may only be used once as the backing map for connections is not copied
             return new RestaurantImpl(region, name, location, Collections.unmodifiableSet(connections), availableFood);
         }
     }

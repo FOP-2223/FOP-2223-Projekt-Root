@@ -3,7 +3,9 @@ package projekt.gui.scene;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import projekt.Main;
@@ -12,8 +14,8 @@ import projekt.delivery.archetype.ProblemGroup;
 import projekt.delivery.archetype.ProblemGroupImpl;
 import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.service.BasicDeliveryService;
-import projekt.gui.ProblemArchetypeOverviewPane;
 import projekt.gui.controller.MainMenuSceneController;
+import projekt.gui.pane.ProblemArchetypeOverviewPane;
 import projekt.gui.runner.GUIRunner;
 
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.List;
 public class MainMenuScene extends MenuScene<MainMenuSceneController> {
 
     private TableView<ProblemArchetype> table;
+    private int simulationRuns = 1;
     public MainMenuScene() {
         super(new MainMenuSceneController(), "Delivery Service Simulation");
     }
@@ -46,10 +49,21 @@ public class MainMenuScene extends MenuScene<MainMenuSceneController> {
             //Execute the GUIRunner in a separate Thread to prevent it from blocking the GUI
             new Thread(() -> {
                 ProblemGroup problemGroup = new ProblemGroupImpl(problems, Arrays.stream(RatingCriteria.values()).toList());
-                new GUIRunner(controller.getStage()).run(problemGroup, Main.simulationConfig, 10, BasicDeliveryService::new);
+                new GUIRunner(controller.getStage()).run(problemGroup, Main.simulationConfig, simulationRuns, BasicDeliveryService::new);
             }).start();
         });
         buttonsVbox.getChildren().add(startGameButton);
+
+        HBox simulationRunsHBox = new HBox();
+        simulationRunsHBox.setMaxWidth(200);
+
+        Label simulationRunsLabel = new Label("Simulation Runs:");
+        TextField simulationRunsTextField = createPositiveIntegerTextField(value -> simulationRuns = value, 1);
+        simulationRunsTextField.setMaxWidth(50);
+
+        simulationRunsHBox.getChildren().addAll(simulationRunsLabel, createIntermediateRegion(0), simulationRunsTextField);
+
+        buttonsVbox.getChildren().add(simulationRunsHBox);
 
         table = createProblemArchetypeTableView();
 

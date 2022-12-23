@@ -1,23 +1,19 @@
 package projekt.gui;
 
-import javafx.collections.FXCollections;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import projekt.delivery.routing.Vehicle;
-import projekt.gui.scene.SimulationScene;
+import projekt.delivery.simulation.Simulation;
 
-import java.util.List;
+public class VehiclePane extends BorderPane {
 
-public class VehiclePanel extends BorderPane {
-
-    private final SimulationScene scene;
+    private final Simulation simulation;
 
     public ListView<Vehicle> selectionList;
 
-    public VehiclePanel(SimulationScene scene) {
-        this.scene = scene;
+    public VehiclePane(Simulation simulation) {
+        this.simulation = simulation;
         initComponents();
     }
 
@@ -38,16 +34,10 @@ public class VehiclePanel extends BorderPane {
 
     public void initComponents() {
         // getcars:
-        var vehicleManager = scene.vehicleManager;
-        var vehicles = FXCollections.observableArrayList(vehicleManager.getAllVehicles());
-        selectionList = new ListView<>(vehicles);
-        final ScrollPane scrollPane = new ScrollPane(selectionList);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        setCenter(scrollPane);
-        selectionList.setCellFactory((ListView<Vehicle> l) -> new RenderCell());
 
-        selectionList.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, selected) -> scene.selectedVehicle = selected);
+
+//        selectionList.getSelectionModel().selectedItemProperty().addListener(
+//            (observable, oldValue, selected) -> scene.selectedVehicle = selected);
 
         // ------
         /*selectionList.setModel(new AbstractListModel<>() {
@@ -64,17 +54,5 @@ public class VehiclePanel extends BorderPane {
                 return (vehicles = Objects.requireNonNullElseGet(vehicles, () -> mainFrame.getVehicleManager().getVehicles().toArray(Vehicle[]::new)))[index];
             }
         });*/
-    }
-
-    public void onUpdate() {
-        //SwingUtilities.updateComponentTreeUI(selectionList);
-    }
-
-    public void setSelectedVehicle(Vehicle vehicle) {
-        selectionList.getSelectionModel().select(vehicle);
-    }
-
-    public List<Vehicle> getVehicles() {
-        return selectionList.getItems();
     }
 }

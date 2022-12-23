@@ -37,6 +37,12 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
     }
 
     @Override
+    public VehicleManager.Builder removeVehicle(Location startingLocation) {
+        vehicles.removeIf(vehicleBuilder -> vehicleBuilder.startingLocation.equals(startingLocation));
+        return this;
+    }
+
+    @Override
     public VehicleManager build() {
         Objects.requireNonNull(region, "region");
         Objects.requireNonNull(pathCalculator, "pathCalculator");

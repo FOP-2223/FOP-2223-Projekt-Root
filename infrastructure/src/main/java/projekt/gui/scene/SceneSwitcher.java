@@ -15,8 +15,6 @@ import java.util.concurrent.Callable;
  */
 public final class SceneSwitcher {
 
-    // --Variables-- //
-
     /**
      * An enum that represents the different scenes that can be switched to.
      */

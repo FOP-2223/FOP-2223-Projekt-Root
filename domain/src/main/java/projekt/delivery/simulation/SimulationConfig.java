@@ -1,6 +1,5 @@
 package projekt.delivery.simulation;
 
-import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -37,10 +36,6 @@ public class SimulationConfig {
      */
     public void setMillisecondsPerTick(int millisecondsPerTick) {
         this.millisecondsPerTick.set(millisecondsPerTick);
-    }
-
-    public LocalDateTime tickToLocalDateTime(long ticks) {
-        return LocalDateTime.now().minusNanos(1000 * millisecondsPerTick.get() * ticks);
     }
 
     /**

@@ -215,6 +215,15 @@ public interface VehicleManager {
         );
 
         /**
+         * Removes all {@link Vehicle}s at the given starting {@link Location} from the constructed {@link VehicleManager}.
+         * @param startingLocation The starting {@link Location} of the removed {@link Vehicle}.
+         * @return The current {@link Builder}.
+         */
+        Builder removeVehicle(
+            Location startingLocation
+        );
+
+        /**
          * Constructs the {@link VehicleManager}.
          * @return The constructed {@link VehicleManager}.
          */

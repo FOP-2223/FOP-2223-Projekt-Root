@@ -86,7 +86,7 @@ public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGenerator
                     .setDeliveryInterval((Integer) values.get("deliveryInterval"))
                     .setMaxWeight((Double) values.get("maxWeight"))
                     .setVariance((Double) values.get("variance"))
-                    .setLastTick((Integer) values.get("lastTick"))
+                    .setLastTick((Long) values.get("lastTick"))
                     .setVehicleManager(vehicleManager)
                     .setSeed(seedCheckBox.isSelected() ? (Integer) values.get("seed") : -1);
             } else if (choiceBox.getValue().equals("Empty Order Generator")) {
@@ -143,7 +143,7 @@ public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGenerator
             values.put("deliveryInterval", 0);
             values.put("maxWeight", 0.0);
             values.put("variance", 0.0);
-            values.put("lastTick", 0);
+            values.put("lastTick", 0L);
             values.put("seed", 0);
         } else {
             FridayOrderGenerator.FactoryBuilder fridayBuilder = (FridayOrderGenerator.FactoryBuilder) orderGeneratorFactoryBuilder;
@@ -157,12 +157,12 @@ public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGenerator
 
         HBox orderCountHBox = new HBox();
         Label orderCountLabel = createIndentedLabel("Order Count");
-        TextField orderCountTextField = createIntegerTextField(value -> values.put("orderCount", value), (Integer) values.get("orderCount"));
+        TextField orderCountTextField = createPositiveIntegerTextField(value -> values.put("orderCount", value), (Integer) values.get("orderCount"));
         orderCountHBox.getChildren().addAll(orderCountLabel, createIntermediateRegion(0), orderCountTextField);
 
         HBox deliveryIntervalHBox = new HBox();
         Label deliveryIntervalLabel = createIndentedLabel("Delivery Interval");
-        TextField deliveryIntervalTextField = createIntegerTextField(value -> values.put("deliveryInterval", value), (Integer) values.get("deliveryInterval"));
+        TextField deliveryIntervalTextField = createPositiveIntegerTextField(value -> values.put("deliveryInterval", value), (Integer) values.get("deliveryInterval"));
         deliveryIntervalHBox.getChildren().addAll(deliveryIntervalLabel, createIntermediateRegion(0), deliveryIntervalTextField);
 
         HBox maxWeightHBox = new HBox();
@@ -177,12 +177,12 @@ public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGenerator
 
         HBox lastTickHBox = new HBox();
         Label lastTickLabel = createIndentedLabel("Last Tick");
-        TextField lastTickTextField = createIntegerTextField(value -> values.put("lastTick", value), (Integer) values.get("lastTick"));
+        TextField lastTickTextField = createLongTextField(value -> values.put("lastTick", value), (Long) values.get("lastTick"));
         lastTickHBox.getChildren().addAll(lastTickLabel, createIntermediateRegion(0), lastTickTextField);
 
         HBox seedHBox = new HBox();
         Label seedLabel = createIndentedLabel("Seed");
-        TextField seedTextField = createIntegerTextField(value -> values.put("seed", value), (Integer) values.get("seed") == -1 ? 0 : (Integer) values.get("seed"));
+        TextField seedTextField = createPositiveIntegerTextField(value -> values.put("seed", value), (Integer) values.get("seed") == -1 ? 0 : (Integer) values.get("seed"));
         this.seedTextField = seedTextField;
         seedHBox.getChildren().addAll(seedCheckBox, seedLabel, createIntermediateRegion(0), seedTextField);
 

@@ -5,7 +5,7 @@ plugins{
 
 javafx {
     version = "17.0.1"
-    modules("javafx.controls", "javafx.fxml")
+        modules("javafx.controls", "javafx.fxml", "javafx.swing")
 }
 
 dependencies {

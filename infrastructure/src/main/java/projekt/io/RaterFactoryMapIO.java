@@ -74,7 +74,7 @@ public class RaterFactoryMapIO {
 
             for (Map.Entry<RatingCriteria, Rater.Factory> entry : factoryMap.entrySet()) {
                 writer.write("R %s %s".formatted(
-                    entry.getKey().toString(),
+                    entry.getKey().name(),
                     entry.getValue().getClass().getName())
                 );
 

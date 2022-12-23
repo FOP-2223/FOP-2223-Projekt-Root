@@ -30,9 +30,9 @@ class VehicleManagerImpl implements VehicleManager {
         occupiedNodes = toOccupiedNodes(region.getNodes());
         occupiedEdges = toOccupiedEdges(region.getEdges());
 
-        if (getOccupiedRestaurants().size() == 0) {
-            throw new IllegalArgumentException("At least one restaurant is required to create a VehicleManager");
-        }
+//        if (getOccupiedRestaurants().size() == 0) {
+//            throw new IllegalArgumentException("At least one restaurant is required to create a VehicleManager");
+//        }
     }
 
     private OccupiedNodeImpl<? extends Region.Node> toOccupied(Region.Node node) {

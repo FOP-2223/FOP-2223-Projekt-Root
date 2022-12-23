@@ -96,7 +96,7 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
                 return;
             }
 
-            if (longTextField.getText().equals("")) return;
+            if (newValue.equals("")) return;
 
             try {
                 valueChangeConsumer.accept(Long.parseLong(longTextField.getText()));
@@ -108,25 +108,46 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
         return longTextField;
     }
 
-    public static TextField createIntegerTextField(Consumer<Integer> valueChangeConsumer, Integer initialValue) {
-        TextField longTextField = new TextField();
-        longTextField.setText(initialValue.toString());
-        longTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+    public static TextField createPositiveIntegerTextField(Consumer<Integer> valueChangeConsumer, Integer initialValue) {
+        TextField positivIntegerTextField = new TextField();
+        positivIntegerTextField.setText(initialValue.toString());
+        positivIntegerTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
-                longTextField.setText(oldValue);
+                positivIntegerTextField.setText(oldValue);
                 return;
             }
 
-            if (longTextField.getText().equals("")) return;
+            if (newValue.equals("")) return;
 
             try {
-                valueChangeConsumer.accept(Integer.parseInt(longTextField.getText()));
+                valueChangeConsumer.accept(Integer.parseInt(positivIntegerTextField.getText()));
             } catch (NumberFormatException exc) {
-                longTextField.setText(oldValue);
+                positivIntegerTextField.setText(oldValue);
             }
         });
 
-        return longTextField;
+        return positivIntegerTextField;
+    }
+
+    public static TextField createIntegerTextField(Consumer<Integer> valueChangeConsumer, Integer initialValue) {
+        TextField negativeIntegerTextField = new TextField();
+        negativeIntegerTextField.setText(initialValue.toString());
+        negativeIntegerTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("-?\\d*")) {
+                negativeIntegerTextField.setText(oldValue);
+                return;
+            }
+
+            if (newValue.equals("") || newValue.equals("-")) return;
+
+            try {
+                valueChangeConsumer.accept(Integer.parseInt(negativeIntegerTextField.getText()));
+            } catch (NumberFormatException exc) {
+                negativeIntegerTextField.setText(oldValue);
+            }
+        });
+
+        return negativeIntegerTextField;
     }
 
     public static TextField createDoubleTextField(Consumer<Double> valueChangeConsumer, Double initialValue) {
@@ -138,7 +159,7 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
                 return;
             }
 
-            if (doubleTextField.getText().equals("")) return;
+            if (newValue.equals("")) return;
 
             try {
                 valueChangeConsumer.accept(Double.parseDouble(doubleTextField.getText()));
@@ -150,9 +171,9 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
         return doubleTextField;
     }
 
-    public static Region createIntermediateRegion(int min_width) {
+    public static Region createIntermediateRegion(int minWidth) {
         Region intermediateRegion = new Region();
-        intermediateRegion.setMinWidth(min_width);
+        intermediateRegion.setMinWidth(minWidth);
         HBox.setHgrow(intermediateRegion, Priority.ALWAYS);
 
         return intermediateRegion;
@@ -192,7 +213,7 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public Set<File> getAllFilesInBuildDir() {
-        File dir = new File(Path.of(System.getProperty("user.dir"), "projekt", "gui", "dir").toUri());
+        File dir = new File(Path.of(System.getProperty("user.dir"), "projekt", "gui", "problems").toUri());
 
         if (!dir.exists()) {
             dir.mkdirs();
@@ -218,15 +239,20 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
         return problems;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void writeProblem(ProblemArchetype problem) {
-        String dir = "projekt/gui/problems";
-        File file = new File(Path.of(System.getProperty("user.dir"), dir, problem.name()).toUri());
+        File dir = Path.of(System.getProperty("user.dir"), "projekt", "gui", "problems").toFile();
+        File file = Path.of(dir.getPath(), problem.name() + ".txt").toFile();
+
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            file.createNewFile();
             ProblemArchetypeIO.writeProblemArchetype(writer, problem);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }

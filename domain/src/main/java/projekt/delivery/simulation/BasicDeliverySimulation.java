@@ -21,6 +21,7 @@ public class BasicDeliverySimulation implements Simulation {
     protected long currentTick = 0;
     protected List<Event> lastEvents;
     protected boolean isRunning = false;
+    private SimulationListener endSimulationListener;
 
     /**
      * Creates a new {@link BasicDeliverySimulation} instance.
@@ -148,7 +149,9 @@ public class BasicDeliverySimulation implements Simulation {
 
     private void setupNewSimulation() {
         currentTick = 0;
+        terminationRequested = false;
         lastEvents = new ArrayList<>();
+        removeListener(endSimulationListener);
         getDeliveryService().reset();
         setupRaters();
         setupOrderGenerator();

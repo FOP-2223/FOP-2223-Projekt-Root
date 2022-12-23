@@ -210,6 +210,18 @@ public interface Region {
         Builder addNode(String name, Location location);
 
         /**
+         * Checks if a {@link Node} with the given values can be added to the constructed {@link Region}.<p>
+         *
+         * If this method returns true, the very next call to {@link #addNode(String, Location)} with the same parameter
+         * will not result in an exception.
+         *
+         * @param name The name to check.
+         * @param location The {@link Location} to check.
+         * @return True, if a {@link Node} with the given name and {@link Location} can be added to the constructed {@link Region}.
+         */
+        boolean checkNode(String name, Location location);
+
+        /**
          * Adds a new {@link Neighborhood} to the constructed {@link Region}.
          * @param name The name of the new {@link Neighborhood}.
          * @param location The {@link Location} of the new {@link Neighborhood}.
@@ -242,6 +254,27 @@ public interface Region {
          * @return The current {@link Builder}.
          */
         Builder addEdge(String name, Location locationA, Location locationB);
+
+        /**
+         * Checks if a {@link Edge} with the given values can be added to the constructed {@link Region}.<p>
+         *
+         * If this method returns true, the very next call to {@link #addEdge(String, Location, Location)} with the same parameter
+         * will not result in an exception.
+         *
+         * @param name The name to check.
+         * @param locationA The first {@link Location} to check.
+         * @param locationB The second {@link Location} to check.
+         * @return True, if a {@link Edge} with the given name and {@link Location}s can be added to the constructed {@link Region}.
+         */
+        boolean checkEdge(String name, Location locationA, Location locationB);
+
+        /**
+         * Removes the {@link Component} with the given name from the constructed {@link Region}.
+         * @param name The name of the {@link Component} to remove.
+         * @return the current {@link Builder}.
+         */
+        @SuppressWarnings("UnusedReturnValue")
+        Builder removeComponent(String name);
 
         /**
          * Constructs the new {@link Region}.

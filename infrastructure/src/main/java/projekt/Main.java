@@ -195,7 +195,7 @@ public class Main {
         DeliveryService deliveryService = new BasicDeliveryService(vehicleManager1);
 
         // SimulationConfig
-        simulationConfig = new SimulationConfig(0);
+        simulationConfig = new SimulationConfig(20);
 
         //ProblemGroup
         problemGroup = new ProblemGroupImpl(List.of(problemArchetype1, problemArchetype2), new ArrayList<>(raterFactoryMap1.keySet()));
