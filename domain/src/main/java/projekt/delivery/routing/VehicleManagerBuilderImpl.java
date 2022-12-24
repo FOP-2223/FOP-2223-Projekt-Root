@@ -1,10 +1,10 @@
 package projekt.delivery.routing;
 
-import org.jetbrains.annotations.Nullable;
 import projekt.base.Location;
 
-import java.util.*;
-import java.util.function.Predicate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 class VehicleManagerBuilderImpl implements VehicleManager.Builder {
 
@@ -33,6 +33,12 @@ class VehicleManagerBuilderImpl implements VehicleManager.Builder {
             throw new IllegalArgumentException("Capacity must be positive");
         }
         vehicles.add(new VehicleBuilder(startingLocation, capacity));
+        return this;
+    }
+
+    @Override
+    public VehicleManager.Builder removeVehicle(Location startingLocation) {
+        vehicles.removeIf(vehicleBuilder -> vehicleBuilder.startingLocation.equals(startingLocation));
         return this;
     }
 

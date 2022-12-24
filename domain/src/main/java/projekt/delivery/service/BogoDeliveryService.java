@@ -30,7 +30,7 @@ public class BogoDeliveryService extends AbstractDeliveryService {
     }
 
     @Override
-    List<Event> tick(long currentTick, List<ConfirmedOrder> newOrders) {
+    protected List<Event> tick(long currentTick, List<ConfirmedOrder> newOrders) {
         List<Event> events = vehicleManager.tick(currentTick);
         pendingOrders.addAll(newOrders);
 
@@ -94,5 +94,10 @@ public class BogoDeliveryService extends AbstractDeliveryService {
     public void reset() {
         super.reset();
         pendingOrders.clear();
+    }
+
+    public interface Factory extends DeliveryService.Factory {
+
+        BogoDeliveryService create(VehicleManager vehicleManager);
     }
 }

@@ -1,10 +1,19 @@
 package projekt.delivery.routing;
 
+import org.jetbrains.annotations.NotNull;
 import projekt.base.Location;
 
-import static org.tudalgo.algoutils.student.Student.crash;
+import java.util.Comparator;
+import java.util.Objects;
 
+/**
+ * Represents a weighted edge in a graph.
+ */
+@SuppressWarnings("ClassCanBeRecord")
 class EdgeImpl implements Region.Edge {
+
+    private final static Comparator<Region.Edge> COMPARATOR =
+        Comparator.comparing(Region.Edge::getNodeA).thenComparing(Region.Edge::getNodeB);
 
     private final Region region;
     private final String name;
@@ -12,6 +21,14 @@ class EdgeImpl implements Region.Edge {
     private final Location locationB;
     private final long duration;
 
+    /**
+     * Creates a new {@link EdgeImpl} instance.
+     * @param region The {@link Region} this {@link EdgeImpl} belongs to.
+     * @param name The name of this {@link EdgeImpl}.
+     * @param locationA The start of this {@link EdgeImpl}.
+     * @param locationB The end of this {@link EdgeImpl}.
+     * @param duration The length of this {@link EdgeImpl}.
+     */
     EdgeImpl(
         Region region,
         String name,
@@ -30,56 +47,79 @@ class EdgeImpl implements Region.Edge {
         this.duration = duration;
     }
 
+    /**
+     * Returns the start of this {@link EdgeImpl}.
+     * @return The start of this {@link EdgeImpl}.
+     */
     public Location getLocationA() {
-        return crash(); // TODO: H4.1 - remove if implemented
+        return locationA;
     }
 
+    /**
+     * Returns the end of this {@link EdgeImpl}.
+     * @return The end of this {@link EdgeImpl}.
+     */
     public Location getLocationB() {
-        return crash(); // TODO: H4.1 - remove if implemented
+        return locationB;
     }
 
     @Override
     public Region getRegion() {
-        return crash(); // TODO: H4.1 - remove if implemented
+        return region;
     }
 
     @Override
     public String getName() {
-        return crash(); // TODO: H4.1 - remove if implemented
+        return name;
     }
 
     @Override
     public long getDuration() {
-        return crash(); // TODO: H4.1 - remove if implemented
+        return duration;
     }
 
     @Override
     public Region.Node getNodeA() {
-        return crash(); // TODO: H4.2 - remove if implemented
+        return getRegion().getNode(locationA);
     }
 
     @Override
     public Region.Node getNodeB() {
-        return crash(); // TODO: H4.2 - remove if implemented
+        return getRegion().getNode(locationB);
     }
 
     @Override
-    public int compareTo(Region.Edge o) {
-        return crash(); // TODO: H4.3 - remove if implemented
+    public int compareTo(Region.@NotNull Edge o) {
+        return COMPARATOR.compare(this, o);
     }
 
     @Override
     public int hashCode() {
-        return crash(); // TODO: H4.5 - remove if implemented
+        return Objects.hash(name, locationA, locationB, duration);
     }
 
     @Override
     public boolean equals(Object o) {
-        return crash(); // TODO: H4.4 - remove if implemented
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        EdgeImpl edge = (EdgeImpl) o;
+        return Objects.equals(name, edge.name)
+            && Objects.equals(locationA, edge.locationA)
+            && Objects.equals(locationB, edge.locationB)
+            && Objects.equals(duration, edge.duration);
     }
 
     @Override
     public String toString() {
-        return crash(); // TODO: H4.6 - remove if implemented
+        return "EdgeImpl(" +
+            "name='" + getName() + "'"
+            + ", locationA='" + getLocationA() + "'"
+            + ", locationB='" + getLocationB() + "'"
+            + ", duration='" + getDuration() + "'"
+            + ')';
     }
 }

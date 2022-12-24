@@ -5,8 +5,13 @@ import projekt.delivery.event.LoadOrderEvent;
 
 class OccupiedRestaurantImpl extends OccupiedNodeImpl<Region.Restaurant> implements VehicleManager.OccupiedRestaurant {
 
-    OccupiedRestaurantImpl(Region.Restaurant component, VehicleManager vehicleManager) {
-        super(component, vehicleManager);
+    /**
+     * Creates a new {@link OccupiedRestaurantImpl} instance.
+     * @param restaurant The represented {@link Region.Neighborhood}.
+     * @param vehicleManager the corresponding {@link VehicleManager}.
+     */
+    OccupiedRestaurantImpl(Region.Restaurant restaurant, VehicleManager vehicleManager) {
+        super(restaurant, vehicleManager);
     }
 
     @Override
@@ -20,7 +25,7 @@ class OccupiedRestaurantImpl extends OccupiedNodeImpl<Region.Restaurant> impleme
                 currentTick,
                 vehicle,
                 order,
-                this
+                getComponent()
             )
         );
     }

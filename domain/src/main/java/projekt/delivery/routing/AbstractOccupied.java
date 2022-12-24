@@ -7,6 +7,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * An abstract class combining basic functionality of all {@link VehicleManager.Occupied} implementations.
+ * @param <C> The type of the occupied {@link Region.Component}.
+ */
 abstract class AbstractOccupied<C extends Region.Component<? super C>> implements VehicleManager.Occupied<C> {
 
     protected final C component;
@@ -39,10 +43,6 @@ abstract class AbstractOccupied<C extends Region.Component<? super C>> implement
     public void reset() {
         vehicles.clear();
     }
-
-    abstract void tick(long currentTick);
-
-    abstract void addVehicle(VehicleImpl vehicle, long currentTick);
 
     protected static class VehicleStats {
         final long arrived;

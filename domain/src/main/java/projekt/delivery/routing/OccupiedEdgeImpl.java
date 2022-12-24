@@ -6,12 +6,18 @@ import java.util.List;
 import java.util.Map;
 
 class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
-    OccupiedEdgeImpl(Region.Edge component, VehicleManager vehicleManager) {
-        super(component, vehicleManager);
+
+    /**
+     * Creates a new {@link OccupiedEdgeImpl} instance.
+     * @param edge The represented {@link Region.Edge}.
+     * @param vehicleManager the corresponding {@link VehicleManager}.
+     */
+    OccupiedEdgeImpl(Region.Edge edge, VehicleManager vehicleManager) {
+        super(edge, vehicleManager);
     }
 
     @Override
-    void tick(long currentTick) {
+    public void tick(long currentTick) {
         // it is important to create a copy here. The move method in vehicle will probably modify this map
         for (Map.Entry<VehicleImpl, VehicleStats> entry : List.copyOf(vehicles.entrySet())) {
             if (currentTick >= entry.getValue().arrived + component.getDuration()) {
@@ -21,7 +27,7 @@ class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
     }
 
     @Override
-    void addVehicle(VehicleImpl vehicle, long currentTick) {
+    public void addVehicle(VehicleImpl vehicle, long currentTick) {
         if (vehicles.containsKey(vehicle)) {
             return;
         }
@@ -29,7 +35,7 @@ class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
         if (previous instanceof OccupiedEdgeImpl) {
             throw new AssertionError("Vehicle " + vehicle.getId() + " cannot move directly from edge to edge");
         }
-        final OccupiedNodeImpl<?> previousNode = (OccupiedNodeImpl) previous;
+        final OccupiedNodeImpl<?> previousNode = (OccupiedNodeImpl<?>) previous;
         if (previousNode.vehicles.remove(vehicle) == null) {
             throw new AssertionError("Vehicle " + vehicle.getId() + " was not found in previous node");
         }

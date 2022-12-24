@@ -3,17 +3,24 @@ package projekt.delivery.routing;
 import org.jetbrains.annotations.Nullable;
 import projekt.base.Location;
 
+import java.util.Objects;
 import java.util.Set;
-
-import static org.tudalgo.algoutils.student.Student.crash;
+import java.util.stream.Collectors;
 
 class NodeImpl implements Region.Node {
 
     protected final Set<Location> connections;
-    private final Region region;
-    private final String name;
-    private final Location location;
+    protected final Region region;
+    protected final String name;
+    protected final Location location;
 
+    /**
+     * Creates a new {@link NodeImpl} instance.
+     * @param region The {@link Region} this {@link NodeImpl} belongs to.
+     * @param name The name of this {@link NodeImpl}.
+     * @param location The {@link Location} of this {@link EdgeImpl}.
+     * @param connections All {@link Location}s this {@link NeighborhoodImpl} has an {@link Region.Edge} to.
+     */
     NodeImpl(
         Region region,
         String name,
@@ -28,37 +35,32 @@ class NodeImpl implements Region.Node {
 
     @Override
     public Region getRegion() {
-        return crash(); // TODO: H3.1 - remove if implemented
+        return region;
     }
 
     @Override
     public String getName() {
-        return crash(); // TODO: H3.1 - remove if implemented
+        return name;
     }
 
     @Override
     public Location getLocation() {
-        return crash(); // TODO: H3.1 - remove if implemented
+        return location;
     }
 
     @Override
     public @Nullable Region.Edge getEdge(Region.Node other) {
-        return crash(); // TODO: H3.2 - remove if implemented
+        return region.getEdge(getLocation(), other.getLocation());
     }
 
     @Override
     public Set<Region.Node> getAdjacentNodes() {
-        return crash(); // TODO: H3.3 - remove if implemented
+        return connections.stream().map(region::getNode).collect(Collectors.toSet());
     }
 
     @Override
     public Set<Region.Edge> getAdjacentEdges() {
-        return crash(); // TODO: H3.4 - remove if implemented
-    }
-
-    @Override
-    public int compareTo(Region.Node o) {
-        return crash(); // TODO: H3.5 - remove if implemented
+        return connections.stream().map(c -> region.getEdge(getLocation(), c)).collect(Collectors.toSet());
     }
 
     public Set<Location> getConnections() {
@@ -66,17 +68,37 @@ class NodeImpl implements Region.Node {
     }
 
     @Override
+    public int compareTo(Region.Node o) {
+        return location.compareTo(o.getLocation());
+    }
+
+    @Override
     public int hashCode() {
-        return crash(); // TODO: H3.7 - remove if implemented
+        return Objects.hash(name, location, connections);
     }
 
     @Override
     public boolean equals(Object o) {
-        return crash(); // TODO: H3.6 - remove if implemented
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        NodeImpl node = (NodeImpl) o;
+        if (hashCode() != node.hashCode()) {
+            return false;
+        }
+        return Objects.equals(name, node.name)
+            && Objects.equals(location, node.location)
+            && Objects.equals(connections, node.connections);
     }
 
     @Override
     public String toString() {
-        return crash(); // TODO: H3.8 - remove if implemented
+        return "NodeImpl(name='" + getName() + "'"
+            + ", location='" + getLocation() + "'"
+            + ", connections='" + connections + "'"
+            + ')';
     }
 }

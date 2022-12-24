@@ -1,14 +1,21 @@
 package projekt.base;
 
-import static org.tudalgo.algoutils.student.Student.crash;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Comparator;
 
 /**
  * A tuple for the x- and y-coordinates of a point.
  */
 public final class Location implements Comparable<Location> {
 
+    private final static Comparator<Location> COMPARATOR =
+        Comparator.comparing(Location::getX).thenComparing(Location::getY);
+
     private final int x;
     private final int y;
+    private final int hashcode;
+
     /**
      * Instantiates a new {@link Location} object using {@code x} and {@code y} as coordinates.
      *
@@ -18,6 +25,8 @@ public final class Location implements Comparable<Location> {
     public Location(int x, int y) {
         this.x = x;
         this.y = y;
+        // Equivalent: hashcode = (x << 16) | ((y << 16) >>> 16);
+        hashcode = (x << 16) | (0xFFFF & y);
     }
 
     /**
@@ -61,22 +70,29 @@ public final class Location implements Comparable<Location> {
     }
 
     @Override
-    public int compareTo(Location o) {
-        return crash(); // TODO: H1.1 - remove if implemented
+    public int compareTo(@NotNull Location o) {
+        return COMPARATOR.compare(this, o);
     }
 
     @Override
     public int hashCode() {
-        return crash(); // TODO: H1.2 - remove if implemented
+        return hashcode;
     }
 
     @Override
     public boolean equals(Object o) {
-        return crash(); // TODO: H1.3 - remove if implemented
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Location location = (Location) o;
+        return x == location.x && y == location.y;
     }
 
     @Override
     public String toString() {
-        return crash(); // TODO: H1.4 - remove if implemented
+        return String.format("(%d, %d)", x, y);
     }
 }

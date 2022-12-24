@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractDeliveryService implements DeliveryService {
+
     protected final VehicleManager vehicleManager;
     private final Object lock = new Object();
 
@@ -27,6 +28,7 @@ public abstract class AbstractDeliveryService implements DeliveryService {
         }
     }
 
+    @Override
     public List<Event> tick(long currentTick) {
         // Schedule new orders
         List<ConfirmedOrder> newOrders = Collections.emptyList();
@@ -56,5 +58,11 @@ public abstract class AbstractDeliveryService implements DeliveryService {
         vehicleManager.reset();
     }
 
-    abstract List<Event> tick(long currentTick, List<ConfirmedOrder> newOrders);
+    /**
+     * Executes the current tick.
+     * @param currentTick The tick to execute.
+     * @param newOrders All new {@link ConfirmedOrder}s that have been ordered during the last tick.
+     * @return A {@link List} containing all {@link Event}s that occurred during the tick.
+     */
+   protected abstract List<Event> tick(long currentTick, List<ConfirmedOrder> newOrders);
 }

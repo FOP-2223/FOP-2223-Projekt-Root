@@ -3,6 +3,9 @@ package projekt.delivery.routing;
 import java.util.Deque;
 import java.util.Map;
 
+/**
+ * Calculates paths inside a graph.
+ */
 public interface PathCalculator {
 
     /**

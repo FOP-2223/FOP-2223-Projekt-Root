@@ -4,6 +4,7 @@ plugins {
     application
     alias(libs.plugins.style)
     alias(libs.plugins.jagr.gradle)
+    alias(libs.plugins.javafx)
 }
 
 version = file("version").readLines().first()

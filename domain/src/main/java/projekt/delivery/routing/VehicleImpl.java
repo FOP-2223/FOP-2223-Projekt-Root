@@ -5,8 +5,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static org.tudalgo.algoutils.student.Student.crash;
-
 class VehicleImpl implements Vehicle {
 
     private final int id;
@@ -51,12 +49,46 @@ class VehicleImpl implements Vehicle {
 
     @Override
     public void moveDirect(Region.Node node, Consumer<? super Vehicle> arrivalAction) {
-        crash(); // TODO: H5.4 - remove if implemented
+        checkMoveToNode(node);
+        moveQueue.clear();
+        if (occupied instanceof OccupiedEdgeImpl) {
+            // if a vehicle is on an edge, keep the movement to the next node
+            final @Nullable VehicleManager.Occupied<?> previousOccupied = occupied.vehicles.get(this).previous;
+            if (!(previousOccupied instanceof OccupiedNodeImpl<?>)) {
+                throw new AssertionError("Previous component must be a node");
+            }
+            final Region.Node previousNode = ((OccupiedNodeImpl<?>) previousOccupied).component;
+            final Region.Node nodeA = ((Region.Edge) occupied.component).getNodeA();
+            final Region.Node nodeB = ((Region.Edge) occupied.component).getNodeB();
+            final Region.Node nextNode = previousNode.equals(nodeA) ? nodeB : nodeA;
+            moveQueue.add(new PathImpl(new ArrayDeque<>(Collections.singleton(nextNode)), v -> {
+            }));
+        }
+        moveQueued(node, arrivalAction);
     }
 
     @Override
     public void moveQueued(Region.Node node, Consumer<? super Vehicle> arrivalAction) {
-        crash(); // TODO: H5.3 - remove if implemented
+        checkMoveToNode(node);
+        Region.Node startNode = null;
+        final Iterator<PathImpl> it = moveQueue.descendingIterator();
+        while (it.hasNext() && startNode == null) {
+            PathImpl path = it.next();
+            if (!path.nodes().isEmpty()) {
+                startNode = path.nodes().peekLast();
+            }
+        }
+        // if no queued node could be found
+        if (startNode == null) {
+            if (occupied instanceof OccupiedNodeImpl<?>) {
+                startNode = ((OccupiedNodeImpl<?>) occupied).getComponent();
+            } else {
+                throw new AssertionError("It is not possible to be on an edge if the move queue is naturally empty");
+            }
+        }
+        final Deque<Region.Node> nodes = vehicleManager.getPathCalculator().getPath(startNode, node);
+        moveQueue.add(new PathImpl(nodes, ((Consumer<Vehicle>) v ->
+            System.out.println("Vehicle " + v.getId() + " arrived at node " + node)).andThen(arrivalAction)));
     }
 
     @Override
@@ -91,27 +123,33 @@ class VehicleImpl implements Vehicle {
         orders.clear();
     }
 
+    private void checkMoveToNode(Region.Node node) {
+        if (occupied.component.equals(node) && moveQueue.isEmpty()) {
+            throw new IllegalArgumentException("Vehicle " + getId() + " cannot move to own node " + node);
+        }
+    }
+
     void move(long currentTick) {
         final Region region = vehicleManager.getRegion();
         if (moveQueue.isEmpty()) {
             return;
         }
         final PathImpl path = moveQueue.peek();
-        if (path.getNodes().isEmpty()) {
+        if (path.nodes().isEmpty()) {
             moveQueue.pop();
-            final @Nullable Consumer<? super Vehicle> action = path.getArrivalAction();
+            final @Nullable Consumer<? super Vehicle> action = path.arrivalAction();
             if (action == null) {
                 move(currentTick);
             } else {
                 action.accept(this);
             }
         } else {
-            Region.Node next = path.getNodes().peek();
+            Region.Node next = path.nodes().peek();
             if (occupied instanceof OccupiedNodeImpl) {
                 vehicleManager.getOccupied(region.getEdge(((OccupiedNodeImpl<?>) occupied).getComponent(), next)).addVehicle(this, currentTick);
             } else if (occupied instanceof OccupiedEdgeImpl) {
                 vehicleManager.getOccupied(next).addVehicle(this, currentTick);
-                path.getNodes().pop();
+                path.nodes().pop();
             } else {
                 throw new AssertionError("Component must be either node or component");
             }
@@ -119,11 +157,17 @@ class VehicleImpl implements Vehicle {
     }
 
     void loadOrder(ConfirmedOrder order) {
-        crash(); // TODO: H5.2 - remove if implemented
+        double capacityNeeded = getCurrentWeight() + order.getWeight();
+
+        if (capacityNeeded > capacity) {
+            throw new VehicleOverloadedException(this, capacityNeeded);
+        }
+
+        orders.add(order);
     }
 
     void unloadOrder(ConfirmedOrder order) {
-        crash(); // TODO: H5.2 - remove if implemented
+        orders.remove(order);
     }
 
     @Override
@@ -141,28 +185,7 @@ class VehicleImpl implements Vehicle {
             + ')';
     }
 
-    /**
-     * The path is expected to exclude the start node and to include the end node.
-     * If the start node and the end node are the same, the path should be empty.
-     */
-    private static class PathImpl implements Path {
+    private record PathImpl(Deque<Region.Node> nodes, Consumer<? super Vehicle> arrivalAction) implements Path {
 
-        private final Deque<Region.Node> nodes;
-        private final Consumer<? super Vehicle> arrivalAction;
-
-        private PathImpl(Deque<Region.Node> nodes, Consumer<? super Vehicle> arrivalAction) {
-            this.nodes = nodes;
-            this.arrivalAction = arrivalAction;
-        }
-
-        @Override
-        public Deque<Region.Node> getNodes() {
-            return nodes;
-        }
-
-        @Override
-        public Consumer<? super Vehicle> getArrivalAction() {
-            return arrivalAction;
-        }
     }
 }

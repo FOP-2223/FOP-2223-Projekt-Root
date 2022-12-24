@@ -1,24 +1,43 @@
 package projekt.delivery.rating;
 
+import projekt.delivery.event.DeliverOrderEvent;
 import projekt.delivery.event.Event;
+import projekt.delivery.event.OrderReceivedEvent;
+import projekt.delivery.routing.ConfirmedOrder;
+import projekt.delivery.simulation.Simulation;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import static org.tudalgo.algoutils.student.Student.crash;
-
+/**
+ * Rates the observed {@link Simulation} based on the amount of delivered orders.<p>
+ *
+ * To create a new {@link AmountDeliveredRater} use {@code AmountDeliveredRater.Factory.builder()...build();}.
+ */
 public class AmountDeliveredRater implements Rater {
 
     public static final RatingCriteria RATING_CRITERIA = RatingCriteria.AMOUNT_DELIVERED;
 
+    private long ordersCount = 0;
+    private final Set<ConfirmedOrder> pendingOrders = new HashSet<>();
+
     private final double factor;
 
-    public AmountDeliveredRater(double factor) {
+    private AmountDeliveredRater(double factor) {
         this.factor = factor;
     }
 
     @Override
     public double getScore() {
-        return crash(); // TODO: H8.1 - remove if implemented
+        long undeliveredOrders = pendingOrders.size();
+        double maxUndeliveredOrders = ordersCount * (1 - factor);
+
+        if (undeliveredOrders > maxUndeliveredOrders || maxUndeliveredOrders == 0) {
+            return 0;
+        }
+
+        return 1 - (undeliveredOrders / maxUndeliveredOrders);
     }
 
     @Override
@@ -28,14 +47,35 @@ public class AmountDeliveredRater implements Rater {
 
     @Override
     public void onTick(List<Event> events, long tick) {
-        crash(); // TODO: H8.1 - remove if implemented
+        events.stream()
+            .filter(DeliverOrderEvent.class::isInstance)
+            .map(DeliverOrderEvent.class::cast)
+            .forEach(deliverOrderEvent -> {
+                ConfirmedOrder order = deliverOrderEvent.getOrder();
+
+                if (!pendingOrders.remove(order)) {
+                    throw new AssertionError("DeliverOrderEvent before OrderReceivedEvent");
+                }
+            });
+
+        events.stream()
+            .filter(OrderReceivedEvent.class::isInstance)
+            .map(OrderReceivedEvent.class::cast)
+            .map(OrderReceivedEvent::getOrder)
+            .forEach(order -> {
+                pendingOrders.add(order);
+                ordersCount++;
+            });
     }
 
+    /**
+     * A {@link Rater.Factory} for creating a new {@link AmountDeliveredRater}.
+     */
     public static class Factory implements Rater.Factory {
 
-        private final double factor;
+        public final double factor;
 
-        Factory(double factor) {
+        private Factory(double factor) {
             this.factor = factor;
         }
 
@@ -44,11 +84,23 @@ public class AmountDeliveredRater implements Rater {
             return new AmountDeliveredRater(factor);
         }
 
+        /**
+         * Creates a new {@link AmountDeliveredRater.FactoryBuilder}.
+         * @return The created {@link AmountDeliveredRater.FactoryBuilder}.
+         */
+        public static AmountDeliveredRater.FactoryBuilder builder() {
+            return new AmountDeliveredRater.FactoryBuilder();
+        }
     }
 
+    /**
+     * A {@link Rater.FactoryBuilder} form constructing a new {@link AmountDeliveredRater.Factory}.
+     */
     public static class FactoryBuilder implements Rater.FactoryBuilder {
 
-        private double factor = 0.99;
+        public double factor = 0.99;
+
+        private FactoryBuilder() {}
 
         @Override
         public Rater.Factory build() {

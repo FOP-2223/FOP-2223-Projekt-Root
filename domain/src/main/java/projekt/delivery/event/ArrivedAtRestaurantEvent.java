@@ -4,6 +4,9 @@ import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
 import projekt.delivery.routing.VehicleManager;
 
+/**
+ * Indicates that a {@link Vehicle} arrived at a {@link Region.Restaurant}.
+ */
 public interface ArrivedAtRestaurantEvent extends ArrivedAtNodeEvent {
 
     static ArrivedAtRestaurantEvent of(
@@ -15,6 +18,10 @@ public interface ArrivedAtRestaurantEvent extends ArrivedAtNodeEvent {
         return new ArrivedAtRestaurantEventImpl(tick, vehicle, restaurant, lastEdge);
     }
 
-    public VehicleManager.OccupiedRestaurant getRestaurant();
+    /**
+     * Returns the {@link Region.Restaurant} the {@link Vehicle} arrived at.
+     * @return The {@link Region.Restaurant} the {@link Vehicle} arrived at.
+     */
+    VehicleManager.OccupiedRestaurant getRestaurant();
 
 }

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import projekt.ComparableUnitTests;
 import projekt.ObjectUnitTests;
 
-import static org.tudalgo.algoutils.student.Student.crash;
+import java.util.function.Function;
 
 public class LocationUnitTests {
 
@@ -14,37 +14,51 @@ public class LocationUnitTests {
 
     @BeforeAll
     public static void initialize() {
-        crash(); // TODO: H12.3 - remove if implemented
+        Function<Integer, Location> testObjectFactory = i -> {
+            if (i < 5) {
+                return new Location(0, i);
+            } else if (i < 10){
+                return new Location(i - 5, i);
+            }
+            return new Location(i, 0);
+        };
+
+        objectUnitTests = new ObjectUnitTests<>(testObjectFactory, o ->
+            String.format("(%d, %d)", o.getX(), o.getY()));
+        comparableUnitTests = new ComparableUnitTests<>(testObjectFactory);
+
+        objectUnitTests.initialize(10);
+        comparableUnitTests.initialize(10);
     }
 
     @Test
-    void testEquals() {
-        crash(); // TODO: H12.3 - remove if implemented
+    public void testEquals() {
+        objectUnitTests.testEquals();
     }
 
     @Test
-    void testHashCode() {
-        crash(); // TODO: H12.3 - remove if implemented
+    public void testHashCode() {
+        objectUnitTests.testHashCode();
     }
 
     @Test
-    void testToString() {
-        crash(); // TODO: H12.3 - remove if implemented
+    public void testToString() {
+        objectUnitTests.testToString();
     }
 
     @Test
-    void testBiggerThen() {
-        crash(); // TODO: H12.3 - remove if implemented
+    public void testBiggerThen() {
+        comparableUnitTests.testBiggerThen();
     }
 
     @Test
-    void testAsBigAs() {
-        crash(); // TODO: H12.3 - remove if implemented
+    public void testAsBigAs() {
+        comparableUnitTests.testAsBigAs();
     }
 
     @Test
-    void testLessThen() {
-        crash(); // TODO: H12.3 - remove if implemented
+    public void testLessThen() {
+        comparableUnitTests.testLessThen();
     }
 
 }

@@ -1,30 +1,44 @@
 package projekt.delivery.runner;
 
+import projekt.delivery.archetype.ProblemArchetype;
 import projekt.delivery.archetype.ProblemGroup;
 import projekt.delivery.rating.RatingCriteria;
+import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.service.DeliveryService;
 import projekt.delivery.simulation.Simulation;
 import projekt.delivery.simulation.SimulationConfig;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
-import static org.tudalgo.algoutils.student.Student.crash;
-
-public class BasicRunner implements Runner {
+/**
+ * A basic {@link Runner} that only executes the simulation and returns the result.
+ */
+public class BasicRunner extends AbstractRunner {
 
     @Override
-    public Map<RatingCriteria, Double> run(
-        ProblemGroup problemGroup,
-        SimulationConfig simulationConfig,
-        int simulationRuns) {
+    public Map<RatingCriteria, Double> run(ProblemGroup problemGroup,
+                                           SimulationConfig simulationConfig,
+                                           int simulationRuns,
+                                           DeliveryService.Factory deliveryServiceFactory) {
 
-        return crash(); // TODO: H10.1 - remove if implemented
-    }
+        Map<ProblemArchetype, Simulation> simulations = createSimulations(problemGroup, simulationConfig, deliveryServiceFactory);
+        Map<RatingCriteria, Double> results = new HashMap<>();
 
-    private List<Simulation> createSimulations(
-        ProblemGroup problemGroup,
-        SimulationConfig simulationConfig) {
+        for (RatingCriteria criteria : problemGroup.ratingCriteria()) {
+            results.put(criteria, 0.0);
+        }
 
-        return crash(); // TODO: H10.1 - remove if implemented
+        for (int i = 0; i < simulationRuns; i++) {
+            for (Map.Entry<ProblemArchetype, Simulation> entry : simulations.entrySet()) {
+                entry.getValue().runSimulation(entry.getKey().simulationLength());
+                results.replaceAll((criteria, rating) -> results.get(criteria) + entry.getValue().getRatingForCriterion(criteria));
+            }
+        }
+
+        results.replaceAll((criteria, rating) -> (results.get(criteria) / (simulationRuns * problemGroup.problems().size())));
+
+        return results;
     }
 }
