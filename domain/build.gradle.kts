@@ -10,7 +10,7 @@ dependencies {
 
 tasks {
     test {
-        val runDir = File("../build/run")
+        val runDir = File("build/run")
         doFirst {
             runDir.mkdirs()
         }
