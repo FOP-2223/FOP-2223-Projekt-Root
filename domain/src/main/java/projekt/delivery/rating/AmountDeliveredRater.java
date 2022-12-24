@@ -1,14 +1,11 @@
 package projekt.delivery.rating;
 
-import projekt.delivery.event.DeliverOrderEvent;
 import projekt.delivery.event.Event;
-import projekt.delivery.event.OrderReceivedEvent;
-import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.simulation.Simulation;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import static org.tudalgo.algoutils.student.Student.crash;
 
 /**
  * Rates the observed {@link Simulation} based on the amount of delivered orders.<p>
@@ -19,9 +16,6 @@ public class AmountDeliveredRater implements Rater {
 
     public static final RatingCriteria RATING_CRITERIA = RatingCriteria.AMOUNT_DELIVERED;
 
-    private long ordersCount = 0;
-    private final Set<ConfirmedOrder> pendingOrders = new HashSet<>();
-
     private final double factor;
 
     private AmountDeliveredRater(double factor) {
@@ -30,14 +24,7 @@ public class AmountDeliveredRater implements Rater {
 
     @Override
     public double getScore() {
-        long undeliveredOrders = pendingOrders.size();
-        double maxUndeliveredOrders = ordersCount * (1 - factor);
-
-        if (undeliveredOrders > maxUndeliveredOrders || maxUndeliveredOrders == 0) {
-            return 0;
-        }
-
-        return 1 - (undeliveredOrders / maxUndeliveredOrders);
+        return crash(); // TODO: H8.1 - remove if implemented
     }
 
     @Override
@@ -47,25 +34,7 @@ public class AmountDeliveredRater implements Rater {
 
     @Override
     public void onTick(List<Event> events, long tick) {
-        events.stream()
-            .filter(DeliverOrderEvent.class::isInstance)
-            .map(DeliverOrderEvent.class::cast)
-            .forEach(deliverOrderEvent -> {
-                ConfirmedOrder order = deliverOrderEvent.getOrder();
-
-                if (!pendingOrders.remove(order)) {
-                    throw new AssertionError("DeliverOrderEvent before OrderReceivedEvent");
-                }
-            });
-
-        events.stream()
-            .filter(OrderReceivedEvent.class::isInstance)
-            .map(OrderReceivedEvent.class::cast)
-            .map(OrderReceivedEvent::getOrder)
-            .forEach(order -> {
-                pendingOrders.add(order);
-                ordersCount++;
-            });
+        crash(); // TODO: H8.1 - remove if implemented
     }
 
     /**

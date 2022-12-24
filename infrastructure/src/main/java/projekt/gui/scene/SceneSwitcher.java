@@ -89,13 +89,6 @@ public final class SceneSwitcher {
 
         MAIN_MENU(() -> SceneAndController.fromScene(new MainMenuScene())),
 
-        PROBLEM_CREATION(() -> SceneAndController.fromScene(new ProblemCreationScene())),
-
-        VEHICLE_MANAGER_CREATION(() -> SceneAndController.fromScene(new VehicleManagerCreationScene())),
-
-        ORDER_CREATION(() -> SceneAndController.fromScene(new OrderGeneratorFactoryCreationScene())),
-
-        RATER_CREATION(() -> SceneAndController.fromScene(new RaterFactoryMapCreationScene())),
         SIMULATION(() -> SceneAndController.fromScene(new SimulationScene())),
 
         RATING(() -> SceneAndController.fromScene(new RaterScene()));

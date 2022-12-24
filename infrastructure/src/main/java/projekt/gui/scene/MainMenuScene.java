@@ -1,8 +1,10 @@
 package projekt.gui.scene;
 
-import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
@@ -16,15 +18,12 @@ import projekt.delivery.service.DeliveryService;
 import projekt.delivery.service.OurDeliveryService;
 import projekt.delivery.simulation.SimulationConfig;
 import projekt.gui.controller.MainMenuSceneController;
-import projekt.gui.pane.ProblemArchetypeOverviewPane;
 import projekt.gui.runner.GUIRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainMenuScene extends MenuScene<MainMenuSceneController> {
 
-    private TableView<ProblemArchetype> table;
     private int simulationRuns = 1;
     private DeliveryService.Factory deliveryServiceFactory;
 
@@ -34,13 +33,11 @@ public class MainMenuScene extends MenuScene<MainMenuSceneController> {
 
     @Override
     public void initComponents() {
-        root.setRight(new ProblemArchetypeOverviewPane(problems.get(0)));
         root.setCenter(createOptionsVBox());
-        table.setItems(FXCollections.observableArrayList(problems));
     }
 
     /**
-     * Initializes th
+     * Initializes this {@link MainMenuScene} with the {@link ProblemArchetype} presets in the resource dir.
      */
     public void init() {
         super.init(readProblemPresets());
@@ -55,18 +52,8 @@ public class MainMenuScene extends MenuScene<MainMenuSceneController> {
         optionsVbox.getChildren().addAll(
             createStartSimulationButton(),
             createSimulationRunsHBox(),
-            createDeliveryServiceChoiceBox(),
-            table = createProblemArchetypeTableView(),
-            createRemoveButton(),
-            createAddButton()
-        );
-
-        table.requestFocus();
-        table.getSelectionModel().select(0);
-        table.getFocusModel().focus(0);
-
-        table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-            root.setRight(new ProblemArchetypeOverviewPane(newValue))
+            createDeliveryServiceChoiceBox()
+            //TODO H11.2
         );
 
         optionsVbox.getChildren().stream()
@@ -152,27 +139,6 @@ public class MainMenuScene extends MenuScene<MainMenuSceneController> {
         deliveryServiceVBox.getChildren().addAll(label, choiceBox);
 
         return deliveryServiceVBox;
-    }
-
-    private Button createRemoveButton() {
-        Button removeButton = new Button("Remove ProblemArchetype");
-        removeButton.setOnAction(e -> {
-            ProblemArchetype selectedItem = table.getSelectionModel().getSelectedItem();
-            table.getItems().remove(selectedItem);
-            problems.remove(selectedItem);
-        });
-
-        return removeButton;
-    }
-
-    private Button createAddButton() {
-        Button addButton = new Button("Add Problem Archetype");
-        addButton.setOnAction(e -> {
-            ProblemCreationScene scene = (ProblemCreationScene) SceneSwitcher.loadScene(SceneSwitcher.SceneType.PROBLEM_CREATION, getController().getStage());
-            scene.init(new ArrayList<>(problems), null, null, null, null, null);
-        });
-
-        return addButton;
     }
 
     @Override

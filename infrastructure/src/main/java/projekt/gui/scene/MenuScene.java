@@ -1,12 +1,12 @@
 package projekt.gui.scene;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -85,6 +85,34 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
     }
 
     /**
+     * Initializes this {@link MainMenuScene} with the given {@link ProblemArchetype}s.
+     *
+     * @param problems The current selection of {@link ProblemArchetype}s
+     */
+    public final void init(List<ProblemArchetype> problems) {
+        this.problems = problems;
+        initComponents();
+        initReturnButton();
+    }
+
+    /**
+     * Initializes all components of this {@link MainMenuScene}.
+     */
+    public abstract void initComponents();
+
+    /**
+     * Initializes the return button of this {@link MainMenuScene}.
+     */
+    public abstract void initReturnButton();
+
+    @Override
+    public SC getController() {
+        return controller;
+    }
+
+    // --- common util --- //
+
+    /**
      * Creates a {@link TextField} that only accepts long values.
      *
      * @param valueChangeConsumer A {@link Consumer} that will be called when the entered value changes.
@@ -122,24 +150,24 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
      * @return The created {@link TextField}
      */
     public static TextField createPositiveIntegerTextField(Consumer<Integer> valueChangeConsumer, Integer initialValue) {
-        TextField positivIntegerTextField = new TextField();
-        positivIntegerTextField.setText(initialValue.toString());
-        positivIntegerTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+        TextField positiveIntegerTextField = new TextField();
+        positiveIntegerTextField.setText(initialValue.toString());
+        positiveIntegerTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
-                positivIntegerTextField.setText(oldValue);
+                positiveIntegerTextField.setText(oldValue);
                 return;
             }
 
             if (newValue.equals("")) return;
 
             try {
-                valueChangeConsumer.accept(Integer.parseInt(positivIntegerTextField.getText()));
+                valueChangeConsumer.accept(Integer.parseInt(positiveIntegerTextField.getText()));
             } catch (NumberFormatException exc) {
-                positivIntegerTextField.setText(oldValue);
+                positiveIntegerTextField.setText(oldValue);
             }
         });
 
-        return positivIntegerTextField;
+        return positiveIntegerTextField;
     }
 
     /**
@@ -147,7 +175,7 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
      *
      * @param valueChangeConsumer A {@link Consumer} that will be called when the entered value changes.
      *                            It will be invoked with the new value.
-     * @param initialValue        The intial value of the {@link TextField}.
+     * @param initialValue        The initial value of the {@link TextField}.
      * @return The created {@link TextField}
      */
     public static TextField createIntegerTextField(Consumer<Integer> valueChangeConsumer, Integer initialValue) {
@@ -200,9 +228,6 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
         return doubleTextField;
     }
 
-
-    // --- common util --- //
-
     /**
      * Creates an empty {@link Region} that always grows inside a {@link HBox}.<p>
      * It can be used for evenly space the components inside a {@link HBox} by putting an intermediate region between each Node.
@@ -217,59 +242,6 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
         HBox.setHgrow(intermediateRegion, Priority.ALWAYS);
 
         return intermediateRegion;
-    }
-
-    public static Label createIndentedLabel(String label) {
-        return new Label("         " + label);
-    }
-
-    public static void limitWidth(ObservableList<Node> nodes, int maxWidth) {
-        for (Node child : nodes) {
-            if (child instanceof Region region) {
-                region.setMaxWidth(maxWidth);
-            }
-        }
-    }
-
-    public static TableView<ProblemArchetype> createProblemArchetypeTableView() {
-        TableView<ProblemArchetype> table = new TableView<>();
-        table.setMaxWidth(200);
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        table.setMinHeight(200);
-
-        TableColumn<ProblemArchetype, String> column = new TableColumn<>("ProblemArchetype");
-        column.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().name()));
-        column.setMinWidth(200);
-
-        table.getColumns().add(column);
-
-        return table;
-    }
-
-    /**
-     * Initializes this {@link MainMenuScene} with the given {@link ProblemArchetype}s.
-     *
-     * @param problems The current selection of {@link ProblemArchetype}s
-     */
-    public final void init(List<ProblemArchetype> problems) {
-        this.problems = problems;
-        initComponents();
-        initReturnButton();
-    }
-
-    /**
-     * Initializes all components of this {@link MainMenuScene}.
-     */
-    public abstract void initComponents();
-
-    /**
-     * Initializes the return button of this {@link MainMenuScene}.
-     */
-    public abstract void initReturnButton();
-
-    @Override
-    public SC getController() {
-        return controller;
     }
 
     /**

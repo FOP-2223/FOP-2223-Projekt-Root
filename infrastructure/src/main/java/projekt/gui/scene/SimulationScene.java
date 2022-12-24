@@ -17,7 +17,6 @@ import projekt.gui.controller.ControlledScene;
 import projekt.gui.controller.SimulationSceneController;
 import projekt.gui.pane.ControlsPane;
 import projekt.gui.pane.MapPane;
-import projekt.gui.pane.VehicleInfoPane;
 import projekt.gui.runner.GUIRunner;
 
 import java.util.List;
@@ -28,7 +27,6 @@ public class SimulationScene extends Scene implements SimulationListener, Contro
     private final SimulationSceneController controller;
 
     private MapPane mapPane;
-    private VehicleInfoPane vehicleInfoPane;
     private ControlsPane controlsPane;
 
     public SimulationScene() {
@@ -52,8 +50,7 @@ public class SimulationScene extends Scene implements SimulationListener, Contro
 
         root.setCenter(mapPane);
         root.setBottom(titledControlsPane);
-        vehicleInfoPane = new VehicleInfoPane(simulation);
-        root.setLeft(vehicleInfoPane);
+        //TODO H11.4
 
         //stop the simulation when closing the window
         controller.getStage().setOnCloseRequest(e -> {
@@ -81,7 +78,6 @@ public class SimulationScene extends Scene implements SimulationListener, Contro
                 .map(ArrivedAtEdgeEvent.class::cast)
                 .forEach(arrivedAtEdgeEvent -> mapPane.redrawVehicle(arrivedAtEdgeEvent.getVehicle()));
 
-            vehicleInfoPane.refresh();
             controlsPane.updateTickLabel(tick);
         });
 

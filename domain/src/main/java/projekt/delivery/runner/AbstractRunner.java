@@ -2,15 +2,14 @@ package projekt.delivery.runner;
 
 import projekt.delivery.archetype.ProblemArchetype;
 import projekt.delivery.archetype.ProblemGroup;
-import projekt.delivery.routing.VehicleManager;
 import projekt.delivery.service.DeliveryService;
 import projekt.delivery.simulation.BasicDeliverySimulation;
 import projekt.delivery.simulation.Simulation;
 import projekt.delivery.simulation.SimulationConfig;
 
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static org.tudalgo.algoutils.student.Student.crash;
 
 public abstract class AbstractRunner implements Runner {
 
@@ -27,14 +26,7 @@ public abstract class AbstractRunner implements Runner {
                                                                   SimulationConfig simulationConfig,
                                                                   DeliveryService.Factory deliveryServiceFactory) {
 
-        return problemGroup.problems().stream().collect(Collectors.toMap(
-            problem -> problem,
-            problem -> new BasicDeliverySimulation(
-                simulationConfig,
-                problem.raterFactoryMap(),
-                deliveryServiceFactory.create(problem.vehicleManager()),
-                problem.orderGeneratorFactory())
-        ));
+        return crash(); // TODO: H10.1 - remove if implemented
     }
 
 }

@@ -1,6 +1,5 @@
 package projekt.gui.scene;
 
-import javafx.scene.chart.*;
 import projekt.delivery.archetype.ProblemArchetype;
 import projekt.delivery.rating.RatingCriteria;
 import projekt.gui.controller.RaterSceneController;
@@ -23,24 +22,7 @@ public class RaterScene extends MenuScene<RaterSceneController> {
 
     @Override
     public void initComponents() {
-        //Configuring category and NumberAxis
-        CategoryAxis xaxis = new CategoryAxis();
-        Axis<Number> yaxis = new NumberAxis(0.0, 1, 0.05);
-        yaxis.setLabel("Score");
-
-        //Configuring BarChart
-        BarChart<String, Number> bar = new BarChart<>(xaxis, yaxis);
-        root.setCenter(bar);
-
-        //Add simulation scores to the XYSeries
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        for (Map.Entry<RatingCriteria, Double> entry : result.entrySet()) {
-            series.getData().add(new XYChart.Data<>(entry.getKey().name(), entry.getValue()));
-        }
-
-        //Adding series to the barchart
-        bar.getData().add(series);
-        bar.setLegendVisible(false);
+        //TODO H11.3
     }
 
     @Override
