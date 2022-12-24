@@ -95,4 +95,9 @@ public class BogoDeliveryService extends AbstractDeliveryService {
         super.reset();
         pendingOrders.clear();
     }
+
+    public interface Factory extends DeliveryService.Factory {
+
+        BogoDeliveryService create(VehicleManager vehicleManager);
+    }
 }

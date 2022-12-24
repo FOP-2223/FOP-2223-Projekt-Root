@@ -19,22 +19,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGeneratorFactoryCreationSceneController>{
+public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGeneratorFactoryCreationSceneController> {
 
+    private final List<HBox> options = new ArrayList<>();
+    private final Map<String, Number> values = new HashMap<>();
+    private final CheckBox seedCheckBox = new CheckBox();
+    private final Button applyButton = new Button("Apply");
+    private final ChoiceBox<String> choiceBox = new ChoiceBox<>();
     private String name;
     private Long simulationLength;
     private VehicleManager vehicleManager;
     private OrderGenerator.FactoryBuilder orderGeneratorFactoryBuilder;
     private Map<RatingCriteria, Rater.FactoryBuilder> raterFactoryBuilderMap;
-
     private VBox vBox = new VBox();
-    private final List<HBox> options = new ArrayList<>();
-    private final Map<String, Number> values = new HashMap<>();
-
-    private final CheckBox seedCheckBox = new CheckBox();
     private TextField seedTextField;
-    private final Button applyButton = new Button("Apply");
-    private final ChoiceBox<String> choiceBox = new ChoiceBox<>();
 
     public OrderGeneratorFactoryCreationScene() {
         super(new OrderGeneratorFactoryCreationSceneController(), "Edit OrderGenerator");
@@ -167,12 +165,12 @@ public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGenerator
 
         HBox maxWeightHBox = new HBox();
         Label maxWeightLabel = createIndentedLabel("Max Weight");
-        TextField maxWeightTextField = createDoubleTextField(value -> values.put("maxWeight", value), (Double) values.get("maxWeight"));
+        TextField maxWeightTextField = createPositiveDoubleTextField(value -> values.put("maxWeight", value), (Double) values.get("maxWeight"));
         maxWeightHBox.getChildren().addAll(maxWeightLabel, createIntermediateRegion(0), maxWeightTextField);
 
         HBox varianceHBox = new HBox();
         Label varianceLabel = createIndentedLabel("Variance");
-        TextField varianceTextField = createDoubleTextField(value -> values.put("variance", value), (Double) values.get("variance"));
+        TextField varianceTextField = createPositiveDoubleTextField(value -> values.put("variance", value), (Double) values.get("variance"));
         varianceHBox.getChildren().addAll(varianceLabel, createIntermediateRegion(0), varianceTextField);
 
         HBox lastTickHBox = new HBox();
@@ -186,7 +184,8 @@ public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGenerator
         this.seedTextField = seedTextField;
         seedHBox.getChildren().addAll(seedCheckBox, seedLabel, createIntermediateRegion(0), seedTextField);
 
-        if (orderGeneratorFactoryBuilder == null || ((FridayOrderGenerator.FactoryBuilder) orderGeneratorFactoryBuilder).seed == -1) seedTextField.setDisable(true);
+        if (orderGeneratorFactoryBuilder == null || ((FridayOrderGenerator.FactoryBuilder) orderGeneratorFactoryBuilder).seed == -1)
+            seedTextField.setDisable(true);
 
         options.addAll(List.of(orderCountHBox, deliveryIntervalHBox, maxWeightHBox, varianceHBox, lastTickHBox, seedHBox));
 

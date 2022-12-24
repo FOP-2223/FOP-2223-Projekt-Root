@@ -14,28 +14,6 @@ public record SceneAndController(Scene scene, @Nullable SceneController controll
     // --Getters and Setters-- //
 
     /**
-     * Gets the {@link Scene}.
-     *
-     * @return The {@link Scene}.
-     * @see #scene
-     */
-    public Scene getScene() {
-        return scene;
-    }
-
-    /**
-     * Gets the {@link SceneController}.
-     *
-     * @return The {@link SceneController}.
-     * @see #controller
-     */
-    public @Nullable SceneController getController() {
-        return controller;
-    }
-
-    // --Utility Methods-- //
-
-    /**
      * Creates a new {@link SceneAndController} with the given {@link Scene}.
      * If the {@link Scene} is a {@link ControlledScene}, the {@link SceneController} is retrieved from it.
      * Otherwise, the {@link SceneController} will be null.
@@ -45,5 +23,27 @@ public record SceneAndController(Scene scene, @Nullable SceneController controll
      */
     public static SceneAndController fromScene(final Scene scene) {
         return new SceneAndController(scene, scene instanceof ControlledScene<?> cs ? cs.getController() : null);
+    }
+
+    /**
+     * Gets the {@link Scene}.
+     *
+     * @return The {@link Scene}.
+     * @see #scene
+     */
+    public Scene getScene() {
+        return scene;
+    }
+
+    // --Utility Methods-- //
+
+    /**
+     * Gets the {@link SceneController}.
+     *
+     * @return The {@link SceneController}.
+     * @see #controller
+     */
+    public @Nullable SceneController getController() {
+        return controller;
     }
 }

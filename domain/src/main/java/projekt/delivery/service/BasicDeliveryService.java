@@ -90,4 +90,9 @@ public class BasicDeliveryService extends AbstractDeliveryService {
         super.reset();
         pendingOrders.clear();
     }
+
+    public interface Factory extends DeliveryService.Factory {
+
+        BasicDeliveryService create(VehicleManager vehicleManager);
+    }
 }

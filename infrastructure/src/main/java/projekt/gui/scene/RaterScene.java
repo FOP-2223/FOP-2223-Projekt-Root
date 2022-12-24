@@ -13,7 +13,7 @@ public class RaterScene extends MenuScene<RaterSceneController> {
     private Map<RatingCriteria, Double> result;
 
     public RaterScene() {
-        super(new RaterSceneController(), "Simulation Score","projekt/gui/raterStyle.css" );
+        super(new RaterSceneController(), "Simulation Score", "projekt/gui/raterStyle.css");
     }
 
     public void init(List<ProblemArchetype> problems, Map<RatingCriteria, Double> result) {
@@ -24,8 +24,8 @@ public class RaterScene extends MenuScene<RaterSceneController> {
     @Override
     public void initComponents() {
         //Configuring category and NumberAxis
-        CategoryAxis xaxis= new CategoryAxis();
-        Axis<Number> yaxis = new NumberAxis(0.0,1,0.05);
+        CategoryAxis xaxis = new CategoryAxis();
+        Axis<Number> yaxis = new NumberAxis(0.0, 1, 0.05);
         yaxis.setLabel("Score");
 
         //Configuring BarChart

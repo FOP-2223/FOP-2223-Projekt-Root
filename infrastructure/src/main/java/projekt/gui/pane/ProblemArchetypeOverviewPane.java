@@ -57,6 +57,39 @@ public class ProblemArchetypeOverviewPane extends Pane {
         getChildren().add(scrollPane);
     }
 
+    private static OrderGenerator.FactoryBuilder orderGeneratorFactoryToFactoryBuilder(OrderGenerator.Factory factory) {
+        if (factory instanceof FridayOrderGenerator.Factory fridayOrderGenerator) {
+            return FridayOrderGenerator.Factory.builder()
+                .setOrderCount(fridayOrderGenerator.orderCount)
+                .setDeliveryInterval(fridayOrderGenerator.deliveryInterval)
+                .setMaxWeight(fridayOrderGenerator.maxWeight)
+                .setVariance(fridayOrderGenerator.variance)
+                .setLastTick(fridayOrderGenerator.lastTick)
+                .setSeed(fridayOrderGenerator.seed);
+        } else {
+            return new EmptyOrderGenerator.FactoryBuilder();
+        }
+    }
+
+    private static Map<RatingCriteria, Rater.FactoryBuilder> raterFactoryMapToFactoryBuilder(Map<RatingCriteria, Rater.Factory> raterFactoryMap) {
+        Map<RatingCriteria, Rater.FactoryBuilder> raterFactoryBuilderMap = new HashMap<>();
+
+        for (Map.Entry<RatingCriteria, Rater.Factory> entry : raterFactoryMap.entrySet()) {
+            if (entry.getValue() instanceof InTimeRater.Factory inTimeRater) {
+                raterFactoryBuilderMap.put(entry.getKey(), InTimeRater.Factory.builder()
+                    .setIgnoredTicksOff(inTimeRater.ignoredTicksOff)
+                    .setMaxTicksOff(inTimeRater.maxTicksOff));
+            } else if (entry.getValue() instanceof AmountDeliveredRater.Factory amountDeliveredFactory) {
+                raterFactoryBuilderMap.put(entry.getKey(), AmountDeliveredRater.Factory.builder()
+                    .setFactor(amountDeliveredFactory.factor));
+            } else if (entry.getValue() instanceof TravelDistanceRater.Factory travelDistanceFactory) {
+                raterFactoryBuilderMap.put(entry.getKey(), TravelDistanceRater.Factory.builder()
+                    .setFactor(travelDistanceFactory.factor));
+            }
+        }
+
+        return raterFactoryBuilderMap;
+    }
 
     private List<HBox> createNameProperties(String name) {
         List<HBox> properties = new ArrayList<>();
@@ -125,7 +158,7 @@ public class ProblemArchetypeOverviewPane extends Pane {
         return properties;
     }
 
-    private List<HBox> createRaterFactoryMapProperties(Map<RatingCriteria, Rater.FactoryBuilder> raterFactoryMap)  {
+    private List<HBox> createRaterFactoryMapProperties(Map<RatingCriteria, Rater.FactoryBuilder> raterFactoryMap) {
         List<HBox> properties = new ArrayList<>();
 
         if (raterFactoryMap == null) {
@@ -174,39 +207,5 @@ public class ProblemArchetypeOverviewPane extends Pane {
         box.getChildren().addAll(nameLabel, MenuScene.createIntermediateRegion(WIDTH_BETWEEN_VALUE), valueLabel);
 
         return box;
-    }
-
-    private static OrderGenerator.FactoryBuilder orderGeneratorFactoryToFactoryBuilder(OrderGenerator.Factory factory) {
-        if (factory instanceof FridayOrderGenerator.Factory fridayOrderGenerator) {
-            return FridayOrderGenerator.Factory.builder()
-                .setOrderCount(fridayOrderGenerator.orderCount)
-                .setDeliveryInterval(fridayOrderGenerator.deliveryInterval)
-                .setMaxWeight(fridayOrderGenerator.maxWeight)
-                .setVariance(fridayOrderGenerator.variance)
-                .setLastTick(fridayOrderGenerator.lastTick)
-                .setSeed(fridayOrderGenerator.seed);
-        } else {
-            return new EmptyOrderGenerator.FactoryBuilder();
-        }
-    }
-
-    private static Map<RatingCriteria, Rater.FactoryBuilder> raterFactoryMapToFactoryBuilder(Map<RatingCriteria, Rater.Factory> raterFactoryMap) {
-        Map<RatingCriteria, Rater.FactoryBuilder> raterFactoryBuilderMap = new HashMap<>();
-
-        for (Map.Entry<RatingCriteria, Rater.Factory> entry : raterFactoryMap.entrySet()) {
-            if (entry.getValue() instanceof InTimeRater.Factory inTimeRater) {
-                raterFactoryBuilderMap.put(entry.getKey(), InTimeRater.Factory.builder()
-                    .setIgnoredTicksOff(inTimeRater.ignoredTicksOff)
-                    .setMaxTicksOff(inTimeRater.maxTicksOff));
-            } else if (entry.getValue() instanceof AmountDeliveredRater.Factory amountDeliveredFactory) {
-                raterFactoryBuilderMap.put(entry.getKey(), AmountDeliveredRater.Factory.builder()
-                    .setFactor(amountDeliveredFactory.factor));
-            } else if (entry.getValue() instanceof TravelDistanceRater.Factory travelDistanceFactory) {
-                raterFactoryBuilderMap.put(entry.getKey(), TravelDistanceRater.Factory.builder()
-                    .setFactor(travelDistanceFactory.factor));
-            }
-        }
-
-        return raterFactoryBuilderMap;
     }
 }

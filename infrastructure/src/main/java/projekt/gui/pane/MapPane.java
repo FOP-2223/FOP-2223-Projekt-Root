@@ -1,7 +1,7 @@
 package projekt.gui.pane;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -9,41 +9,44 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import org.jetbrains.annotations.Nullable;
 import projekt.base.Location;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.Vehicle;
+import projekt.delivery.routing.VehicleManager;
 import projekt.gui.TUColors;
-import projekt.gui.Utils;
 
+import javax.imageio.ImageIO;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import static projekt.gui.TUColors.*;
-import static projekt.gui.Utils.getDifference;
-import static projekt.gui.Utils.midPoint;
 
 public class MapPane extends Pane {
 
-    public static final float OUTER_TICKS_WIDTH = .5f;
     public static final float FIVE_TICKS_WIDTH = .125f;
-    public static final float ONE_TICKS_WIDTH = 1f / 32f;
     public static final float TEN_TICKS_WIDTH = .25f;
 
-    private static final java.awt.Color NODE_COLOR = COLOR_0D;
-    private static final java.awt.Color EDGE_COLOR = TUColors.COLOR_0C;
+    private static final Color EDGE_COLOR = TUColors.COLOR_0C;
+
+    private static final Color NODE_COLOR = COLOR_0D;
     private static final double NODE_DIAMETER = 15;
+
     private static final double IMAGE_SIZE = 0.1;
-    private static final java.awt.Color CAR_COLOR = TUColors.COLOR_6C;
-    private static final Image CAR_SELECTED = Utils.loadImage("car.png", CAR_COLOR);
+    private static final Color CAR_COLOR = TUColors.COLOR_6C;
+    private static final Image CAR_IMAGE = loadImage("projekt/gui/scene/car.png", CAR_COLOR);
+
     private static final double SCALE_IN = 1.1;
     private static final double SCALE_OUT = 1 / SCALE_IN;
+    private static final double MAX_SCALE = 100;
+    private static final double MIN_SCALE = 3;
 
     private final AtomicReference<Point2D> lastPoint = new AtomicReference<>();
     private final AffineTransform transformation = new AffineTransform();
@@ -56,24 +59,34 @@ public class MapPane extends Pane {
     private final List<Node> grid = new ArrayList<>();
 
     private Region.Node selectedNode;
-    private Consumer<Region.Node> nodeSelectionHandler;
-    private Consumer<Region.Node> nodeRemoveSelectionHandler;
+    private Consumer<? super Region.Node> nodeSelectionHandler;
+    private Consumer<? super Region.Node> nodeRemoveSelectionHandler;
 
     private Region.Edge selectedEdge;
-    private Consumer<Region.Edge> edgeSelectionHandler;
-    private Consumer<Region.Edge> edgeRemoveSelectionHandler;
+    private Consumer<? super Region.Edge> edgeSelectionHandler;
+    private Consumer<? super Region.Edge> edgeRemoveSelectionHandler;
 
-    private Vehicle selectedVehicle;
-    private Consumer<Vehicle> vehicleSelectionHandler;
-    private Consumer<Vehicle> vehicleRemoveSelectionHandler;
+    private Collection<Vehicle> selectedVehicles;
+    private Consumer<? super Collection<Vehicle>> vehiclesSelectionHandler;
+    private Consumer<? super Collection<Vehicle>> vehiclesRemoveSelectionHandler;
 
-
+    /**
+     * Creates a new, empty {@link MapPane}.
+     */
     public MapPane() {
         this(List.of(), List.of(), List.of());
     }
 
-    public MapPane(Collection<Region.Node> nodes, Collection<Region.Edge> edges, Collection<Vehicle> vehicles) {
-        initListeners();
+    /**
+     * Creates a new {@link MapPane} nad displays the given components.
+     *
+     * @param nodes    The {@link Region.Node}s to display.
+     * @param edges    The {@link Region.Edge}s to display.
+     * @param vehicles The {@link Vehicle}s to display.
+     */
+    public MapPane(Collection<? extends Region.Node> nodes,
+                   Collection<? extends Region.Edge> edges,
+                   Collection<? extends Vehicle> vehicles) {
 
         //TODO make configurable
         transformation.translate(350, 350);
@@ -91,9 +104,412 @@ public class MapPane extends Pane {
             addVehicle(vehicle);
         }
 
+        initListeners();
         drawGrid();
         drawPositionText();
         positionText.setFill(Color.WHITE);
+    }
+
+    // --- Edge Handling --- //
+
+    @Nullable
+    private static Float getStrokeWidth(int i, boolean inverted) {
+        float strokeWidth;
+        if (i % 10 == 0) {
+            strokeWidth = inverted ? TEN_TICKS_WIDTH : FIVE_TICKS_WIDTH;
+        } else if (i % 5 == 0) {
+            strokeWidth = inverted ? FIVE_TICKS_WIDTH : TEN_TICKS_WIDTH;
+        } else {
+            return null;
+        }
+        return strokeWidth;
+    }
+
+    private static Point2D locationToPoint2D(Location location) {
+        return new Point2D.Double(location.getX(), location.getY());
+    }
+
+    private static Point2D getDifference(Point2D p1, Point2D p2) {
+        return new Point2D.Double(p1.getX() - p2.getX(), p1.getY() - p2.getY());
+    }
+
+    private static Point2D midPoint(VehicleManager.Occupied<?> occupied) {
+        if (occupied.getComponent() instanceof Region.Node) {
+            return midPoint(((Region.Node) occupied.getComponent()).getLocation());
+        } else if (occupied.getComponent() instanceof Region.Edge) {
+            return midPoint((Region.Edge) occupied.getComponent());
+        }
+        throw new UnsupportedOperationException("unsupported type of component");
+    }
+
+    private static Point2D midPoint(Location location) {
+        return new Point2D.Double(location.getX(), location.getY());
+    }
+
+    private static Point2D midPoint(Vehicle vehicle) {
+        return midPoint(vehicle.getOccupied());
+    }
+
+    private static Point2D midPoint(Region.Node node) {
+        return midPoint(node.getLocation());
+    }
+
+    private static Point2D midPoint(Region.Edge edge) {
+        var l1 = edge.getNodeA().getLocation();
+        var l2 = edge.getNodeB().getLocation();
+        return new Point2D.Double((l1.getX() + l2.getX()) / 2d, (l1.getY() + l2.getY()) / 2d);
+    }
+
+    // --- Node Handling --- //
+
+    @SuppressWarnings("SameParameterValue")
+    private static Image loadImage(String name, Color color) {
+        try {
+            BufferedImage image = ImageIO.read(Objects.requireNonNull(MapPane.class.getClassLoader().getResource(name)));
+            for (int x = 0; x < image.getWidth(); x++)
+                for (int y = 0; y < image.getHeight(); y++)
+                    if (image.getRGB(x, y) == java.awt.Color.BLACK.getRGB())
+                        image.setRGB(x, y, new java.awt.Color(
+                            (float) color.getRed(),
+                            (float) color.getGreen(),
+                            (float) color.getBlue(),
+                            (float) color.getOpacity())
+                            .getRGB());
+            return SwingFXUtils.toFXImage(image, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Adds an {@link Region.Edge} to this {@link MapPane} and displays it.
+     *
+     * @param edge The {@link Region.Edge} to display.
+     */
+    public void addEdge(Region.Edge edge) {
+        edges.put(edge, drawEdge(edge));
+    }
+
+    /**
+     * Adds the {@link Region.Edge}s to this {@link MapPane} and displays them.
+     *
+     * @param edges The {@link Region.Edge}s to display.
+     */
+    public void addAllEdges(Collection<? extends Region.Edge> edges) {
+        for (Region.Edge edge : edges) {
+            addEdge(edge);
+        }
+    }
+
+    /**
+     * Removes the given {@link Region.Edge} from this {@link MapPane}.
+     *
+     * @param edge The {@link Region.Edge} to remove.
+     */
+    public void removeEdge(Region.Edge edge) {
+        LabeledEdge labeledEdge = edges.remove(edge);
+
+        if (labeledEdge != null) {
+            getChildren().removeAll(labeledEdge.line(), labeledEdge.text());
+        }
+    }
+
+    /**
+     * Returns the {@link Region.Edge} selected by the user by clicking onto it or its name.
+     *
+     * @return The {@link Region.Edge} selected by the user or null if no {@link Region.Edge} is selected.
+     */
+    public Region.Edge getSelectedEdge() {
+        return selectedEdge;
+    }
+
+    /**
+     * Sets the action that is supposed to be executed when the user selects an {@link Region.Edge}.
+     *
+     * @param edgeSelectionHandler The {@link Consumer} that executes the action.
+     *                             The apply method of the {@link Consumer} will be called with
+     *                             the selected {@link Region.Edge} as the parameter.
+     */
+    public void onEdgeSelection(Consumer<? super Region.Edge> edgeSelectionHandler) {
+        this.edgeSelectionHandler = edgeSelectionHandler;
+    }
+
+    /**
+     * Sets the action that is supposed to be executed when the user removes the selection of an {@link Region.Edge}.<p>
+     * When a different {@link Region.Edge} is selected than the previous one only the action set by
+     * {@link #onEdgeSelection(Consumer) will be executed.
+     * <p>
+     *
+     * @param edgeRemoveSelectionHandler The {@link Consumer} that executes the action.
+     *                                   The apply method of the {@link Consumer} will be called with
+     *                                   the previously selected {@link Region.Edge} as the parameter.
+     */
+    public void onEdgeRemoveSelection(Consumer<? super Region.Edge> edgeRemoveSelectionHandler) {
+        this.edgeRemoveSelectionHandler = edgeRemoveSelectionHandler;
+    }
+
+    /**
+     * Updates the position of all {@link Region.Edge}s on this {@link MapPane}.
+     */
+    public void redrawEdges() {
+        for (Region.Edge edge : edges.keySet()) {
+            redrawEdge(edge);
+        }
+    }
+
+    // -- Vehicle Handling --- //
+
+    /**
+     * Updates the position of the given {@link Region.Edge}.
+     *
+     * @param edge The {@link Region.Edge} to update.
+     * @throws IllegalArgumentException If the given {@link Region.Edge} is not part of this {@link MapPane}.
+     */
+    public void redrawEdge(Region.Edge edge) {
+        if (!edges.containsKey(edge)) {
+            throw new IllegalArgumentException("The given edge is not part of this MapPane");
+        }
+
+        Point2D transformedMidPoint = transform(midPoint(edge));
+        Point2D transformedPointA = transform(edge.getNodeA().getLocation());
+        Point2D transformedPointB = transform(edge.getNodeB().getLocation());
+
+        LabeledEdge labeledEdge = edges.get(edge);
+
+        labeledEdge.line().setStartX(transformedPointA.getX());
+        labeledEdge.line().setStartY(transformedPointA.getY());
+
+        labeledEdge.line().setEndX(transformedPointB.getX());
+        labeledEdge.line().setEndY(transformedPointB.getY());
+
+        labeledEdge.text().setX(transformedMidPoint.getX());
+        labeledEdge.text().setY(transformedMidPoint.getY());
+    }
+
+    /**
+     * Adds a {@link Region.Node} to this {@link MapPane} and displays it.
+     *
+     * @param node The {@link Region.Node} to display.
+     */
+    public void addNode(Region.Node node) {
+        nodes.put(node, drawNode(node));
+    }
+
+    /**
+     * Adds the {@link Region.Node}s to this {@link MapPane} and displays them.
+     *
+     * @param nodes The {@link Region.Node}s to display.
+     */
+    public void addAllNodes(Collection<? extends Region.Node> nodes) {
+        for (Region.Node node : nodes) {
+            addNode(node);
+        }
+    }
+
+    /**
+     * Removes the given {@link Region.Node} from this {@link MapPane}.<p>
+     * {@link Region.Edge}s and {@link Vehicle}s connected to the removed {@link Region.Node} will not get removed.
+     *
+     * @param node The {@link Region.Node} to remove.
+     */
+    public void removeNode(Region.Node node) {
+        LabeledNode labeledNode = nodes.remove(node);
+
+        if (labeledNode != null) {
+            getChildren().removeAll(labeledNode.ellipse(), labeledNode.text());
+        }
+    }
+
+    /**
+     * Returns the {@link Region.Node} selected by the user by clicking onto it or its name.
+     *
+     * @return The {@link Region.Node} selected by the user or null if no {@link Region.Node} is selected.
+     */
+    public Region.Node getSelectedNode() {
+        return selectedNode;
+    }
+
+    /**
+     * Sets the action that is supposed to be executed when the user selects an {@link Region.Node}.
+     *
+     * @param nodeSelectionHandler The {@link Consumer} that executes the action.
+     *                             The apply method of the {@link Consumer} will be called with
+     *                             the selected {@link Region.Node} as the parameter.
+     */
+    public void onNodeSelection(Consumer<? super Region.Node> nodeSelectionHandler) {
+        this.nodeSelectionHandler = nodeSelectionHandler;
+    }
+
+    /**
+     * Sets the action that is supposed to be executed when the user removes the selection of an {@link Region.Node}.<p>
+     * When a different {@link Region.Node} is selected than the previous one only the action set by
+     * {@link #onNodeSelection(Consumer)} will be executed.
+     * <p>
+     *
+     * @param nodeRemoveSelectionHandler The {@link Consumer} that executes the action.
+     *                                   The apply method of the {@link Consumer} will be called with
+     *                                   the previously selected {@link Region.Edge} as the parameter.
+     */
+    public void onNodeRemoveSelection(Consumer<? super Region.Node> nodeRemoveSelectionHandler) {
+        this.nodeRemoveSelectionHandler = nodeRemoveSelectionHandler;
+    }
+
+    /**
+     * Updates the position of all {@link Region.Node}s on this {@link MapPane}.
+     */
+    public void redrawNodes() {
+        for (Region.Node node : nodes.keySet()) {
+            redrawNode(node);
+        }
+    }
+
+    // --- Other Util --- //
+
+    /**
+     * Updates the position of the given {@link Region.Node}.
+     *
+     * @param node The {@link Region.Node} to update.
+     * @throws IllegalArgumentException If the given {@link Region.Node} is not part of this {@link MapPane}.
+     */
+    public void redrawNode(Region.Node node) {
+        if (!nodes.containsKey(node)) {
+            throw new IllegalArgumentException("The given node is not part of this MapPane");
+        }
+
+        Point2D transformedMidPoint = transform(midPoint(node));
+
+        LabeledNode labeledNode = nodes.get(node);
+
+        labeledNode.ellipse().setCenterX(transformedMidPoint.getX());
+        labeledNode.ellipse().setCenterY(transformedMidPoint.getY());
+
+        labeledNode.text().setX(transformedMidPoint.getX() + NODE_DIAMETER);
+        labeledNode.text().setY(transformedMidPoint.getY());
+    }
+
+    /**
+     * Adds a {@link Vehicle} to this {@link MapPane} and displays it.
+     *
+     * @param vehicle The {@link Vehicle} to display.
+     */
+    public void addVehicle(Vehicle vehicle) {
+        vehicles.put(vehicle, drawVehicle(vehicle));
+    }
+
+
+    // --- Private Methods --- //
+
+    /**
+     * Adds the {@link Vehicle}s to this {@link MapPane} and displays them.
+     *
+     * @param vehicles The {@link Vehicle}s to display.
+     */
+    public void addAllVehicles(Collection<? extends Vehicle> vehicles) {
+        for (Vehicle vehicle : vehicles) {
+            addVehicle(vehicle);
+        }
+    }
+
+    /**
+     * Removes the given {@link Vehicle} from this {@link MapPane}.
+     *
+     * @param vehicle The {@link Vehicle} to remove.
+     */
+    public void removeVehicle(Vehicle vehicle) {
+        ImageView imageView = vehicles.remove(vehicle);
+
+        if (imageView != null) {
+            getChildren().remove(imageView);
+        }
+    }
+
+    /**
+     * Returns the {@link Vehicle}s selected by the user by clicking onto the {@link Region.Node} or its name
+     * the {@link Vehicle}s are on.
+     *
+     * @return The {@link Vehicle}s selected by the user or null if no {@link Region.Edge} is selected.
+     */
+    public Collection<Vehicle> getSelectedVehicles() {
+        return selectedVehicles;
+    }
+
+    /**
+     * Sets the action that is supposed to be executed when the user selects {@link Vehicle}s.
+     *
+     * @param vehiclesSelectionHandler The {@link Consumer} that executes the action.
+     *                                 The apply method of the {@link Consumer} will be called with
+     *                                 the selected {@link Vehicle}s as the parameter.
+     */
+    public void onVehicleSelection(Consumer<? super Collection<Vehicle>> vehiclesSelectionHandler) {
+        this.vehiclesSelectionHandler = vehiclesSelectionHandler;
+    }
+
+    /**
+     * Sets the action that is supposed to be executed when the user removes the selection of {@link Vehicle}s.<p>
+     * When different {@link Vehicle}s are selected than the previous one only the action set by
+     * {@link #onVehicleSelection(Consumer)} will be executed.
+     * <p>
+     *
+     * @param vehiclesRemoveSelectionHandler The {@link Consumer} that executes the action.
+     *                                       The apply method of the {@link Consumer} will be called with
+     *                                       the previously selected {@link Vehicle}s as the parameter.
+     */
+    public void onVehicleRemoveSelection(Consumer<? super Collection<Vehicle>> vehiclesRemoveSelectionHandler) {
+        this.vehiclesRemoveSelectionHandler = vehiclesRemoveSelectionHandler;
+    }
+
+    /**
+     * Updates the position of all {@link Vehicle}s on this {@link MapPane}.
+     */
+    public void redrawVehicles() {
+        for (Vehicle vehicle : vehicles.keySet()) {
+            redrawVehicle(vehicle);
+        }
+    }
+
+    /**
+     * Updates the position of the given {@link Vehicle}.
+     *
+     * @param vehicle The {@link Vehicle} to update.
+     * @throws IllegalArgumentException If the given {@link Vehicle} is not part of this {@link MapPane}.
+     */
+    public void redrawVehicle(Vehicle vehicle) {
+        if (!vehicles.containsKey(vehicle)) {
+            throw new IllegalArgumentException("The given vehicle is not part of this MapPane.");
+        }
+
+        Point2D transformedMidPoint = transform(midPoint(vehicle));
+
+        ImageView imageView = vehicles.get(vehicle);
+        imageView.setX(transformedMidPoint.getX() - imageView.getImage().getWidth() / 2);
+        imageView.setY(transformedMidPoint.getY() - imageView.getImage().getHeight() / 2);
+    }
+
+    /**
+     * Removes all components from this {@link MapPane}.
+     */
+    public void clear() {
+        for (Region.Node node : new HashSet<>(nodes.keySet())) {
+            removeNode(node);
+        }
+
+        for (Region.Edge edge : new HashSet<>(edges.keySet())) {
+            removeEdge(edge);
+        }
+
+        for (Vehicle vehicle : new HashSet<>(vehicles.keySet())) {
+            removeVehicle(vehicle);
+        }
+    }
+
+    /**
+     * Updates the position of all components on this {@link MapPane}.
+     */
+    public void redrawMap() {
+        redrawNodes();
+        redrawEdges();
+        redrawVehicles();
     }
 
     private void initListeners() {
@@ -114,6 +530,12 @@ public class MapPane extends Pane {
 
         setOnScroll(event -> {
             double scale = event.getDeltaY() > 0 ? SCALE_IN : SCALE_OUT;
+
+            if (((transformation.getScaleX() < MIN_SCALE || transformation.getScaleY() < MIN_SCALE) && scale < 1)
+                || ((transformation.getScaleX() > MAX_SCALE || transformation.getScaleX() > MAX_SCALE) && scale > 1)) {
+                return;
+            }
+
             transformation.scale(scale, scale);
 
             redrawMap();
@@ -133,6 +555,7 @@ public class MapPane extends Pane {
             redrawMap();
             drawPositionText();
         });
+
         heightProperty().addListener((obs, oldValue, newValue) -> {
             setClip(new Rectangle(0, 0, getWidth(), getHeight()));
             redrawGrid();
@@ -141,174 +564,41 @@ public class MapPane extends Pane {
         });
     }
 
-    public void addEdge(Region.Edge edge) {
-        edges.put(edge, drawEdge(edge));
+    private LabeledEdge drawEdge(Region.Edge edge) {
+        Location a = edge.getNodeA().getLocation();
+        Location b = edge.getNodeB().getLocation();
+
+        Point2D transformedA = transform(a);
+        Point2D transformedB = transform(b);
+
+        Line line = new Line(transformedA.getX(), transformedA.getY(), transformedB.getX(), transformedB.getY());
+
+        line.setStroke(edge.equals(selectedEdge) ? COLOR_9B : COLOR_0A);
+        line.setStrokeWidth(1);
+
+        Point2D transformedMidPoint = transform(midPoint(edge));
+        Text text = new Text(transformedMidPoint.getX(), transformedMidPoint.getY(), edge.getName());
+        text.setStroke(COLOR_0A);
+
+        getChildren().addAll(line, text);
+
+        line.setOnMouseClicked(e -> handleEdgeClick(line, edge));
+        text.setOnMouseClicked(e -> handleEdgeClick(line, edge));
+
+        return new LabeledEdge(line, text);
     }
 
-    public void addAllEdges(Collection<Region.Edge> edges) {
-        for (Region.Edge edge : edges) {
-            addEdge(edge);
-        }
-    }
-
-    public void removeEdge(Region.Edge edge) {
-        LabeledEdge labeledEdge = edges.remove(edge);
-
-        if (labeledEdge != null) {
-            getChildren().removeAll(labeledEdge.line(), labeledEdge.text());
-        }
-    }
-
-    public Region.Edge getSelectedEdge() {
-        return selectedEdge;
-    }
-
-    public void onEdgeSelection(Consumer<Region.Edge> edgeSelectionHandler) {
-        this.edgeSelectionHandler = edgeSelectionHandler;
-    }
-
-    public void onEdgeRemoveSelection(Consumer<Region.Edge> edgeRemoveSelectionHandler) {
-        this.edgeRemoveSelectionHandler = edgeRemoveSelectionHandler;
-    }
-
-    public void addNode(Region.Node node) {
-        nodes.put(node, drawNode(node));
-    }
-
-    public void addAllNodes(Collection<Region.Node> nodes) {
-        for (Region.Node node : nodes) {
-            addNode(node);
-        }
-    }
-
-    public void removeNode(Region.Node node) {
-        LabeledNode labeledNode = nodes.remove(node);
-
-
-        if (labeledNode != null) {
-            getChildren().removeAll(labeledNode.ellipse(), labeledNode.text());
-        }
-    }
-
-    public Region.Node getSelectedNode() {
-        return selectedNode;
-    }
-
-    public void onNodeSelection(Consumer<Region.Node> nodeSelectionHandler) {
-        this.nodeSelectionHandler = nodeSelectionHandler;
-    }
-
-    public void onNodeRemoveSelection(Consumer<Region.Node> nodeRemoveSelectionHandler) {
-        this.nodeRemoveSelectionHandler = nodeRemoveSelectionHandler;
-    }
-
-    public void addVehicle(Vehicle vehicle) {
-        vehicles.put(vehicle, drawVehicle(vehicle));
-    }
-
-    public void addAllVehicles(Collection<Vehicle> vehicles) {
-        for (Vehicle vehicle : vehicles) {
-            addVehicle(vehicle);
-        }
-    }
-
-    public void removeVehicle(Vehicle vehicle) {
-        ImageView imageView = vehicles.remove(vehicle);
-
-        if (imageView != null) {
-            getChildren().remove(imageView);
-        }
-    }
-
-    public Vehicle getSelectedVehicle() {
-        return selectedVehicle;
-    }
-
-    public void onVehicleSelection(Consumer<Vehicle> vehicleSelectionHandler) {
-        this.vehicleSelectionHandler = vehicleSelectionHandler;
-    }
-
-    public void onVehicleRemoveSelection(Consumer<Vehicle> vehicleRemoveSelectionHandler) {
-        this.vehicleRemoveSelectionHandler = vehicleRemoveSelectionHandler;
-    }
-
-    public void clear() {
-        for (Region.Node node : new HashSet<>(nodes.keySet())) {
-            removeNode(node);
-        }
-
-        for (Region.Edge edge : new HashSet<>(edges.keySet())) {
-            removeEdge(edge);
-        }
-
-        for (Vehicle vehicle : new HashSet<>(vehicles.keySet())) {
-            removeVehicle(vehicle);
-        }
-    }
-
-    public void redrawMap() {
-        redrawNodes();
-        redrawEdges();
-        redrawVehicles();
-    }
-
-    public void redrawNodes() {
-        for (Map.Entry<Region.Node, LabeledNode> entry : nodes.entrySet()) {
-            Region.Node node = entry.getKey();
-            Ellipse ellipse = entry.getValue().ellipse();
-            Text text = entry.getValue().text();
-
-            getChildren().removeAll(ellipse, text);
-            nodes.put(node, drawNode(node));
-        }
-    }
-
-    public void redrawEdges() {
-        for (Map.Entry<Region.Edge, LabeledEdge> entry : edges.entrySet()) {
-            Region.Edge edge = entry.getKey();
-            Line line = entry.getValue().line();
-            Text text = entry.getValue().text();
-
-            getChildren().removeAll(line, text);
-            edges.put(edge, drawEdge(edge));
-        }
-    }
-
-    public void redrawVehicles() {
-        for (Map.Entry<Vehicle, ImageView> entry : vehicles.entrySet()) {
-            Vehicle vehicle = entry.getKey();
-            ImageView imageView = entry.getValue();
-
-            getChildren().remove(imageView);
-            vehicles.put(vehicle, drawVehicle(vehicle));
-        }
-    }
-
-    public void redrawVehicle(Vehicle vehicle) {
-        Point2D midPoint = midPoint(vehicle);
-        Point2D transformedPoint = transformation.transform(midPoint, null);
-
-        ImageView imageView = vehicles.get(vehicle);
-        imageView.setX(transformedPoint.getX() - imageView.getImage().getWidth() / 2);
-        imageView.setY(transformedPoint.getY() - imageView.getImage().getHeight() / 2);
-    }
-
-    /**
-     * Paints the given node.
-     *
-     * @param node the node to paint
-     */
     private LabeledNode drawNode(Region.Node node) {
-        Point2D transformedPoint = transformLocation(node.getLocation());
+        Point2D transformedPoint = transform(node.getLocation());
 
         Ellipse ellipse = new Ellipse(transformedPoint.getX(), transformedPoint.getY(), NODE_DIAMETER, NODE_DIAMETER);
-        ellipse.setFill(convert(NODE_COLOR));
+        ellipse.setFill(NODE_COLOR);
         ellipse.setStrokeWidth(1);
-        ellipse.setStroke(node.equals(selectedNode) ? convert(COLOR_9B) : convert(COLOR_0A));
+        ellipse.setStroke(node.equals(selectedNode) ? COLOR_9B : COLOR_0A);
         setMouseTransparent(false);
 
         Text text = new Text(transformedPoint.getX(), transformedPoint.getY(), node.getName());
-        text.setStroke(convert(COLOR_0A));
+        text.setStroke(COLOR_0A);
 
         getChildren().addAll(ellipse, text);
 
@@ -318,9 +608,23 @@ public class MapPane extends Pane {
         return new LabeledNode(ellipse, text);
     }
 
+    private ImageView drawVehicle(Vehicle vehicle) {
+        Point2D transformedMidPoint = transform(midPoint(vehicle));
+
+        var imageView = new ImageView();
+        imageView.setImage(CAR_IMAGE);
+        imageView.scaleXProperty().set(IMAGE_SIZE);
+        imageView.scaleYProperty().set(IMAGE_SIZE);
+        imageView.setX(transformedMidPoint.getX() - imageView.getImage().getWidth() / 2);
+        imageView.setY(transformedMidPoint.getY() - imageView.getImage().getHeight() / 2);
+        getChildren().add(imageView);
+
+        return imageView;
+    }
+
     private void handleNodeClick(Ellipse ellipse, Region.Node node) {
         if (selectedNode != null) {
-            nodes.get(selectedNode).ellipse().setStroke(convert(EDGE_COLOR));
+            nodes.get(selectedNode).ellipse().setStroke(EDGE_COLOR);
         }
 
         if (node.equals(selectedNode)) {
@@ -328,57 +632,32 @@ public class MapPane extends Pane {
                 nodeRemoveSelectionHandler.accept(selectedNode);
             }
 
-            if (vehicleRemoveSelectionHandler != null && selectedVehicle != null) {
-                vehicleRemoveSelectionHandler.accept(selectedVehicle);
+            if (vehiclesRemoveSelectionHandler != null && selectedVehicles != null) {
+                vehiclesRemoveSelectionHandler.accept(selectedVehicles);
             }
 
             selectedNode = null;
-            selectedVehicle = null;
+            selectedVehicles = null;
         } else {
-            ellipse.setStroke(convert(COLOR_9B));
+            ellipse.setStroke(COLOR_9B);
             selectedNode = node;
-            selectedVehicle = vehicles.keySet().stream()
-                .filter(vehicle -> vehicle.getStartingNode().getComponent().equals(selectedNode))
-                .findFirst().orElse(null);
+            selectedVehicles = vehicles.keySet().stream()
+                .filter(vehicle -> vehicle.getOccupied().getComponent().equals(selectedNode))
+                .toList();
 
             if (nodeSelectionHandler != null) {
                 nodeSelectionHandler.accept(selectedNode);
             }
 
-            if (vehicleSelectionHandler != null && selectedVehicle != null) {
-                vehicleSelectionHandler.accept(selectedVehicle);
+            if (vehiclesSelectionHandler != null && selectedVehicles != null) {
+                vehiclesSelectionHandler.accept(selectedVehicles);
             }
         }
     }
 
-    private LabeledEdge drawEdge(Region.Edge edge) {
-        Location a = edge.getNodeA().getLocation();
-        Location b = edge.getNodeB().getLocation();
-
-        Point2D transformedA = transformLocation(a);
-        Point2D transformedB = transformLocation(b);
-
-        Line line = new Line(transformedA.getX(), transformedA.getY(), transformedB.getX(), transformedB.getY());
-
-        line.setStroke(edge.equals(selectedEdge) ? convert(COLOR_9B) : convert(COLOR_0A));
-        line.setStrokeWidth(1);
-
-        Point2D mid = getTransform().transform(midPoint(edge), null);
-        Text text = new Text(mid.getX(), mid.getY(), edge.getName());
-        text.setStroke(convert(COLOR_0A));
-
-        getChildren().addAll(line, text);
-
-        line.setOnMouseClicked(e -> handleEdgeClick(line, edge));
-        text.setOnMouseClicked(e -> handleEdgeClick(line, edge));
-
-
-        return new LabeledEdge(line, text);
-    }
-
     private void handleEdgeClick(Line line, Region.Edge edge) {
         if (selectedEdge != null) {
-            edges.get(selectedEdge).line().setStroke(convert(EDGE_COLOR));
+            edges.get(selectedEdge).line().setStroke(EDGE_COLOR);
         }
 
         if (edge.equals(selectedEdge)) {
@@ -387,7 +666,7 @@ public class MapPane extends Pane {
             }
             selectedEdge = null;
         } else {
-            line.setStroke(convert(COLOR_9B));
+            line.setStroke(COLOR_9B);
             selectedEdge = edge;
             if (edgeSelectionHandler != null) {
                 edgeSelectionHandler.accept(selectedEdge);
@@ -395,92 +674,8 @@ public class MapPane extends Pane {
         }
     }
 
-    /**
-     * Paints the given vehicle.
-     *
-     * @param vehicle the vehicle to paint
-     */
-    private ImageView drawVehicle(Vehicle vehicle) {
-
-        Point2D midPoint = midPoint(vehicle);
-        Point2D transformedPoint = transformation.transform(midPoint, null);
-
-        var imageView = new ImageView();
-        imageView.setImage(CAR_SELECTED);
-        imageView.scaleXProperty().set(IMAGE_SIZE);
-        imageView.scaleYProperty().set(IMAGE_SIZE);
-        imageView.setX(transformedPoint.getX() - imageView.getImage().getWidth() / 2);
-        imageView.setY(transformedPoint.getY() - imageView.getImage().getHeight() / 2);
-        getChildren().add(imageView);
-
-        return imageView;
-    }
-
-    /**
-     * Returns the last point hovered by the mouse or {@code null} if no point was hovered by the mouse.
-     *
-     * @return the point
-     * @see MapPane#getCurrentLocation()
-     */
-    private Point2D getCurrentPoint() {
-        if (lastPoint.get() == null)
-            return null;
-        var reverse = getReverseTransform();
-        return reverse.transform(lastPoint.get(), null);
-    }
-
-    /**
-     * Returns the last location hovered by the mouse or {@code null} if no location was hovered by the mouse.
-     *
-     * @return the location
-     * @see MapPane#getCurrentPoint()
-     */
-    public Location getCurrentLocation() {
-        var currentPoint = getCurrentPoint();
-        if (currentPoint == null)
-            return null;
-        return new Location((int) Math.round(currentPoint.getX()), (int) Math.round(currentPoint.getY()));
-    }
-
-    /**
-     * Returns the affine transformation used to map model locations to view locations.
-     *
-     * @return the affine transformation
-     * @see MapPane#getReverseTransform()
-     */
-    private AffineTransform getTransform() {
-        return transformation;
-    }
-
-    /**
-     * Returns the reverse affine transformation used to map view locations to model locations.
-     *
-     * @return the reverse affine transformation
-     * @see MapPane#getReverseTransform()
-     */
-    private AffineTransform getReverseTransform() {
-        try {
-            return getTransform().createInverse();
-        } catch (NoninvertibleTransformException e) {
-            throw new IllegalStateException("transformation is not invertible");
-        }
-    }
-
-    public void redrawGrid() {
-        getChildren().removeAll(grid);
-        grid.clear();
-        drawGrid();
-    }
-
-    private static Color convert(java.awt.Color color) {
-        return Color.rgb(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 255.0);
-    }
-
-    /**
-     * Draws a Grid to help With Positioning
-     */
     private void drawGrid() {
-        Color color = convert(COLOR_0D);
+        Color color = COLOR_0D;
 
         int stepX = (int) (transformation.getScaleX() / 2);
         int stepY = (int) (transformation.getScaleY() / 2);
@@ -512,17 +707,10 @@ public class MapPane extends Pane {
         }
     }
 
-    @Nullable
-    private static Float getStrokeWidth(int i, boolean inverted) {
-        float strokeWidth;
-        if (i % 10 == 0) {
-            strokeWidth = inverted ? TEN_TICKS_WIDTH : FIVE_TICKS_WIDTH;
-        } else if (i % 5 == 0) {
-            strokeWidth = inverted ? FIVE_TICKS_WIDTH : TEN_TICKS_WIDTH;
-        } else {
-            return null;
-        }
-        return strokeWidth;
+    private void redrawGrid() {
+        getChildren().removeAll(grid);
+        grid.clear();
+        drawGrid();
     }
 
     private void drawPositionText() {
@@ -541,14 +729,20 @@ public class MapPane extends Pane {
         positionText.setY(getHeight());
     }
 
-    private Point2D transformLocation(Location location) {
-        AffineTransform t = new AffineTransform();
-        t.translate(0, 5);
-        return getTransform().transform(locationToPoint2D(location), null);
+    private AffineTransform getReverseTransform() {
+        try {
+            return transformation.createInverse();
+        } catch (NoninvertibleTransformException e) {
+            throw new IllegalStateException("transformation is not invertible");
+        }
     }
 
-    private Point2D locationToPoint2D(Location location) {
-        return new Point2D.Double(location.getX(), location.getY());
+    private Point2D transform(Point2D point) {
+        return transformation.transform(point, null);
+    }
+
+    private Point2D transform(Location location) {
+        return transformation.transform(locationToPoint2D(location), null);
     }
 
     private record LabeledEdge(Line line, Text text) {

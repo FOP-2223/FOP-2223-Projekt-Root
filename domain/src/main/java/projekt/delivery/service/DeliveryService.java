@@ -12,8 +12,9 @@ import java.util.List;
  */
 public interface DeliveryService {
 
-    Factory BASIC = BasicDeliveryService::new;
-    Factory BOGO = BogoDeliveryService::new;
+    BasicDeliveryService.Factory BASIC = BasicDeliveryService::new;
+    BogoDeliveryService.Factory BOGO = BogoDeliveryService::new;
+    OurDeliveryService.Factory OUR = OurDeliveryService::new;
 
     /**
      * Adds a {@link List} of {@link ConfirmedOrder}s to the pending orders of this {@link DeliveryService}.

@@ -16,6 +16,72 @@ import java.util.concurrent.Callable;
 public final class SceneSwitcher {
 
     /**
+     * Overrides the default constructor.
+     */
+    private SceneSwitcher() {
+        throw new RuntimeException("Cannot instantiate SceneSwitcher");
+    }
+
+    // --Constructors-- //
+
+    /**
+     * Loads an FXML file and creates a {@link SceneAndController} from it.
+     *
+     * @param sceneName The path to the FXML file.
+     * @return The {@link SceneAndController} from the FXML file.
+     * @throws IOException If the FXML file could not be loaded.
+     * @see FXMLLoader#load(java.io.InputStream)
+     */
+    private static SceneAndController getFXMLScene(final String sceneName) throws IOException {
+        final @Nullable var sceneURL = SceneSwitcher.class.getResource(sceneName);
+        if (sceneURL == null) {
+            throw new IOException("Scene not found: " + sceneName);
+        }
+        final var loader = new FXMLLoader(sceneURL);
+        return new SceneAndController(new Scene(loader.load()), loader.getController());
+    }
+
+    // --Methods-- //
+
+    /**
+     * Switches to the given Scene and initializes its Controller.
+     *
+     * @param sac   The {@link SceneAndController} to switch to and initialize.
+     * @param stage The {@link Stage} to show the {@link Scene} on.
+     * @return The {@link Scene} that was switched to.
+     * @see Stage#setScene(Scene)
+     * @see SceneController#initStage(Stage)
+     */
+    private static Scene loadScene(final SceneAndController sac, final Stage stage) {
+        final var scene = sac.getScene();
+        final var controller = sac.getController();
+        stage.setScene(scene);
+        if (controller != null) {
+            controller.initStage(stage);
+        }
+        stage.show();
+        return scene;
+    }
+
+    /**
+     * Loads the given {@link SceneType} and initializes its Controller.
+     *
+     * @param sceneType The {@link SceneType} to load.
+     * @param stage     The {@link Stage} to show the {@link Scene} on.
+     * @return The {@link Scene} that was switched to.
+     * @see #loadScene(SceneAndController, Stage)
+     */
+    public static Scene loadScene(final SceneType sceneType, final Stage stage) {
+        final SceneAndController sac;
+        try {
+            sac = sceneType.getSacGenerator().call();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+        return loadScene(sac, stage);
+    }
+
+    /**
      * An enum that represents the different scenes that can be switched to.
      */
     public enum SceneType {
@@ -63,71 +129,5 @@ public final class SceneSwitcher {
         public Callable<SceneAndController> getSacGenerator() {
             return sacGenerator;
         }
-    }
-
-    // --Constructors-- //
-
-    /**
-     * Overrides the default constructor.
-     */
-    private SceneSwitcher() {
-        throw new RuntimeException("Cannot instantiate SceneSwitcher");
-    }
-
-    // --Methods-- //
-
-    /**
-     * Loads an FXML file and creates a {@link SceneAndController} from it.
-     *
-     * @param sceneName The path to the FXML file.
-     * @return The {@link SceneAndController} from the FXML file.
-     * @throws IOException If the FXML file could not be loaded.
-     * @see FXMLLoader#load(java.io.InputStream)
-     */
-    private static SceneAndController getFXMLScene(final String sceneName) throws IOException {
-        final @Nullable var sceneURL = SceneSwitcher.class.getResource(sceneName);
-        if (sceneURL == null) {
-            throw new IOException("Scene not found: " + sceneName);
-        }
-        final var loader = new FXMLLoader(sceneURL);
-        return new SceneAndController(new Scene(loader.load()), loader.getController());
-    }
-
-    /**
-     * Switches to the given Scene and initializes its Controller.
-     *
-     * @param sac   The {@link SceneAndController} to switch to and initialize.
-     * @param stage The {@link Stage} to show the {@link Scene} on.
-     * @return The {@link Scene} that was switched to.
-     * @see Stage#setScene(Scene)
-     * @see SceneController#initStage(Stage)
-     */
-    private static Scene loadScene(final SceneAndController sac, final Stage stage) {
-        final var scene = sac.getScene();
-        final var controller = sac.getController();
-        stage.setScene(scene);
-        if (controller != null) {
-            controller.initStage(stage);
-        }
-        stage.show();
-        return scene;
-    }
-
-    /**
-     * Loads the given {@link SceneType} and initializes its Controller.
-     *
-     * @param sceneType The {@link SceneType} to load.
-     * @param stage     The {@link Stage} to show the {@link Scene} on.
-     * @return The {@link Scene} that was switched to.
-     * @see #loadScene(SceneAndController, Stage)
-     */
-    public static Scene loadScene(final SceneType sceneType, final Stage stage) {
-        final SceneAndController sac;
-        try {
-            sac = sceneType.getSacGenerator().call();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-        return loadScene(sac, stage);
     }
 }

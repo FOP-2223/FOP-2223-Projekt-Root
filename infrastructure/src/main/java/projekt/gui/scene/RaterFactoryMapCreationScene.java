@@ -20,16 +20,14 @@ import java.util.Map;
 
 public class RaterFactoryMapCreationScene extends MenuScene<RaterFactoryMapCreationSceneController> {
 
+    private final CheckBox inTimeCheckBox = new CheckBox();
+    private final CheckBox amountDeliveredCheckBox = new CheckBox();
+    private final CheckBox travelDistanceCheckBox = new CheckBox();
     private String name;
     private Long simulationLength;
     private VehicleManager vehicleManager;
     private OrderGenerator.FactoryBuilder orderGeneratorFactoryBuilder;
     private Map<RatingCriteria, Rater.FactoryBuilder> raterFactoryBuilderMap;
-
-    private final CheckBox inTimeCheckBox = new CheckBox();
-    private final CheckBox amountDeliveredCheckBox = new CheckBox();
-    private final CheckBox travelDistanceCheckBox = new CheckBox();
-
     private long ignoredTicksOff;
     private long maxTicksOff;
     private double amountDeliveredFactor;
@@ -115,7 +113,7 @@ public class RaterFactoryMapCreationScene extends MenuScene<RaterFactoryMapCreat
         HBox maxTicksOffHBOX = new HBox();
         maxTicksOffHBOX.setSpacing(10);
         TextField maxTicksOffTextField = createLongTextField(value -> maxTicksOff = value, 0L);
-        maxTicksOffHBOX.getChildren().addAll(createIndentedLabel("Max Ticks Off"),createIntermediateRegion(0), maxTicksOffTextField);
+        maxTicksOffHBOX.getChildren().addAll(createIndentedLabel("Max Ticks Off"), createIntermediateRegion(0), maxTicksOffTextField);
         HBoxes.add(maxTicksOffHBOX);
 
         return HBoxes;
@@ -131,7 +129,7 @@ public class RaterFactoryMapCreationScene extends MenuScene<RaterFactoryMapCreat
 
         HBox amountDeliveredFactorHBox = new HBox();
         amountDeliveredFactorHBox.setSpacing(10);
-        TextField amountDeliveredFactorTextField = createDoubleTextField(value -> amountDeliveredFactor = value, 0.0);
+        TextField amountDeliveredFactorTextField = createPositiveDoubleTextField(value -> amountDeliveredFactor = value, 0.0);
         amountDeliveredFactorHBox.getChildren().addAll(createIndentedLabel("factor"), createIntermediateRegion(0), amountDeliveredFactorTextField);
         HBoxes.add(amountDeliveredFactorHBox);
 
@@ -148,7 +146,7 @@ public class RaterFactoryMapCreationScene extends MenuScene<RaterFactoryMapCreat
 
         HBox travelDistanceFactorHBox = new HBox();
         travelDistanceFactorHBox.setSpacing(10);
-        TextField travelDistanceFactorTextField = createDoubleTextField(value -> travelDistanceFactor = value, 0.0);
+        TextField travelDistanceFactorTextField = createPositiveDoubleTextField(value -> travelDistanceFactor = value, 0.0);
         travelDistanceFactorHBox.getChildren().addAll(createIndentedLabel("factor"), createIntermediateRegion(0), travelDistanceFactorTextField);
         HBoxes.add(travelDistanceFactorHBox);
 

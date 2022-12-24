@@ -188,12 +188,12 @@ public class Main {
         ProblemArchetype problemArchetype2 = new ProblemArchetypeImpl(orderGeneratorFactory2, vehicleManager2, raterFactoryMap2, simulationLength, "problem 2");
 
         // SimulationConfig
-        SimulationConfig simulationConfig = new SimulationConfig(0);
+        SimulationConfig simulationConfig = new SimulationConfig(20);
 
         //ProblemGroup
         ProblemGroup problemGroup = new ProblemGroupImpl(List.of(problemArchetype1, problemArchetype2), new ArrayList<>(raterFactoryMap1.keySet()));
 
-        Map<RatingCriteria, Double> result = new BasicRunner().run(problemGroup, simulationConfig, 10, BasicDeliveryService::new);
+        Map<RatingCriteria, Double> result = new BasicRunner().run(problemGroup, simulationConfig, 1, BasicDeliveryService::new);
 
         System.out.println("IN_TIME: " + result.get(RatingCriteria.IN_TIME));
 
@@ -202,16 +202,5 @@ public class Main {
         System.out.println("AMOUNT_DELIVERED: " + result.get(RatingCriteria.AMOUNT_DELIVERED));
 
         // the lasagna is complete
-
-        // Gui Setup
-//        FlatDarkLaf.setup();
-//        MainFrame mainFrame = new MainFrame(region1, vehicleManager1, simulation);
-//        mainFrame.setVisible(true);
-//        simulation.addListener(mainFrame);
-//
-//        //start simulation
-//        simulation.runSimulation(problemArchetype1.simulationLength()); // -> blocks the thread until the simulation is finished.
-//
-//        System.out.println(simulation.getRatingForCriterion(RatingCriteria.IN_TIME));
     }
 }

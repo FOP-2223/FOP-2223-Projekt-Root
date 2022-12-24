@@ -17,8 +17,12 @@ public class ControlsPane extends BorderPane {
     private final Button singleStepButton = new Button("Single step");
     private final Slider tickIntervalSlider = new Slider();
     private final Label tickIntervalSliderLabel = new Label();
+    private final Label tickLabel = new Label();
 
-    public ControlsPane(Simulation simulation, ProblemArchetype problem, int run, int simulationRuns) {
+    private final long simulationLength;
+
+    public ControlsPane(Simulation simulation, ProblemArchetype problem, int run, int simulationRuns, long simulationLength) {
+        this.simulationLength = simulationLength;
         this.simulation = simulation;
         this.simulationConfig = simulation.getSimulationConfig();
         initComponents(problem, run, simulationRuns);
@@ -46,7 +50,7 @@ public class ControlsPane extends BorderPane {
 
         Label problemLabel = new Label("Simulating Problem: %s".formatted(problem.name()));
         Label runLabel = new Label("Run: %d/%d".formatted(run + 1, simulationRuns));
-        VBox labels = new VBox(problemLabel, runLabel);
+        VBox labels = new VBox(problemLabel, runLabel, tickLabel);
 
         Region intermediateRegion = new Region();
         intermediateRegion.setMinWidth(0);
@@ -57,6 +61,10 @@ public class ControlsPane extends BorderPane {
         box.setSpacing(10);
 
         setCenter(box);
+    }
+
+    public void updateTickLabel(long tick) {
+        tickLabel.setText("Tick: %d/%d".formatted(tick, simulationLength));
     }
 
     private void updateText() {

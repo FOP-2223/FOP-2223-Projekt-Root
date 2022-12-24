@@ -112,7 +112,7 @@ public class RegionIO {
             restaurant.getLocation().getX(),
             restaurant.getLocation().getY(),
             String.join(",", restaurant.getAvailableFood())
-           );
+        );
     }
 
     private static String serializeEdge(Region.Edge edge) {

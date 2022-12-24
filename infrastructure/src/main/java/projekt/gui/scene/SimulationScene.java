@@ -18,6 +18,7 @@ import projekt.gui.controller.SimulationSceneController;
 import projekt.gui.pane.ControlsPane;
 import projekt.gui.pane.MapPane;
 import projekt.gui.pane.VehicleInfoPane;
+import projekt.gui.runner.GUIRunner;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class SimulationScene extends Scene implements SimulationListener, Contro
 
     private MapPane mapPane;
     private VehicleInfoPane vehicleInfoPane;
+    private ControlsPane controlsPane;
 
     public SimulationScene() {
         super(new BorderPane());
@@ -38,13 +40,13 @@ public class SimulationScene extends Scene implements SimulationListener, Contro
         root.getStylesheets().addAll("projekt/gui/darkMode.css", "projekt/gui/simulationStyle.css");
     }
 
-    public void init(Simulation simulation, ProblemArchetype problem, int run, int simulationRuns) {
+    public void init(Simulation simulation, ProblemArchetype problem, int run, int simulationRuns, GUIRunner runner) {
         VehicleManager vehicleManager = simulation.getDeliveryService().getVehicleManager();
         Region region = vehicleManager.getRegion();
 
         mapPane = new MapPane(region.getNodes(), region.getEdges(), vehicleManager.getVehicles());
 
-        ControlsPane controlsPane = new ControlsPane(simulation, problem, run, simulationRuns);
+        controlsPane = new ControlsPane(simulation, problem, run, simulationRuns, problem.simulationLength());
         TitledPane titledControlsPane = new TitledPane("Controls", controlsPane);
         titledControlsPane.setCollapsible(false);
 
@@ -52,6 +54,12 @@ public class SimulationScene extends Scene implements SimulationListener, Contro
         root.setBottom(titledControlsPane);
         vehicleInfoPane = new VehicleInfoPane(simulation);
         root.setLeft(vehicleInfoPane);
+
+        //stop the simulation when closing the window
+        controller.getStage().setOnCloseRequest(e -> {
+            simulation.endSimulation();
+            runner.terminate();
+        });
     }
 
     @Override
@@ -74,6 +82,7 @@ public class SimulationScene extends Scene implements SimulationListener, Contro
                 .forEach(arrivedAtEdgeEvent -> mapPane.redrawVehicle(arrivedAtEdgeEvent.getVehicle()));
 
             vehicleInfoPane.refresh();
+            controlsPane.updateTickLabel(tick);
         });
 
     }

@@ -1,11 +1,11 @@
 @Suppress("DSL_SCOPE_VIOLATION") // https://youtrack.jetbrains.com/issue/KTIJ-19369
-plugins{
+plugins {
     alias(libs.plugins.javafx)
 }
 
 javafx {
     version = "17.0.1"
-        modules("javafx.controls", "javafx.fxml", "javafx.swing")
+    modules("javafx.controls", "javafx.fxml", "javafx.swing")
 }
 
 dependencies {

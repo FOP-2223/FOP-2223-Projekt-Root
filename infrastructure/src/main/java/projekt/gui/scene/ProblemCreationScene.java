@@ -25,16 +25,16 @@ import java.util.stream.Collectors;
 public class ProblemCreationScene extends MenuScene<ProblemCreationSceneController> {
 
 
+    private final BorderPane createNewPane = new BorderPane();
+    private final Button createAndAddButton = new Button("Create And Add");
+    private final ScrollPane problemsPane = new ScrollPane();
+    private final VBox buttonsVbox = new VBox();
     private TableView<ProblemArchetype> table;
     private VehicleManager vehicleManager;
     private OrderGenerator.FactoryBuilder orderGeneratorFactoryBuilder;
     private Map<RatingCriteria, Rater.FactoryBuilder> raterFactoryBuilderMap;
     private Long simulationLength;
     private String name;
-    private final BorderPane createNewPane = new BorderPane();
-    private final Button createAndAddButton = new Button("Create And Add");
-    private final ScrollPane problemsPane = new ScrollPane();
-    private final VBox buttonsVbox = new VBox();
 
     public ProblemCreationScene() {
         super(new ProblemCreationSceneController(), "Add ProblemArchetype");

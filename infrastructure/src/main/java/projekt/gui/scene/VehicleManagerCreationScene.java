@@ -22,25 +22,9 @@ import java.util.Map;
 
 public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreationSceneController> {
 
-    private String name;
-    private Long simulationLength;
-    private VehicleManager vehicleManager;
-    private OrderGenerator.FactoryBuilder orderGeneratorFactoryBuilder;
-    private Map<RatingCriteria, Rater.FactoryBuilder> raterFactoryBuilderMap;
-
     private final MapPane mapPane = new MapPane();
-
     private final Region.Builder regionBuilder = Region.builder();
     private final VehicleManager.Builder vehicleManagerBuilder = VehicleManager.builder();
-
-    private int x1;
-    private int x2;
-    private int y1;
-    private int y2;
-    private double capacity = 1.0;
-    private String componentName;
-    private Region.Restaurant.Preset preset;
-
     private final Button createNodeButton = new Button("Create Node At (X1, Y1)");
     private final Button createNeighborhoodButton = new Button("Create Neighborhood At (X1, Y1)");
     private final Button createRestaurantButton = new Button("Create Restaurant At (X1, Y1)");
@@ -49,6 +33,18 @@ public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreatio
     private final Button removeEdgeButton = new Button("Remove Edge");
     private final Button createVehicleButton = new Button("Create Vehicle");
     private final Button removeVehicleButton = new Button("Remove Vehicle");
+    private String name;
+    private Long simulationLength;
+    private VehicleManager vehicleManager;
+    private OrderGenerator.FactoryBuilder orderGeneratorFactoryBuilder;
+    private Map<RatingCriteria, Rater.FactoryBuilder> raterFactoryBuilderMap;
+    private int x1;
+    private int x2;
+    private int y1;
+    private int y2;
+    private double capacity = 1.0;
+    private String componentName;
+    private Region.Restaurant.Preset preset;
 
     public VehicleManagerCreationScene() {
         super(new VehicleManagerCreationSceneController(), "Edit Vehicle Manager");
@@ -82,7 +78,7 @@ public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreatio
 
         mapPane.onNodeSelection(n -> {
             removeNodeButton.setDisable(false);
-            if (mapPane.getSelectedVehicle() == null && n instanceof Region.Restaurant) {
+            if (mapPane.getSelectedVehicles() == null && n instanceof Region.Restaurant) {
                 createVehicleButton.setDisable(false);
             }
         });
@@ -318,7 +314,7 @@ public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreatio
             Region.Restaurant.ISENJAR,
             Region.Restaurant.MIDDLE_FOP,
             Region.Restaurant.MOUNT_DOOM_PIZZA
-            );
+        );
         choiceBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(Region.Restaurant.Preset preset) {
@@ -394,7 +390,7 @@ public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreatio
 
         Label capacityLabel = new Label("Capacity: ");
 
-        TextField capacityTextField = createDoubleTextField(d -> {
+        TextField capacityTextField = createPositiveDoubleTextField(d -> {
             capacity = d;
             handleValueChange();
         }, 1.0);

@@ -21,7 +21,7 @@ public class BasicRunner extends AbstractRunner {
     public Map<RatingCriteria, Double> run(ProblemGroup problemGroup,
                                            SimulationConfig simulationConfig,
                                            int simulationRuns,
-                                           Function<VehicleManager, DeliveryService> deliveryServiceFactory) {
+                                           DeliveryService.Factory deliveryServiceFactory) {
 
         Map<ProblemArchetype, Simulation> simulations = createSimulations(problemGroup, simulationConfig, deliveryServiceFactory);
         Map<RatingCriteria, Double> results = new HashMap<>();

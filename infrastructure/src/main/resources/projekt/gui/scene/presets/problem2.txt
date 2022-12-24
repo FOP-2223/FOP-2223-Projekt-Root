@@ -31,7 +31,7 @@ E A5_1,4,-4,6,0
 E A5,4,-4,8,-8
 E A3_2,4,-4,10,-7
 E A5_2,6,0,6,8
-E Straße,6,8,10,8
+E FOP-Street,6,8,10,8
 D EuclideanDistanceCalculator
 END REGION
 V
@@ -51,7 +51,7 @@ P DijkstraPathCalculator
 END VEHICLE MANAGER
 O
 START ORDER GENERATOR
-O projekt.delivery.generator.FridayOrderGenerator$Factory 300 15 0.500000 0.500000 400 0
+O projekt.delivery.generator.FridayOrderGenerator$Factory 300 15 0.500000 0.500000 400 -1
 END ORDER GENERATOR
 RA
 START RATER

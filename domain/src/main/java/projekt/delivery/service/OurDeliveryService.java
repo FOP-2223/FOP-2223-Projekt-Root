@@ -3,6 +3,7 @@ package projekt.delivery.service;
 import projekt.delivery.archetype.ProblemArchetype;
 import projekt.delivery.event.Event;
 import projekt.delivery.routing.ConfirmedOrder;
+import projekt.delivery.routing.VehicleManager;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -10,17 +11,10 @@ import java.util.List;
 
 public class OurDeliveryService extends AbstractDeliveryService {
 
-//    private final OrderGenerator orderGenerator;
-//    private final RatingCriteria ratingCriteria;
-
     protected final List<ConfirmedOrder> pendingOrders = new ArrayList<>();
 
-    public OurDeliveryService(
-        ProblemArchetype problemArchetype
-    ) {
-        super(problemArchetype.vehicleManager());
-//        orderGenerator = problemArchetype.getOrderGenerator();
-//        ratingCriteria = problemArchetype.getRatingCriteria();
+    public OurDeliveryService(VehicleManager vehicleManager) {
+        super(vehicleManager);
     }
 
     @Override
@@ -83,5 +77,10 @@ public class OurDeliveryService extends AbstractDeliveryService {
     public void reset() {
         super.reset();
         pendingOrders.clear();
+    }
+
+    public interface Factory extends DeliveryService.Factory {
+
+        OurDeliveryService create(VehicleManager vehicleManager);
     }
 }
