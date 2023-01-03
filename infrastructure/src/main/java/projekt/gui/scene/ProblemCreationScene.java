@@ -15,6 +15,7 @@ import projekt.delivery.rating.TravelDistanceRater;
 import projekt.delivery.routing.VehicleManager;
 import projekt.gui.controller.ProblemCreationSceneController;
 import projekt.gui.pane.ProblemArchetypeOverviewPane;
+import projekt.io.IOHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,7 +126,7 @@ public class ProblemCreationScene extends MenuScene<ProblemCreationSceneControll
             problems.add("Name is not set");
         } else if (name.trim().equals("")) {
             problems.add("Name is empty");
-        } else if (readProblems().stream().anyMatch(problem -> problem.name().equals(name))) {
+        } else if (IOHelper.readProblems().stream().anyMatch(problem -> problem.name().equals(name))) {
             problems.add("Duplicate name");
         }
 
@@ -171,7 +172,7 @@ public class ProblemCreationScene extends MenuScene<ProblemCreationSceneControll
 
     private void setupTable() {
         table = createProblemArchetypeTableView();
-        table.getItems().setAll(readProblems().stream()
+        table.getItems().setAll(IOHelper.readProblems().stream()
             .filter(problem -> problems.stream()
                 .noneMatch(problem2 -> problem2.name().equals(problem.name())))
             .toList());
@@ -201,7 +202,7 @@ public class ProblemCreationScene extends MenuScene<ProblemCreationSceneControll
                 name);
 
             problems.add(problem);
-            writeProblem(problem);
+            IOHelper.writeProblem(problem);
 
             MainMenuScene scene = (MainMenuScene) SceneSwitcher.loadScene(SceneSwitcher.SceneType.MAIN_MENU, getController().getStage());
             scene.init(new ArrayList<>(problems));
