@@ -150,7 +150,7 @@ public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreatio
 
         HBox box = new HBox();
 
-        Label label = new Label("OrderGenerator:");
+        Label label = new Label("Distance Calculator:");
 
         EuclideanDistanceCalculator euclideanDistanceCalculator = new EuclideanDistanceCalculator();
         ChessboardDistanceCalculator chessboardDistanceCalculator = new ChessboardDistanceCalculator();
@@ -170,9 +170,7 @@ public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreatio
             }
         });
 
-        choiceBox.getSelectionModel().selectedIndexProperty().addListener((obs, oldValue, newValue) -> {
-            regionBuilder.distanceCalculator(choiceBox.getItems().get((Integer) newValue));
-        });
+        choiceBox.getSelectionModel().selectedIndexProperty().addListener((obs, oldValue, newValue) -> regionBuilder.distanceCalculator(choiceBox.getItems().get((Integer) newValue)));
 
         choiceBox.getSelectionModel().select(euclideanDistanceCalculator);
 
@@ -185,7 +183,7 @@ public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreatio
 
         HBox box = new HBox();
 
-        Label label = new Label("OrderGenerator:");
+        Label label = new Label("Path Calculator:");
 
         DijkstraPathCalculator dijkstraPathCalculator = new DijkstraPathCalculator();
 
@@ -203,9 +201,7 @@ public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreatio
             }
         });
 
-        choiceBox.getSelectionModel().selectedIndexProperty().addListener((obs, oldValue, newValue) -> {
-            vehicleManagerBuilder.pathCalculator(choiceBox.getItems().get((Integer) newValue));
-        });
+        choiceBox.getSelectionModel().selectedIndexProperty().addListener((obs, oldValue, newValue) -> vehicleManagerBuilder.pathCalculator(choiceBox.getItems().get((Integer) newValue)));
 
         choiceBox.getSelectionModel().select(dijkstraPathCalculator);
 
