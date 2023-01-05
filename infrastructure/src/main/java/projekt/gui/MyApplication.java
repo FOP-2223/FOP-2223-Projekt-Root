@@ -9,6 +9,8 @@ public class MyApplication extends javafx.application.Application {
 
     @Override
     public void start(Stage primaryStage) {
+        primaryStage.setMinHeight(400);
+        primaryStage.setMinWidth(400);
         MainMenuScene scene = (MainMenuScene) SceneSwitcher.loadScene(SceneSwitcher.SceneType.MAIN_MENU, primaryStage);
         scene.init();
     }
