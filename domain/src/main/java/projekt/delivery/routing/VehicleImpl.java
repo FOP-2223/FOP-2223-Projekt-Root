@@ -74,8 +74,8 @@ class VehicleImpl implements Vehicle {
         final Iterator<PathImpl> it = moveQueue.descendingIterator();
         while (it.hasNext() && startNode == null) {
             PathImpl path = it.next();
-            if (!path.getNodes().isEmpty()) {
-                startNode = path.getNodes().peekLast();
+            if (!path.nodes().isEmpty()) {
+                startNode = path.nodes().peekLast();
             }
         }
         // if no queued node could be found
@@ -135,21 +135,21 @@ class VehicleImpl implements Vehicle {
             return;
         }
         final PathImpl path = moveQueue.peek();
-        if (path.getNodes().isEmpty()) {
+        if (path.nodes().isEmpty()) {
             moveQueue.pop();
-            final @Nullable Consumer<? super Vehicle> action = path.getArrivalAction();
+            final @Nullable Consumer<? super Vehicle> action = path.arrivalAction();
             if (action == null) {
                 move(currentTick);
             } else {
                 action.accept(this);
             }
         } else {
-            Region.Node next = path.getNodes().peek();
+            Region.Node next = path.nodes().peek();
             if (occupied instanceof OccupiedNodeImpl) {
                 vehicleManager.getOccupied(region.getEdge(((OccupiedNodeImpl<?>) occupied).getComponent(), next)).addVehicle(this, currentTick);
             } else if (occupied instanceof OccupiedEdgeImpl) {
                 vehicleManager.getOccupied(next).addVehicle(this, currentTick);
-                path.getNodes().pop();
+                path.nodes().pop();
             } else {
                 throw new AssertionError("Component must be either node or component");
             }
@@ -157,7 +157,7 @@ class VehicleImpl implements Vehicle {
     }
 
     void loadOrder(ConfirmedOrder order) {
-        double capacityNeeded = getCurrentWeight() + order.getTotalWeight();
+        double capacityNeeded = getCurrentWeight() + order.getWeight();
 
         if (capacityNeeded > capacity) {
             throw new VehicleOverloadedException(this, capacityNeeded);
@@ -185,28 +185,7 @@ class VehicleImpl implements Vehicle {
             + ')';
     }
 
-    /**
-     * The path is expected to exclude the start node and to include the end node.
-     * If the start node and the end node are the same, the path should be empty.
-     */
-    private static class PathImpl implements Path {
+    private record PathImpl(Deque<Region.Node> nodes, Consumer<? super Vehicle> arrivalAction) implements Path {
 
-        private final Deque<Region.Node> nodes;
-        private final Consumer<? super Vehicle> arrivalAction;
-
-        private PathImpl(Deque<Region.Node> nodes, Consumer<? super Vehicle> arrivalAction) {
-            this.nodes = nodes;
-            this.arrivalAction = arrivalAction;
-        }
-
-        @Override
-        public Deque<Region.Node> getNodes() {
-            return nodes;
-        }
-
-        @Override
-        public Consumer<? super Vehicle> getArrivalAction() {
-            return arrivalAction;
-        }
     }
 }

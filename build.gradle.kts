@@ -4,6 +4,7 @@ plugins {
     application
     alias(libs.plugins.style)
     alias(libs.plugins.jagr.gradle)
+    alias(libs.plugins.javafx)
 }
 
 version = file("version").readLines().first()
@@ -37,7 +38,8 @@ dependencies {
     implementation(libs.algoutils.student)
     implementation(libs.flatlaf)
     testImplementation(libs.junit.core)
-    runtimeOnly(project(":application"))
+    implementation(project(":application"))
+    runtimeOnly(project(":infrastructure"))
 }
 
 application {

@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * A class that calculates the shortest path between from a start and end point using Dijkstra.
+ * A {@link PathCalculator} that calculates the shortest path between from a start and end point using Dijkstra.
  */
 public class DijkstraPathCalculator implements PathCalculator {
 

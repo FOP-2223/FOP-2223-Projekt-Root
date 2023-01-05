@@ -1,19 +1,17 @@
 package projekt.base;
 
 /**
- * A closed interval of a start time and an end time.
+ * A closed interval of a start tick and an end tick.
  */
-public class TickInterval {
-    private final long start;
-    private final long end;
+public record TickInterval(long start, long end) {
 
     /**
-     * Constructs a new {@link TickInterval} with start time {@code start} and end time {@code end}.
+     * Constructs a new {@link TickInterval} with start tick {@code start} and end tick {@code end}.
      *
-     * @param start the start time
-     * @param end   the end time
+     * @param start the start tick
+     * @param end   the end tick
      */
-    public TickInterval(long start, long end) {
+    public TickInterval {
         if (start < 0) {
             throw new IllegalArgumentException(String.format("Start tick is negative: %d", start));
         }
@@ -23,25 +21,25 @@ public class TickInterval {
         if (start > end) {
             throw new IllegalArgumentException(String.format("Start %s is after end %s", start, end));
         }
-        this.start = start;
-        this.end = end;
     }
 
     /**
-     * Returns the start time of this time interval.
+     * Returns the start tick of this tick interval.
      *
      * @return the start time
      */
-    public long getStart() {
+    @Override
+    public long start() {
         return start;
     }
 
     /**
-     * Returns the end time of this time interval.
+     * Returns the end tick of this tick interval.
      *
      * @return the end time
      */
-    public long getEnd() {
+    @Override
+    public long end() {
         return end;
     }
 

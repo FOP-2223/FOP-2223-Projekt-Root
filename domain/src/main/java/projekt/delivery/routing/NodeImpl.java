@@ -10,10 +10,17 @@ import java.util.stream.Collectors;
 class NodeImpl implements Region.Node {
 
     protected final Set<Location> connections;
-    private final Region region;
-    private final String name;
-    private final Location location;
+    protected final Region region;
+    protected final String name;
+    protected final Location location;
 
+    /**
+     * Creates a new {@link NodeImpl} instance.
+     * @param region The {@link Region} this {@link NodeImpl} belongs to.
+     * @param name The name of this {@link NodeImpl}.
+     * @param location The {@link Location} of this {@link EdgeImpl}.
+     * @param connections All {@link Location}s this {@link NeighborhoodImpl} has an {@link Region.Edge} to.
+     */
     NodeImpl(
         Region region,
         String name,
@@ -56,6 +63,10 @@ class NodeImpl implements Region.Node {
         return connections.stream().map(c -> region.getEdge(getLocation(), c)).collect(Collectors.toSet());
     }
 
+    public Set<Location> getConnections() {
+        return connections;
+    }
+
     @Override
     public int compareTo(Region.Node o) {
         return location.compareTo(o.getLocation());
@@ -86,8 +97,8 @@ class NodeImpl implements Region.Node {
     @Override
     public String toString() {
         return "NodeImpl(name='" + getName() + "'"
-            + ", location=" + getLocation()
-            + ", connections=" + connections
+            + ", location='" + getLocation() + "'"
+            + ", connections='" + connections + "'"
             + ')';
     }
 }

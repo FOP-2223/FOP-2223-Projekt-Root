@@ -66,20 +66,50 @@ public interface Vehicle extends Comparable<Vehicle> {
      */
     VehicleManager getVehicleManager();
 
+    /**
+     * Returns the {@link Region.Node} this {@link Vehicle} starts on.
+     * @return The {@link Region.Node} this {@link Vehicle} starts on.
+     */
     VehicleManager.Occupied<? extends Region.Node> getStartingNode();
 
+    /**
+     * Returns all {@link ConfirmedOrder}s that are loaded onto this {@link Vehicle}.
+     * @return All {@link ConfirmedOrder}s that are loaded onto this {@link Vehicle}.
+     */
     Collection<ConfirmedOrder> getOrders();
 
+    /**
+     * Resets this {@link Vehicle} to its start state.
+     */
     void reset();
 
+    /**
+     * Returns the total weight of all {@link ConfirmedOrder}s loaded onto this {@link Vehicle}.
+     * @return The total weight of all {@link ConfirmedOrder}s loaded onto this {@link Vehicle}.
+     */
     default double getCurrentWeight() {
-        return getOrders().stream().mapToDouble(ConfirmedOrder::getTotalWeight).sum();
+        return getOrders().stream().mapToDouble(ConfirmedOrder::getWeight).sum();
     }
 
+    /**
+     * Represents a path from one {@link Region.Node} to another {@link Region.Node}.<p>
+     *
+     * The path is represented as a {@link Deque<Region.Node>} that does not contain the start {@link Region.Node} of the path.
+     */
     interface Path {
 
-        Deque<Region.Node> getNodes();
+        /**
+         * Returns a {@link Deque<Region.Node>} containing all {@link Region.Node}s of this {@link Path}.
+         * @return A {@link Deque<Region.Node>} containing all {@link Region.Node}s of this {@link Path}
+         * from to start node (excluded) to the end node (included). When the start and the end node are the same the
+         * {@link Deque} is empty.
+         */
+        Deque<Region.Node> nodes();
 
-        Consumer<? super Vehicle> getArrivalAction();
+        /**
+         * Returns the {@link Consumer} that is supposed to be executed when the end of this {@link Path} is reached.
+         * @return The {@link Consumer} that is supposed to be executed when the end of this {@link Path} is reached.
+         */
+        Consumer<? super Vehicle> arrivalAction();
     }
 }

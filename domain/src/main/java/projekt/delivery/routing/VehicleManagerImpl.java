@@ -19,7 +19,6 @@ class VehicleManagerImpl implements VehicleManager {
     private final List<VehicleImpl> vehiclesToSpawn = new ArrayList<>();
     private final List<VehicleImpl> vehicles = new ArrayList<>();
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
-    private final Set<AbstractOccupied<?>> allOccupied;
     private final EventBus eventBus = new EventBus();
 
     VehicleManagerImpl(
@@ -30,11 +29,10 @@ class VehicleManagerImpl implements VehicleManager {
         this.pathCalculator = pathCalculator;
         occupiedNodes = toOccupiedNodes(region.getNodes());
         occupiedEdges = toOccupiedEdges(region.getEdges());
-        allOccupied = getAllOccupied();
 
-        if (getOccupiedRestaurants().size() == 0) {
-            throw new IllegalArgumentException("At least one restaurant is required to create a VehicleManager");
-        }
+//        if (getOccupiedRestaurants().size() == 0) {
+//            throw new IllegalArgumentException("At least one restaurant is required to create a VehicleManager");
+//        }
     }
 
     private OccupiedNodeImpl<? extends Region.Node> toOccupied(Region.Node node) {
@@ -101,13 +99,13 @@ class VehicleManagerImpl implements VehicleManager {
     }
 
     @Override
-    public OccupiedRestaurant getOccupiedRestaurant(Region.Node component) {
-        Objects.requireNonNull(component, "component is null!");
-        final @Nullable OccupiedNodeImpl<?> node = occupiedNodes.get(component);
-        if (node instanceof OccupiedRestaurant) {
-            return (OccupiedRestaurant) node;
+    public OccupiedRestaurant getOccupiedRestaurant(Region.Node node) {
+        Objects.requireNonNull(node, "Node is null!");
+        final @Nullable OccupiedNodeImpl<? extends Region.Node> occupiedNode = occupiedNodes.get(node);
+        if (occupiedNode instanceof OccupiedRestaurant) {
+            return (OccupiedRestaurant) occupiedNode;
         } else {
-            throw new IllegalArgumentException("Component " + component + " is not a restaurant");
+            throw new IllegalArgumentException("Node " + occupiedNode + " is not a restaurant");
         }
     }
 
@@ -140,13 +138,13 @@ class VehicleManagerImpl implements VehicleManager {
     }
 
     @Override
-    public OccupiedNeighborhood getOccupiedNeighborhood(Region.Node component) {
-        Objects.requireNonNull(component, "component is null!");
-        final @Nullable OccupiedNodeImpl<?> node = occupiedNodes.get(component);
-        if (node instanceof OccupiedNeighborhood) {
-            return (OccupiedNeighborhood) node;
+    public OccupiedNeighborhood getOccupiedNeighborhood(Region.Node node) {
+        Objects.requireNonNull(node, "Node is null!");
+        final @Nullable OccupiedNodeImpl<?> occupiedNode = occupiedNodes.get(node);
+        if (occupiedNode instanceof OccupiedNeighborhood) {
+            return (OccupiedNeighborhood) occupiedNode;
         } else {
-            throw new IllegalArgumentException("Component " + component + " is not a neighborhood");
+            throw new IllegalArgumentException("Node " + occupiedNode + " is not a neighborhood");
         }
     }
 
@@ -198,6 +196,7 @@ class VehicleManagerImpl implements VehicleManager {
         vehicles.clear();
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     Vehicle addVehicle(
         Location startingLocation,
         double capacity

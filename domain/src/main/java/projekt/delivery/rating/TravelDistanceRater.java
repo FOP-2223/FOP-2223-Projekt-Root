@@ -6,11 +6,18 @@ import projekt.delivery.event.OrderReceivedEvent;
 import projekt.delivery.routing.PathCalculator;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.simulation.Simulation;
 
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 
+
+/**
+ * Rates the observed {@link Simulation} based on the distance traveled by all vehicles.<p>
+ *
+ * To create a new {@link TravelDistanceRater} use {@code TravelDistanceRater.Factory.builder()...build();}.
+ */
 public class TravelDistanceRater implements Rater {
 
     public static final RatingCriteria RATING_CRITERIA = RatingCriteria.TRAVEL_DISTANCE;
@@ -22,7 +29,7 @@ public class TravelDistanceRater implements Rater {
     private long worstDistance = 0;
     private long actualDistance = 0;
 
-    public TravelDistanceRater(VehicleManager vehicleManager, double factor) {
+    private TravelDistanceRater(VehicleManager vehicleManager, double factor) {
         region = vehicleManager.getRegion();
         pathCalculator = vehicleManager.getPathCalculator();
         this.factor = factor;
@@ -32,7 +39,7 @@ public class TravelDistanceRater implements Rater {
     public double getScore() {
         double actualWorstDistance = worstDistance * factor;
 
-        if (actualDistance >= actualWorstDistance) {
+        if (actualDistance >= actualWorstDistance || actualWorstDistance == 0) {
             return 0;
         }
 
@@ -55,9 +62,7 @@ public class TravelDistanceRater implements Rater {
         events.stream()
             .filter(ArrivedAtNodeEvent.class::isInstance)
             .map(ArrivedAtNodeEvent.class::cast)
-            .forEach(arrivedAtNodeEvent -> {
-                actualDistance += arrivedAtNodeEvent.getLastEdge().getDuration();
-            });
+            .forEach(arrivedAtNodeEvent -> actualDistance += arrivedAtNodeEvent.getLastEdge().getDuration());
     }
 
     private double getDistance(Region.Node node1, Region.Node node2) {
@@ -76,12 +81,15 @@ public class TravelDistanceRater implements Rater {
         return distance;
     }
 
+    /**
+     * A {@link Rater.Factory} for creating a new {@link TravelDistanceRater}.
+     */
     public static class Factory implements Rater.Factory {
 
-        private final VehicleManager vehicleManager;
-        private final double factor;
+        public final VehicleManager vehicleManager;
+        public final double factor;
 
-        Factory(VehicleManager vehicleManager, double factor) {
+        private Factory(VehicleManager vehicleManager, double factor) {
             this.vehicleManager = vehicleManager;
             this.factor = factor;
         }
@@ -91,12 +99,26 @@ public class TravelDistanceRater implements Rater {
             return new TravelDistanceRater(vehicleManager, factor);
         }
 
+        /**
+         * Creates a new {@link TravelDistanceRater.FactoryBuilder}.
+         * @return The created {@link TravelDistanceRater.FactoryBuilder}.
+         */
+        public static TravelDistanceRater.FactoryBuilder builder() {
+            return new TravelDistanceRater.FactoryBuilder();
+        }
+
+
     }
 
+    /**
+     * A {@link Rater.FactoryBuilder} form constructing a new {@link TravelDistanceRater.Factory}.
+     */
     public static class FactoryBuilder implements Rater.FactoryBuilder {
 
-        private VehicleManager vehicleManager;
-        private double factor = 0.5;
+        public VehicleManager vehicleManager;
+        public double factor = 0.5;
+
+        private FactoryBuilder() {}
 
         @Override
         public Rater.Factory build() {
@@ -110,7 +132,7 @@ public class TravelDistanceRater implements Rater {
 
         public FactoryBuilder setFactor(double factor) {
             if (factor < 0) {
-                throw new IllegalArgumentException("factor must be positiv");
+                throw new IllegalArgumentException("factor must be positive");
             }
 
             this.factor = factor;

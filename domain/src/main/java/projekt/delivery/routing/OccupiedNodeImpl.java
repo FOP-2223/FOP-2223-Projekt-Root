@@ -6,12 +6,18 @@ import java.util.List;
 import java.util.Map;
 
 class OccupiedNodeImpl<C extends Region.Node> extends AbstractOccupied<C> {
-    OccupiedNodeImpl(C component, VehicleManager vehicleManager) {
-        super(component, vehicleManager);
+
+    /**
+     * Creates a new {@link OccupiedNodeImpl} instance.
+     * @param node The represented {@link Region.Node}.
+     * @param vehicleManager the corresponding {@link VehicleManager}.
+     */
+    OccupiedNodeImpl(C node, VehicleManager vehicleManager) {
+        super(node, vehicleManager);
     }
 
     @Override
-    void tick(long currentTick) {
+    public void tick(long currentTick) {
         // it is important to create a copy here. The move method in vehicle will probably modify this map
         // TODO: Only move things that can be moved
         for (Map.Entry<VehicleImpl, VehicleStats> entry : List.copyOf(vehicles.entrySet())) {
@@ -20,7 +26,7 @@ class OccupiedNodeImpl<C extends Region.Node> extends AbstractOccupied<C> {
     }
 
     @Override
-    void addVehicle(VehicleImpl vehicle, long currentTick) {
+    public void addVehicle(VehicleImpl vehicle, long currentTick) {
         if (vehicles.containsKey(vehicle)) {
             return;
         }
