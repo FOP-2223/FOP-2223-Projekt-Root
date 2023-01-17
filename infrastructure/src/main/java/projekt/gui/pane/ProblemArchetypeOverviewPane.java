@@ -52,7 +52,10 @@ public class ProblemArchetypeOverviewPane extends Pane {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setContent(box);
-        scrollPane.setPrefSize(320, 450);
+        scrollPane.setPrefSize(320, 350);
+        scrollPane.prefHeightProperty().bind(heightProperty().subtract(getPadding().getBottom()));
+        scrollPane.setFitToHeight(true);
+        scrollPane.setFitToWidth(true);
 
         getChildren().add(scrollPane);
     }
