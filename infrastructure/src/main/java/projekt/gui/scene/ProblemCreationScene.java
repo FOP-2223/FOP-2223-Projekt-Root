@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import projekt.delivery.archetype.ProblemArchetype;
 import projekt.delivery.archetype.ProblemArchetypeImpl;
@@ -72,7 +73,15 @@ public class ProblemCreationScene extends MenuScene<ProblemCreationSceneControll
         buttonsVbox.getChildren().add(createNewRaterFactoryButton());
         buttonsVbox.getChildren().add(createCreateAndAddButton());
 
-        limitWidth(buttonsVbox.getChildren(), 200);
+        //limitWidth(buttonsVbox.getChildren(), 200);
+        buttonsVbox.getChildren().stream()
+            .filter(Button.class::isInstance)
+            .map(Button.class::cast)
+            .forEach(button -> {
+                button.setPrefSize(200, 50);
+                button.setMaxWidth(Double.MAX_VALUE);
+            });
+        buttonsVbox.setPadding(new Insets(20, 20, 20, 20));
 
         createNewPane.setCenter(buttonsVbox);
 
@@ -110,6 +119,7 @@ public class ProblemCreationScene extends MenuScene<ProblemCreationSceneControll
         buttonsVbox.getChildren().remove(problemsPane);
         setupProblemsPane();
         buttonsVbox.getChildren().add(problemsPane);
+        VBox.setVgrow(problemsPane, Priority.ALWAYS);
         createAndAddButton.setDisable(checkProblem().size() > 0);
     }
 
@@ -168,6 +178,7 @@ public class ProblemCreationScene extends MenuScene<ProblemCreationSceneControll
         problemsPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         problemsPane.setContent(outerBox);
         problemsPane.setPrefSize(180, 150);
+        problemsPane.setMaxHeight(Double.MAX_VALUE);
     }
 
     private void setupTable() {

@@ -65,11 +65,16 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
         buttons.setPadding(new Insets(20, 20, 20, 20));
 
         returnButton = new Button("Return");
+        returnButton.setMaxWidth(600);
         buttons.getChildren().add(returnButton);
 
         quitButton = new Button("Quit");
+        quitButton.setMaxWidth(600);
         quitButton.setOnAction(e -> getController().quit());
         buttons.getChildren().add(quitButton);
+
+        HBox.setHgrow(returnButton, Priority.ALWAYS);
+        HBox.setHgrow(quitButton, Priority.ALWAYS);
 
         root.setBottom(buttons);
 
@@ -230,7 +235,8 @@ public abstract class MenuScene<SC extends MenuSceneController> extends Scene im
 
     public static TableView<ProblemArchetype> createProblemArchetypeTableView() {
         TableView<ProblemArchetype> table = new TableView<>();
-        table.setMaxWidth(200);
+        table.setMaxWidth(Double.MAX_VALUE);
+        table.setMaxHeight(Double.MAX_VALUE);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.setMinHeight(200);
 

@@ -25,7 +25,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 import static projekt.gui.TUColors.*;
 
@@ -49,7 +50,7 @@ public class MapPane extends Pane {
     private static final double MIN_SCALE = 3;
 
     private final AtomicReference<Point2D> lastPoint = new AtomicReference<>();
-    private final AffineTransform transformation = new AffineTransform();
+    private AffineTransform transformation = new AffineTransform();
 
     private final Text positionText = new Text();
 
@@ -70,6 +71,8 @@ public class MapPane extends Pane {
     private Consumer<? super Collection<Vehicle>> vehiclesSelectionHandler;
     private Consumer<? super Collection<Vehicle>> vehiclesRemoveSelectionHandler;
 
+    private boolean alreadyCentered = false;
+
     /**
      * Creates a new, empty {@link MapPane}.
      */
@@ -78,7 +81,7 @@ public class MapPane extends Pane {
     }
 
     /**
-     * Creates a new {@link MapPane} nad displays the given components.
+     * Creates a new {@link MapPane}, displays the given components and centers itself.
      *
      * @param nodes    The {@link Region.Node}s to display.
      * @param edges    The {@link Region.Edge}s to display.
@@ -88,9 +91,8 @@ public class MapPane extends Pane {
                    Collection<? extends Region.Edge> edges,
                    Collection<? extends Vehicle> vehicles) {
 
-        //TODO make configurable
-        transformation.translate(350, 350);
-        transformation.scale(20, 20);
+        //avoid division by zero when scale = 1
+        transformation.scale(MIN_SCALE, MIN_SCALE);
 
         for (Region.Edge edge : edges) {
             addEdge(edge);
@@ -111,76 +113,6 @@ public class MapPane extends Pane {
     }
 
     // --- Edge Handling --- //
-
-    @Nullable
-    private static Float getStrokeWidth(int i, boolean inverted) {
-        float strokeWidth;
-        if (i % 10 == 0) {
-            strokeWidth = inverted ? TEN_TICKS_WIDTH : FIVE_TICKS_WIDTH;
-        } else if (i % 5 == 0) {
-            strokeWidth = inverted ? FIVE_TICKS_WIDTH : TEN_TICKS_WIDTH;
-        } else {
-            return null;
-        }
-        return strokeWidth;
-    }
-
-    private static Point2D locationToPoint2D(Location location) {
-        return new Point2D.Double(location.getX(), location.getY());
-    }
-
-    private static Point2D getDifference(Point2D p1, Point2D p2) {
-        return new Point2D.Double(p1.getX() - p2.getX(), p1.getY() - p2.getY());
-    }
-
-    private static Point2D midPoint(VehicleManager.Occupied<?> occupied) {
-        if (occupied.getComponent() instanceof Region.Node) {
-            return midPoint(((Region.Node) occupied.getComponent()).getLocation());
-        } else if (occupied.getComponent() instanceof Region.Edge) {
-            return midPoint((Region.Edge) occupied.getComponent());
-        }
-        throw new UnsupportedOperationException("unsupported type of component");
-    }
-
-    private static Point2D midPoint(Location location) {
-        return new Point2D.Double(location.getX(), location.getY());
-    }
-
-    private static Point2D midPoint(Vehicle vehicle) {
-        return midPoint(vehicle.getOccupied());
-    }
-
-    private static Point2D midPoint(Region.Node node) {
-        return midPoint(node.getLocation());
-    }
-
-    private static Point2D midPoint(Region.Edge edge) {
-        var l1 = edge.getNodeA().getLocation();
-        var l2 = edge.getNodeB().getLocation();
-        return new Point2D.Double((l1.getX() + l2.getX()) / 2d, (l1.getY() + l2.getY()) / 2d);
-    }
-
-    // --- Node Handling --- //
-
-    @SuppressWarnings("SameParameterValue")
-    private static Image loadImage(String name, Color color) {
-        try {
-            BufferedImage image = ImageIO.read(Objects.requireNonNull(MapPane.class.getClassLoader().getResource(name)));
-            for (int x = 0; x < image.getWidth(); x++)
-                for (int y = 0; y < image.getHeight(); y++)
-                    if (image.getRGB(x, y) == java.awt.Color.BLACK.getRGB())
-                        image.setRGB(x, y, new java.awt.Color(
-                            (float) color.getRed(),
-                            (float) color.getGreen(),
-                            (float) color.getBlue(),
-                            (float) color.getOpacity())
-                            .getRGB());
-            return SwingFXUtils.toFXImage(image, null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     /**
      * Adds an {@link Region.Edge} to this {@link MapPane} and displays it.
@@ -258,8 +190,6 @@ public class MapPane extends Pane {
         }
     }
 
-    // -- Vehicle Handling --- //
-
     /**
      * Updates the position of the given {@link Region.Edge}.
      *
@@ -286,6 +216,8 @@ public class MapPane extends Pane {
         labeledEdge.text().setX(transformedMidPoint.getX());
         labeledEdge.text().setY(transformedMidPoint.getY());
     }
+
+    // --- Node Handling --- //
 
     /**
      * Adds a {@link Region.Node} to this {@link MapPane} and displays it.
@@ -364,8 +296,6 @@ public class MapPane extends Pane {
         }
     }
 
-    // --- Other Util --- //
-
     /**
      * Updates the position of the given {@link Region.Node}.
      *
@@ -388,6 +318,8 @@ public class MapPane extends Pane {
         labeledNode.text().setY(transformedMidPoint.getY());
     }
 
+    // --- Vehicle Handling --- //
+
     /**
      * Adds a {@link Vehicle} to this {@link MapPane} and displays it.
      *
@@ -396,9 +328,6 @@ public class MapPane extends Pane {
     public void addVehicle(Vehicle vehicle) {
         vehicles.put(vehicle, drawVehicle(vehicle));
     }
-
-
-    // --- Private Methods --- //
 
     /**
      * Adds the {@link Vehicle}s to this {@link MapPane} and displays them.
@@ -486,6 +415,8 @@ public class MapPane extends Pane {
         imageView.setY(transformedMidPoint.getY() - imageView.getImage().getHeight() / 2);
     }
 
+    // --- Other Util --- //
+
     /**
      * Removes all components from this {@link MapPane}.
      */
@@ -512,13 +443,51 @@ public class MapPane extends Pane {
         redrawVehicles();
     }
 
+    /**
+     * Tries to center this {@link MapPane} as good as possible such that each node is visible while keeping the zoom factor as high as possible.
+     */
+    public void center() {
+
+        if (getHeight() == 0.0 || getWidth() == 0.0) {
+            return;
+        }
+
+        double maxX = nodes.keySet().stream().map(node -> node.getLocation().getX())
+            .collect(new ComparingCollector<Integer>(Comparator.naturalOrder()));
+
+        double maxY = nodes.keySet().stream().map(node -> node.getLocation().getY())
+            .collect(new ComparingCollector<Integer>(Comparator.naturalOrder()));
+
+        double minX = nodes.keySet().stream().map(node -> node.getLocation().getX())
+            .collect(new ComparingCollector<Integer>(Comparator.reverseOrder()));
+
+        double minY = nodes.keySet().stream().map(node -> node.getLocation().getY())
+            .collect(new ComparingCollector<Integer>(Comparator.reverseOrder()));
+
+        AffineTransform reverse = new AffineTransform();
+
+        reverse.setToTranslation(minX, minY);
+        reverse.scale(1.25 * (maxX - minX) / getWidth(),1.25 * (maxY - minY) / getHeight());
+        reverse.translate(-Math.abs(0.125 * reverse.getTranslateX()) / reverse.getScaleX(),-Math.abs(0.125 * reverse.getTranslateY()) / reverse.getScaleY());
+
+        transformation = reverse;
+        transformation = getReverseTransform();
+
+        redrawGrid();
+        redrawMap();
+
+        alreadyCentered = true;
+    }
+
+    // --- Private Methods --- //
+
     private void initListeners() {
 
         setOnMouseDragged(actionEvent -> {
-                Point2D point = new Point2D.Double(actionEvent.getX(), actionEvent.getY());
-                Point2D diff = getDifference(point, lastPoint.get());
+            Point2D point = new Point2D.Double(actionEvent.getX(), actionEvent.getY());
+            Point2D diff = getDifference(point, lastPoint.get());
 
-                transformation.translate(diff.getX() / transformation.getScaleX(), diff.getY() / transformation.getScaleY());
+            transformation.translate(diff.getX() / transformation.getScaleX(), diff.getY() / transformation.getScaleY());
 
                 redrawMap();
                 redrawGrid();
@@ -547,19 +516,32 @@ public class MapPane extends Pane {
             Point2D point = new Point2D.Double(actionEvent.getX(), actionEvent.getY());
             lastPoint.set(point);
             updatePositionText(point);
+            System.out.println(transformation.getScaleX() + ", " + transformation.getScaleY() + ", " + transformation.getTranslateX() + ", " + transformation.getTranslateY());
         });
 
         widthProperty().addListener((obs, oldValue, newValue) -> {
             setClip(new Rectangle(0, 0, getWidth(), getHeight()));
-            redrawGrid();
-            redrawMap();
+
+            if (alreadyCentered) {
+                redrawGrid();
+                redrawMap();
+            } else {
+                center();
+            }
+
             drawPositionText();
         });
 
         heightProperty().addListener((obs, oldValue, newValue) -> {
             setClip(new Rectangle(0, 0, getWidth(), getHeight()));
-            redrawGrid();
-            redrawMap();
+
+            if (alreadyCentered) {
+                redrawGrid();
+                redrawMap();
+            } else {
+                center();
+            }
+
             drawPositionText();
         });
     }
@@ -620,6 +602,26 @@ public class MapPane extends Pane {
         getChildren().add(imageView);
 
         return imageView;
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static Image loadImage(String name, Color color) {
+        try {
+            BufferedImage image = ImageIO.read(Objects.requireNonNull(MapPane.class.getClassLoader().getResource(name)));
+            for (int x = 0; x < image.getWidth(); x++)
+                for (int y = 0; y < image.getHeight(); y++)
+                    if (image.getRGB(x, y) == java.awt.Color.BLACK.getRGB())
+                        image.setRGB(x, y, new java.awt.Color(
+                            (float) color.getRed(),
+                            (float) color.getGreen(),
+                            (float) color.getBlue(),
+                            (float) color.getOpacity())
+                            .getRGB());
+            return SwingFXUtils.toFXImage(image, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void handleNodeClick(Ellipse ellipse, Region.Node node) {
@@ -707,6 +709,54 @@ public class MapPane extends Pane {
         }
     }
 
+    @Nullable
+    private static Float getStrokeWidth(int i, boolean inverted) {
+        float strokeWidth;
+        if (i % 10 == 0) {
+            strokeWidth = inverted ? TEN_TICKS_WIDTH : FIVE_TICKS_WIDTH;
+        } else if (i % 5 == 0) {
+            strokeWidth = inverted ? FIVE_TICKS_WIDTH : TEN_TICKS_WIDTH;
+        } else {
+            return null;
+        }
+        return strokeWidth;
+    }
+
+    private static Point2D locationToPoint2D(Location location) {
+        return new Point2D.Double(location.getX(), location.getY());
+    }
+
+    private static Point2D getDifference(Point2D p1, Point2D p2) {
+        return new Point2D.Double(p1.getX() - p2.getX(), p1.getY() - p2.getY());
+    }
+
+    private static Point2D midPoint(VehicleManager.Occupied<?> occupied) {
+        if (occupied.getComponent() instanceof Region.Node) {
+            return midPoint(((Region.Node) occupied.getComponent()).getLocation());
+        } else if (occupied.getComponent() instanceof Region.Edge) {
+            return midPoint((Region.Edge) occupied.getComponent());
+        }
+        throw new UnsupportedOperationException("unsupported type of component");
+    }
+
+    private static Point2D midPoint(Location location) {
+        return new Point2D.Double(location.getX(), location.getY());
+    }
+
+    private static Point2D midPoint(Vehicle vehicle) {
+        return midPoint(vehicle.getOccupied());
+    }
+
+    private static Point2D midPoint(Region.Node node) {
+        return midPoint(node.getLocation());
+    }
+
+    private static Point2D midPoint(Region.Edge edge) {
+        var l1 = edge.getNodeA().getLocation();
+        var l2 = edge.getNodeB().getLocation();
+        return new Point2D.Double((l1.getX() + l2.getX()) / 2d, (l1.getY() + l2.getY()) / 2d);
+    }
+
     private void redrawGrid() {
         getChildren().removeAll(grid);
         grid.clear();
@@ -749,5 +799,49 @@ public class MapPane extends Pane {
     }
 
     private record LabeledNode(Ellipse ellipse, Text text) {
+    }
+
+    private record ComparingCollector<T extends Comparable<T>>(Comparator<T> comparator) implements Collector<T, List<T>, T> {
+
+        @Override
+        public Supplier<List<T>> supplier() {
+            return ArrayList::new;
+        }
+
+        @Override
+        public BiConsumer<List<T>, T> accumulator() {
+            return List::add;
+        }
+
+        @Override
+        public BinaryOperator<List<T>> combiner() {
+            return (list1, list2) -> {
+                list1.addAll(list2);
+                return list1;
+            };
+        }
+
+        @Override
+        public Function<List<T>, T> finisher() {
+            return list -> {
+
+                T bestFit = null;
+
+                for (T elem : list) {
+                    if (bestFit == null) {
+                        bestFit = elem;
+                    } else if (comparator.compare(elem, bestFit) > 0) {
+                        bestFit = elem;
+                    }
+                }
+
+                return bestFit;
+            };
+        }
+
+        @Override
+        public Set<Characteristics> characteristics() {
+            return Collections.emptySet();
+        }
     }
 }

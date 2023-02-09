@@ -1,5 +1,6 @@
 package projekt.gui.scene;
 
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -116,6 +117,15 @@ public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreatio
             createRemoveVehicleButton(),
             createCreateButton()
         );
+
+        vBox.getChildren().stream()
+            .filter(Button.class::isInstance)
+            .map(Button.class::cast)
+            .forEach(button -> {
+                button.setPrefSize(200, 50);
+                button.setMaxWidth(Double.MAX_VALUE);
+            });
+        vBox.setPadding(new Insets(20, 20, 20, 20));
 
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
