@@ -17,7 +17,6 @@ import projekt.h9.TutorTests_H9_BasicDeliveryServiceTest;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
-import java.util.function.BiFunction;
 
 public class Projekt_RubricProvider implements RubricProvider {
 
@@ -60,19 +59,20 @@ public class Projekt_RubricProvider implements RubricProvider {
     }
 
     public static final Criterion H1_1_1 = createCriterion("Die Methode compareTo der Klasse Location funktioniert vollständig korrekt" +
-            " wenn die x Werte der verglichenen Positionen verschieden sind",
-        () -> TutorTests_H1_LocationTest.class.getMethod("testCompareToXValueDifferent"));
+            " wenn die x Werte der verglichenen Positionen verschieden sind oder beide Positionen gleich sind",
+        () -> TutorTests_H1_LocationTest.class.getMethod("testCompareToXValueDifferent"),
+        () -> TutorTests_H1_LocationTest.class.getMethod("testCompareToEqual"));
 
     public static final Criterion H1_1_2 = createCriterion("Die Methode compareTo der Klasse Location funktioniert vollständig korrekt",
         () -> TutorTests_H1_LocationTest.class.getMethod("testCompareToXValueDifferent"),
-        () -> TutorTests_H1_LocationTest.class.getMethod("testCompareToXValueEqual"));
+        () -> TutorTests_H1_LocationTest.class.getMethod("testCompareToEqual"),
+        () -> TutorTests_H1_LocationTest.class.getMethod("testCompareToYValueDifferent"));
 
     public static final Criterion H1_1 = createParentCriterion("1.1", "compareTo", H1_1_1, H1_1_2);
 
-    public static final Criterion H1_2_1 = createCriterion("Die Methode compareTo der Klasse Location funktioniert vollständig korrekt" +
-            " wenn die x Werte der verglichenen Positionen verschieden sind",
+    public static final Criterion H1_2_1 = createCriterion("Die Methode hashCode der Klasse Location funktioniert vollständig korrekt",
         2,
-        () -> TutorTests_H1_LocationTest.class.getMethod("testCompareToXValueDifferent"));
+        () -> TutorTests_H1_LocationTest.class.getMethod("testHashCode", int.class));
 
     public static final Criterion H1_2 = createParentCriterion("1.2", "hashCode", H1_2_1);
 
@@ -82,7 +82,7 @@ public class Projekt_RubricProvider implements RubricProvider {
     public static final Criterion H1_3 = createParentCriterion("1.3", "equals", H1_3_1);
 
     public static final Criterion H1_4_1 = createCriterion("Die Methode toString der Klasse Location funktioniert vollständig korrekt",
-        () -> TutorTests_H1_LocationTest.class.getMethod("testToString"));
+        () -> TutorTests_H1_LocationTest.class.getMethod("testToString", int.class, int.class));
 
     public static final Criterion H1_4 = createParentCriterion("1.4", "toString", H1_4_1);
 
@@ -98,11 +98,11 @@ public class Projekt_RubricProvider implements RubricProvider {
 
     public static final Criterion H2_2_2 = createCriterion("Die Methode putNode der Klasse RegionImpl funktioniert vollständig korrekt",
         () -> TutorTests_H2_RegionImplTest.class.getMethod("testPutNodeSuccess"),
-        () -> TutorTests_H2_RegionImplTest.class.getMethod("testPutEdgeException"));
+        () -> TutorTests_H2_RegionImplTest.class.getMethod("testPutNodeException"));
 
     public static final Criterion H2_2 = createParentCriterion("2.2", "Da Noed!", H2_2_1, H2_2_2);
 
-    public static final Criterion H2_3_1 = createCriterion("Die Methode getEdge der Klasse RegionImpl funktioniert korrekt wenn die gesuchte Edge nicht enthalten ist",
+    public static final Criterion H2_3_1 = createCriterion("Die Methode getEdge der Klasse RegionImpl funktioniert korrekt wenn die gesuchte Edge nicht enthalten ist und locationA kleiner als locationB ist",
         () -> TutorTests_H2_RegionImplTest.class.getMethod("testGetEdgeNull"));
 
     public static final Criterion H2_3_2 = createCriterion("Die Methode getEdge der Klasse RegionImpl funktioniert korrekt wenn locationA kleiner als locationB ist",
@@ -132,8 +132,9 @@ public class Projekt_RubricProvider implements RubricProvider {
 
     public static final Criterion H2_4 = createParentCriterion("2.4", "putEdge", H2_4_1, H2_4_2, H2_4_3, H2_4_4);
 
-    public static final Criterion H2_5_1 = createCriterion("Die Methode getNodes der Klasse RegionImpl ist vollständig korrekt",
-        () -> TutorTests_H2_RegionImplTest.class.getMethod("testGetNodes"));
+    public static final Criterion H2_5_1 = createCriterion("Die Methoden getNodes und getEdges der Klasse RegionImpl ist vollständig korrekt",
+        () -> TutorTests_H2_RegionImplTest.class.getMethod("testGetNodes"),
+        () -> TutorTests_H2_RegionImplTest.class.getMethod("testGetEdges"));
 
     public static final Criterion H2_5 = createParentCriterion("2.5", "Wo Noeds?", H2_5_1);
 
@@ -199,7 +200,8 @@ public class Projekt_RubricProvider implements RubricProvider {
 
     public static final Criterion H4_2_2 = createCriterion("Die Methode compareTo der Klasse EdgeImpl vollständig korrekt",
         () -> TutorTests_H4_EdgeImplTest.class.getMethod("testCompareToSimple"),
-        () -> TutorTests_H4_EdgeImplTest.class.getMethod("testCompareToComplex"));
+        () -> TutorTests_H4_EdgeImplTest.class.getMethod("testCompareToComplex"),
+        () -> TutorTests_H4_EdgeImplTest.class.getMethod("testCompareToEqual"));
 
     public static final Criterion H4_2 = createParentCriterion("4.2", "compareTo", H4_2_1, H4_2_2);
 
@@ -247,7 +249,8 @@ public class Projekt_RubricProvider implements RubricProvider {
         () -> TutorTests_H5_VehicleTest.class.getMethod("testMoveQueuedOneNodeInQueue"));
 
     public static final Criterion H5_3_4 = createCriterion("Die Methode moveQueued der Klasse VehicleImpl funktioniert wenn die moveQueue zuvor mehrere Elemente beinhaltet hat",
-        () -> TutorTests_H5_VehicleTest.class.getMethod("testMoveQueuedMultipleNodesInQueue"));
+        () -> TutorTests_H5_VehicleTest.class.getMethod("testMoveQueuedMultipleNodesInQueue1"),
+        () -> TutorTests_H5_VehicleTest.class.getMethod("testMoveQueuedMultipleNodesInQueue2"));
 
     public static final Criterion H5_3_5 = createCriterion("Die Methode moveQueued der Klasse VehicleImpl setzt die arrivalAction korrekt",
         () -> TutorTests_H5_VehicleTest.class.getMethod("testMoveQueuedArrivalAction"));
@@ -256,7 +259,8 @@ public class Projekt_RubricProvider implements RubricProvider {
         () -> TutorTests_H5_VehicleTest.class.getMethod("testMoveQueuedException"),
         () -> TutorTests_H5_VehicleTest.class.getMethod("testMoveQueuedNoNodeInQueue"),
         () -> TutorTests_H5_VehicleTest.class.getMethod("testMoveQueuedOneNodeInQueue"),
-        () -> TutorTests_H5_VehicleTest.class.getMethod("testMoveQueuedMultipleNodesInQueue"),
+        () -> TutorTests_H5_VehicleTest.class.getMethod("testMoveQueuedMultipleNodesInQueue1"),
+        () -> TutorTests_H5_VehicleTest.class.getMethod("testMoveQueuedMultipleNodesInQueue2"),
         () -> TutorTests_H5_VehicleTest.class.getMethod("testMoveQueuedArrivalAction"));
 
     public static final Criterion H5_3 = createParentCriterion("5.3", "Ein Weg nach vorner", H5_3_1, H5_3_2, H5_3_3, H5_3_4, H5_3_5, H5_3_6);

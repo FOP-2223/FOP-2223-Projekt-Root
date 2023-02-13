@@ -1,9 +1,11 @@
 package projekt.h10;
 
 import org.junit.jupiter.api.Test;
+import org.sourcegrade.jagr.api.rubric.TestForSubmission;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
+@TestForSubmission
 public class TutorTests_H10_RunnerImplTest {
 
     @Test
