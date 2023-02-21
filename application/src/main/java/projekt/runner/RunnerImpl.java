@@ -66,7 +66,7 @@ public class RunnerImpl implements Runner {
      * @param deliveryServiceFactory The {@link DeliveryService.Factory} used to create the {@link DeliveryService}s for the {@link BasicDeliverySimulation}s.
      * @return The created {@link Map} from {@link ProblemArchetype} to {@link BasicDeliverySimulation}.
      */
-    private Map<ProblemArchetype, Simulation> createSimulations(ProblemGroup problemGroup,
+    public Map<ProblemArchetype, Simulation> createSimulations(ProblemGroup problemGroup,
                                                                   SimulationConfig simulationConfig,
                                                                   DeliveryService.Factory deliveryServiceFactory) {
 
