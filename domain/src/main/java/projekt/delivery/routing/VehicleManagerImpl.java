@@ -105,14 +105,14 @@ class VehicleManagerImpl implements VehicleManager {
         if (occupiedNode instanceof OccupiedRestaurant) {
             return (OccupiedRestaurant) occupiedNode;
         } else {
-            throw new IllegalArgumentException("Node " + occupiedNode + " is not a restaurant");
+            throw new IllegalArgumentException("Node " + node + " is not a restaurant");
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <C extends Region.Component<C>> AbstractOccupied<C> getOccupied(C component) {
-        Objects.requireNonNull(component, "component is null!");
+        Objects.requireNonNull(component, "Component is null!");
         if (component instanceof Region.Node) {
             final @Nullable AbstractOccupied<C> result = (AbstractOccupied<C>) occupiedNodes.get(component);
             if (result == null) {
@@ -144,7 +144,7 @@ class VehicleManagerImpl implements VehicleManager {
         if (occupiedNode instanceof OccupiedNeighborhood) {
             return (OccupiedNeighborhood) occupiedNode;
         } else {
-            throw new IllegalArgumentException("Node " + occupiedNode + " is not a neighborhood");
+            throw new IllegalArgumentException("Node " + node + " is not a neighborhood");
         }
     }
 
