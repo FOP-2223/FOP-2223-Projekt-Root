@@ -386,49 +386,49 @@ public class Projekt_RubricProvider implements RubricProvider {
     public static final Criterion H7 = createParentCriterion("7", "Was gibt es heute zu Essen?", H7_1);
 
     public static final Criterion H8_1_1 = createCriterion("Die Methode getScore der Klasse AmountDeliveredRater liefert den korrekten Wert zurück wenn keine Bestellung ausgeliefert wurde",
-        () -> TutorTests_H8_AmountDeliveredRaterTest.class.getMethod("testNoOrdersDelivered"));
+        () -> TutorTests_H8_AmountDeliveredRaterTest.class.getMethod("testNoOrdersDelivered", double.class, double.class));
 
     public static final Criterion H8_1_2 = createCriterion("Die Methode getScore der Klasse AmountDeliveredRater liefert den korrekten Wert zurück wenn alle Bestellungen ausgeliefert wurden",
-        () -> TutorTests_H8_AmountDeliveredRaterTest.class.getMethod("testAllOrdersDelivered"));
+        () -> TutorTests_H8_AmountDeliveredRaterTest.class.getMethod("testAllOrdersDelivered", double.class, double.class));
 
     public static final Criterion H8_1_3 = createCriterion("Die Methode getScore der Klasse AmountDeliveredRater liefert den korrekten Wert zurück wenn manche Bestellungen ausgeliefert wurden",
-        () -> TutorTests_H8_AmountDeliveredRaterTest.class.getMethod("testSomeOrdersDelivered"));
+        () -> TutorTests_H8_AmountDeliveredRaterTest.class.getMethod("testSomeOrdersDelivered", double.class, double.class, double.class));
 
     public static final Criterion H8_1 = createParentCriterion("8.1", "Habe ich alle Bestellungen ausgeliefert?", H8_1_1, H8_1_2, H8_1_3);
 
     public static final Criterion H8_2_1 = createCriterion("Die Methode getScore der Klasse InTimeRater liefert den korrekten Wert zurück wenn alle Bestellungen pünktlich ausgeliefert wurden",
-        () -> TutorTests_H8_InTimeRaterTest.class.getMethod("testAllOrdersInTime"));
+        () -> TutorTests_H8_InTimeRaterTest.class.getMethod("testAllOrdersInTime", long.class, long.class, double.class));
 
     public static final Criterion H8_2_2 = createCriterion("Die Methode getScore der Klasse InTimeRater liefert den korrekten Wert zurück wenn alle keine Bestellungen ausgeliefert wurden",
-        () -> TutorTests_H8_InTimeRaterTest.class.getMethod("testNoOrdersDelivered"));
+        () -> TutorTests_H8_InTimeRaterTest.class.getMethod("testNoOrdersDelivered", long.class, long.class, double.class));
 
     public static final Criterion H8_2_3 = createCriterion("Die Methode getScore der Klasse InTimeRater liefert den korrekten Wert zurück wenn alle Bestellungen zu spät ausgeliefert wurden",
-        () -> TutorTests_H8_InTimeRaterTest.class.getMethod("testAllOrdersAboveMaxTicksOff"));
+        () -> TutorTests_H8_InTimeRaterTest.class.getMethod("testAllOrdersAboveMaxTicksOff", long.class, long.class, double.class));
 
     public static final Criterion H8_2_4 = createCriterion("Die Methode getScore der Klasse InTimeRater liefert den korrekten Wert zurück wenn alle Bestellungen zu spät ausgeliefert wurden, aber innerhalb von ignoredTicksOff, ausgeliefert wurden",
-        () -> TutorTests_H8_InTimeRaterTest.class.getMethod("testAllOrdersInIgnoredTicksOff"));
+        () -> TutorTests_H8_InTimeRaterTest.class.getMethod("testAllOrdersInIgnoredTicksOff", long.class, long.class, double.class));
 
     public static final Criterion H8_2_5 = createCriterion("Die Methode getScore der Klasse InTimeRater liefert den korrekten Wert zurück wenn alle Bestellungen zu früh ausgeliefert wurden",
-        () -> TutorTests_H8_InTimeRaterTest.class.getMethod("testAllOrdersTooEarly"));
+        () -> TutorTests_H8_InTimeRaterTest.class.getMethod("testAllOrdersTooEarly", long.class, long.class, double.class));
 
     public static final Criterion H8_2_6 = createCriterion("Die Methode getScore der Klasse InTimeRater liefert den korrekten Wert für gemischte Eingaben zurück",
-        () -> TutorTests_H8_InTimeRaterTest.class.getMethod("testComplex"));
+        () -> TutorTests_H8_InTimeRaterTest.class.getMethod("testComplex", long.class, long.class, double.class));
 
     public static final Criterion H8_2 = createParentCriterion("8.2", "War ich pünkltich?", H8_2_1, H8_2_2, H8_2_3, H8_2_4, H8_2_5, H8_2_6);
 
     public static final Criterion H8_3_1 = createCriterion("Die Methode getScore der Klasse TravelDistanceRater liefert den korrekten Wert zurück wenn keine Strecke zurückgelegt wurde",
-        () -> TutorTests_H8_TravelDistanceRaterTest.class.getMethod("testNoDistanceTraveled"));
+        () -> TutorTests_H8_TravelDistanceRaterTest.class.getMethod("testNoDistanceTraveled", double.class, double.class));
 
     public static final Criterion H8_3_2 = createCriterion("Die Methode getScore der Klasse TravelDistanceRater liefert den korrekten Wert zurück wenn die längste Strecke zurückgelegt wurde",
-        () -> TutorTests_H8_TravelDistanceRaterTest.class.getMethod("testWorstDistanceTraveled"));
+        () -> TutorTests_H8_TravelDistanceRaterTest.class.getMethod("testWorstDistanceTraveled", double.class, double.class));
 
     public static final Criterion H8_3_3 = createCriterion("Die Methode getScore der Klasse TravelDistanceRater liefert den korrekten Wert zurück wenn weniger als die längste Strecke zurückgelegt wurde",
-        () -> TutorTests_H8_TravelDistanceRaterTest.class.getMethod("testLessThanWorstDistanceTraveled"));
+        () -> TutorTests_H8_TravelDistanceRaterTest.class.getMethod("testLessThanWorstDistanceTraveled", double.class, double.class));
 
     public static final Criterion H8_3_4 = createCriterion("Die Methode getScore der Klasse TravelDistanceRater funktioniert vollständig korrekt",
-        () -> TutorTests_H8_TravelDistanceRaterTest.class.getMethod("testWorstDistanceTraveled"),
-        () -> TutorTests_H8_TravelDistanceRaterTest.class.getMethod("testNoDistanceTraveled"),
-        () -> TutorTests_H8_TravelDistanceRaterTest.class.getMethod("testLessThanWorstDistanceTraveled"));
+        () -> TutorTests_H8_TravelDistanceRaterTest.class.getMethod("testWorstDistanceTraveled", double.class, double.class),
+        () -> TutorTests_H8_TravelDistanceRaterTest.class.getMethod("testNoDistanceTraveled", double.class, double.class),
+        () -> TutorTests_H8_TravelDistanceRaterTest.class.getMethod("testLessThanWorstDistanceTraveled", double.class, double.class));
 
     public static final Criterion H8_3 = createParentCriterion("8.3", "Wie viel bin ich gefahren?", H8_3_1, H8_3_2, H8_3_3, H8_3_4);
 
@@ -480,16 +480,23 @@ public class Projekt_RubricProvider implements RubricProvider {
     public static final Criterion H10_1 = createParentCriterion("10.1", "Simulationen erstellen", H10_1_1);
 
     public static final Criterion H10_2_1 = createCriterion("Die Methode run der Klasse RunnerImpl führt jede Simulation simulationRuns mal aus",
-        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testSimulationsExecuted"));
+        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testSimulationsExecuted", int.class));
 
-    public static final Criterion H10_2_2 = createCriterion("Die Methode run der Klasse RunnerImpl geht korrekt mit dem SimulationSetupHandler um",
-        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testSimulationSetupHandler"));
+    public static final Criterion H10_2_2 = createCriterion("Die Methode run der Klasse RunnerImpl geht korrekt mit dem SimulationSetupHandler und dem SimulationFinishedHandler um",
+        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testSimulationSetupHandler", int.class),
+        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testSimulationFinishedHandler", int.class));
 
-    public static final Criterion H10_2_3 = createCriterion("Die Methode run der Klasse RunnerImpl geht korrekt mit dem SimulationFinishedHandler um",
-        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testSimulationFinishedHandler"));
+    public static final Criterion H10_2_3 = createCriterion("Die Methode run der Klasse RunnerImpl geht korrekt mit dem resultHandler um",
+        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testResultHandler", int.class, double.class, double.class));
 
-    public static final Criterion H10_2_4 = createCriterion("Die Methode run der Klasse RunnerImpl geht korrekt mit dem resultHandler um",
-        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testResultHandler"));
+
+
+    //TODO add methode zum testen ob z.B. createSimulations mit korrektem Wert aufgerufen wurde
+    public static final Criterion H10_2_4 = createCriterion("Die Methode run der Klasse RunnerImpl funktioniert vollständig korrekt",
+        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testSimulationsExecuted", int.class),
+        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testSimulationSetupHandler", int.class),
+        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testSimulationFinishedHandler", int.class),
+        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testResultHandler", int.class, double.class, double.class));
 
     public static final Criterion H10_2 = createParentCriterion("10.2", "Runner Implementationen", H10_2_1, H10_2_2, H10_2_3, H10_2_4);
 

@@ -1,7 +1,16 @@
 package projekt.util;
 
 import projekt.base.Location;
+import projekt.delivery.archetype.ProblemArchetype;
+import projekt.delivery.archetype.ProblemGroup;
+import projekt.delivery.generator.OrderGenerator;
+import projekt.delivery.rating.Rater;
+import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.*;
+import projekt.delivery.service.DeliveryService;
+import projekt.delivery.simulation.Simulation;
+import projekt.delivery.simulation.SimulationConfig;
+import projekt.runner.RunnerImpl;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -71,6 +80,13 @@ public class Utils {
 
     @SuppressWarnings("unchecked")
     public static void addEdgesAttributeToRegion(Region region, Location locationA, Map<Location, Region.Edge> nodes) throws ReflectiveOperationException {
+
+        for (Location locationB : nodes.keySet()) {
+            if (locationA.compareTo(locationB) > 0) {
+                throw new IllegalArgumentException(String.format("locationA %s must be <= locationB %s", locationA, locationB));
+            }
+        }
+
         Field edgesField = region.getClass().getDeclaredField("edges");
         edgesField.setAccessible(true);
         ((Map<Location, Map<Location, Region.Edge>>) edgesField.get(region)).put(locationA, new HashMap<>(nodes));
@@ -164,5 +180,99 @@ public class Utils {
         Constructor<?> constructor = Class.forName("projekt.delivery.routing.VehicleImpl$PathImpl").getDeclaredConstructor(Deque.class, Consumer.class);
         constructor.setAccessible(true);
         return (Vehicle.Path) constructor.newInstance(nodes, arrivalAction);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<Region.Node, VehicleManager.Occupied<? extends Region.Node>> callToOccupiedNodes(VehicleManager vehicleManager, Collection<Region.Node> nodes) throws ReflectiveOperationException {
+        Method method = vehicleManager.getClass().getDeclaredMethod("toOccupiedNodes", Collection.class);
+        method.setAccessible(true);
+        return (Map<Region.Node, VehicleManager.Occupied<? extends Region.Node>>) method.invoke(vehicleManager, nodes);
+    }
+
+    public static Map<Region.Node, VehicleManager.Occupied<? extends Region.Node>> callToOccupiedNodes(VehicleManager vehicleManager, Region.Node... nodes) throws ReflectiveOperationException {
+        return callToOccupiedNodes(vehicleManager, Arrays.asList(nodes));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<Region.Edge, VehicleManager.Occupied<Region.Edge>> callToOccupiedEdges(VehicleManager vehicleManager, Collection<Region.Edge> edges) throws ReflectiveOperationException {
+        Method method = vehicleManager.getClass().getDeclaredMethod("toOccupiedEdges", Collection.class);
+        method.setAccessible(true);
+        return (Map<Region.Edge, VehicleManager.Occupied<Region.Edge>>) method.invoke(vehicleManager, edges);
+    }
+
+    public static Map<Region.Edge, VehicleManager.Occupied<Region.Edge>> callToOccupiedEdges(VehicleManager vehicleManager, Region.Edge... edges) throws ReflectiveOperationException {
+        return callToOccupiedEdges(vehicleManager, Arrays.asList(edges));
+    }
+
+    public static void setOccupiedNodeOfVehicleManager(VehicleManager vehicleManager, Map<Region.Node, VehicleManager.Occupied<? extends Region.Node>> map) throws ReflectiveOperationException {
+        Field occupiedNodesField = vehicleManager.getClass().getDeclaredField("occupiedNodes");
+        occupiedNodesField.setAccessible(true);
+        occupiedNodesField.set(vehicleManager, map);
+    }
+
+    public static void setOccupiedEdgeOfVehicleManager(VehicleManager vehicleManager, Map<Region.Edge, VehicleManager.Occupied<Region.Edge>> map) throws ReflectiveOperationException {
+        Field occupiedEdgesField = vehicleManager.getClass().getDeclaredField("occupiedEdges");
+        occupiedEdgesField.setAccessible(true);
+        occupiedEdgesField.set(vehicleManager, map);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Set<VehicleManager.Occupied<?>> callGetAllOccupied(VehicleManager vehicleManager) throws ReflectiveOperationException {
+        Method method = vehicleManager.getClass().getDeclaredMethod("getAllOccupied");
+        method.setAccessible(true);
+        return (Set<VehicleManager.Occupied<?>>) method.invoke(vehicleManager);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static VehicleManager.Occupied<Region.Node> createOccupiedNode(VehicleManager vehicleManager, Region.Node node) throws ReflectiveOperationException {
+        Constructor<?> constructor = Class.forName("projekt.delivery.routing.OccupiedNodeImpl").getDeclaredConstructor(Region.Node.class, VehicleManager.class);
+        constructor.setAccessible(true);
+        return (VehicleManager.Occupied<Region.Node>) constructor.newInstance(node, vehicleManager);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static VehicleManager.Occupied<Region.Edge> createOccupiedEdge(VehicleManager vehicleManager, Region.Edge edge) throws ReflectiveOperationException {
+        Constructor<?> constructor = Class.forName("projekt.delivery.routing.OccupiedEdgeImpl").getDeclaredConstructor(Region.Edge.class, VehicleManager.class);
+        constructor.setAccessible(true);
+        return (VehicleManager.Occupied<Region.Edge>) constructor.newInstance(edge, vehicleManager);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static VehicleManager.Occupied<Region.Neighborhood> createOccupiedNeighborhood(VehicleManager vehicleManager, Region.Neighborhood neighborhood) throws ReflectiveOperationException {
+        Constructor<?> constructor = Class.forName("projekt.delivery.routing.OccupiedNeighborhoodImpl").getDeclaredConstructor(Region.Neighborhood.class, VehicleManager.class);
+        constructor.setAccessible(true);
+        return (VehicleManager.Occupied<Region.Neighborhood>) constructor.newInstance(neighborhood, vehicleManager);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static VehicleManager.Occupied<Region.Restaurant> createOccupiedRestaurant(VehicleManager vehicleManager, Region.Restaurant restaurant) throws ReflectiveOperationException {
+        Constructor<?> constructor = Class.forName("projekt.delivery.routing.OccupiedRestaurantImpl").getDeclaredConstructor(Region.Restaurant.class, VehicleManager.class);
+        constructor.setAccessible(true);
+        return (VehicleManager.Occupied<Region.Restaurant>) constructor.newInstance(restaurant, vehicleManager);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<ProblemArchetype, Simulation> callCreateSimulations(RunnerImpl runner,
+                                                                          ProblemGroup problemGroup,
+                                                                          SimulationConfig simulationConfig,
+                                                                          DeliveryService.Factory deliveryServiceFactory)
+        throws ReflectiveOperationException {
+
+        Method method = runner.getClass().getDeclaredMethod("createSimulations", ProblemGroup.class, SimulationConfig.class, DeliveryService.Factory.class);
+        method.setAccessible(true);
+        return (Map<ProblemArchetype, Simulation>) method.invoke(runner, problemGroup, simulationConfig, deliveryServiceFactory);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<RatingCriteria, Rater.Factory> getRaterFactoryMap(Simulation simulation) throws ReflectiveOperationException {
+        Field raterFactoryMapField = simulation.getClass().getDeclaredField("raterFactoryMap");
+        raterFactoryMapField.setAccessible(true);
+        return (Map<RatingCriteria, Rater.Factory>) raterFactoryMapField.get(simulation);
+    }
+
+    public static OrderGenerator.Factory getOrderGeneratorFactory(Simulation simulation) throws ReflectiveOperationException {
+        Field orderGeneratorFactoryField = simulation.getClass().getDeclaredField("orderGeneratorFactory");
+        orderGeneratorFactoryField.setAccessible(true);
+        return (OrderGenerator.Factory) orderGeneratorFactoryField.get(simulation);
     }
 }
