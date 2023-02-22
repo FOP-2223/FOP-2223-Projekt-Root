@@ -3,7 +3,7 @@ package projekt.delivery.routing;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 class VehicleImpl implements Vehicle {
 
@@ -48,7 +48,7 @@ class VehicleImpl implements Vehicle {
     }
 
     @Override
-    public void moveDirect(Region.Node node, Consumer<? super Vehicle> arrivalAction) {
+    public void moveDirect(Region.Node node, BiConsumer<? super Vehicle, Long> arrivalAction) {
         checkMoveToNode(node);
         moveQueue.clear();
         if (occupied instanceof OccupiedEdgeImpl) {
@@ -61,14 +61,14 @@ class VehicleImpl implements Vehicle {
             final Region.Node nodeA = ((Region.Edge) occupied.component).getNodeA();
             final Region.Node nodeB = ((Region.Edge) occupied.component).getNodeB();
             final Region.Node nextNode = previousNode.equals(nodeA) ? nodeB : nodeA;
-            moveQueue.add(new PathImpl(new ArrayDeque<>(Collections.singleton(nextNode)), v -> {
+            moveQueue.add(new PathImpl(new ArrayDeque<>(Collections.singleton(nextNode)), (v, t) -> {
             }));
         }
         moveQueued(node, arrivalAction);
     }
 
     @Override
-    public void moveQueued(Region.Node node, Consumer<? super Vehicle> arrivalAction) {
+    public void moveQueued(Region.Node node, BiConsumer<? super Vehicle, Long> arrivalAction) {
         checkMoveToNode(node);
         Region.Node startNode = null;
         final Iterator<PathImpl> it = moveQueue.descendingIterator();
@@ -87,7 +87,7 @@ class VehicleImpl implements Vehicle {
             }
         }
         final Deque<Region.Node> nodes = vehicleManager.getPathCalculator().getPath(startNode, node);
-        moveQueue.add(new PathImpl(nodes, ((Consumer<Vehicle>) v ->
+        moveQueue.add(new PathImpl(nodes, ((BiConsumer<Vehicle, Long>) (v, t) ->
             System.out.println("Vehicle " + v.getId() + " arrived at node " + node)).andThen(arrivalAction)));
     }
 
@@ -137,11 +137,11 @@ class VehicleImpl implements Vehicle {
         final PathImpl path = moveQueue.peek();
         if (path.nodes().isEmpty()) {
             moveQueue.pop();
-            final @Nullable Consumer<? super Vehicle> action = path.arrivalAction();
+            final @Nullable BiConsumer<? super Vehicle, Long> action = path.arrivalAction();
             if (action == null) {
                 move(currentTick);
             } else {
-                action.accept(this);
+                action.accept(this, currentTick);
             }
         } else {
             Region.Node next = path.nodes().peek();
@@ -185,7 +185,7 @@ class VehicleImpl implements Vehicle {
             + ')';
     }
 
-    private record PathImpl(Deque<Region.Node> nodes, Consumer<? super Vehicle> arrivalAction) implements Path {
+    private record PathImpl(Deque<Region.Node> nodes, BiConsumer<? super Vehicle, Long> arrivalAction) implements Path {
 
     }
 }

@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import static org.mockito.Mockito.*;
 import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
@@ -56,7 +56,7 @@ public class TutorTests_H5_VehicleTest {
     private ArgumentCaptor<Region.Node> endCaptor;
 
     private ArgumentCaptor<Region.Node> nodeCaptor;
-    private ArgumentCaptor<Consumer<Vehicle>> arrivalActionCaptor;
+    private ArgumentCaptor<BiConsumer<Vehicle, Long>> arrivalActionCaptor;
 
     @SuppressWarnings("unchecked")
     @BeforeEach
@@ -99,7 +99,7 @@ public class TutorTests_H5_VehicleTest {
         startCaptor = ArgumentCaptor.forClass(Region.Node.class);
         endCaptor = ArgumentCaptor.forClass(Region.Node.class);
         nodeCaptor = ArgumentCaptor.forClass(Region.Node.class);
-        arrivalActionCaptor = ArgumentCaptor.forClass(Consumer.class);
+        arrivalActionCaptor = ArgumentCaptor.forClass(BiConsumer.class);
     }
 
     @Test
@@ -256,7 +256,7 @@ public class TutorTests_H5_VehicleTest {
             .build();
 
         try {
-            vehicle.moveQueued(restaurantE, vehicle -> {});
+            vehicle.moveQueued(restaurantE, (v, t) -> {});
         } catch (IllegalArgumentException e) {
             assertEquals("Vehicle " + vehicle.getId() + " cannot move to own node " + restaurantE.toString(), e.getMessage(), context,
                 TR -> "Vehicle.moveQueued(Node, Consumer<Vehicle>) did not throw an IllegalArgumentException with the correct message when the node to move to was the currently occupied node");
@@ -273,14 +273,14 @@ public class TutorTests_H5_VehicleTest {
 
         AtomicReference<Boolean> called = new AtomicReference<>(false);
 
-        vehicle.moveQueued(nodeB, vehicle -> called.set(true));
+        vehicle.moveQueued(nodeB, (v, t) -> called.set(true));
 
         Deque<Vehicle.Path> moveQueue = getMoveQueueOfVehicle(vehicle);
 
         assertEquals(1, moveQueue.size(), context,
             TR -> "Vehicle.moveQueued(Node, Consumer<Vehicle>) did not add the path to the move queue or added to many paths");
 
-        moveQueue.getFirst().arrivalAction().accept(vehicle);
+        moveQueue.getFirst().arrivalAction().accept(vehicle, 0L);
 
         assertTrue(called.get(), context,
             TR -> "The arrivalAction of the added path wasn't properly set to the given arrivalAction");
@@ -301,7 +301,7 @@ public class TutorTests_H5_VehicleTest {
         when(vehicleManager.getPathCalculator().getPath(startCaptor.capture(), endCaptor.capture()))
             .thenReturn(expectedNodes);
 
-        vehicle.moveQueued(nodeA, vehicle -> {});
+        vehicle.moveQueued(nodeA, (v, t) -> {});
 
         Deque<Vehicle.Path> moveQueue = getMoveQueueOfVehicle(vehicle);
 
@@ -329,7 +329,7 @@ public class TutorTests_H5_VehicleTest {
             .add("input", locationA)
             .build();
 
-        Vehicle.Path originalPath = createPath(new LinkedList<>(List.of(nodeD, nodeC)), v -> {});
+        Vehicle.Path originalPath = createPath(new LinkedList<>(List.of(nodeD, nodeC)), (v, t) -> {});
         getMoveQueueOfVehicle(vehicle).push(originalPath);
 
         mockPathCalculator(vehicleManager);
@@ -339,7 +339,7 @@ public class TutorTests_H5_VehicleTest {
         when(vehicleManager.getPathCalculator().getPath(startCaptor.capture(), endCaptor.capture()))
             .thenReturn(expectedNodes);
 
-        vehicle.moveQueued(nodeA, vehicle -> {});
+        vehicle.moveQueued(nodeA, (v, t) -> {});
 
         Deque<Vehicle.Path> moveQueue = getMoveQueueOfVehicle(vehicle);
 
@@ -371,8 +371,8 @@ public class TutorTests_H5_VehicleTest {
             .add("input", locationA)
             .build();
 
-        Vehicle.Path originalPath1 = createPath(new LinkedList<>(List.of(nodeD, nodeC)), v -> {});
-        Vehicle.Path originalPath2 = createPath(new LinkedList<>(List.of(nodeB, nodeC)), v -> {});
+        Vehicle.Path originalPath1 = createPath(new LinkedList<>(List.of(nodeD, nodeC)), (v, t) -> {});
+        Vehicle.Path originalPath2 = createPath(new LinkedList<>(List.of(nodeB, nodeC)), (v, t) -> {});
 
         getMoveQueueOfVehicle(vehicle).push(originalPath2);
         getMoveQueueOfVehicle(vehicle).push(originalPath1);
@@ -384,7 +384,7 @@ public class TutorTests_H5_VehicleTest {
         when(vehicleManager.getPathCalculator().getPath(startCaptor.capture(), endCaptor.capture()))
             .thenReturn(expectedNodes);
 
-        vehicle.moveQueued(nodeA, vehicle -> {});
+        vehicle.moveQueued(nodeA, (v, t) -> {});
 
         Deque<Vehicle.Path> moveQueue = getMoveQueueOfVehicle(vehicle);
 
@@ -421,8 +421,8 @@ public class TutorTests_H5_VehicleTest {
             .add("input", locationA)
             .build();
 
-        Vehicle.Path originalPath1 = createPath(new LinkedList<>(List.of(nodeD, nodeC)), v -> {});
-        Vehicle.Path originalPath2 = createPath(new LinkedList<>(List.of(nodeB, nodeC)), v -> {});
+        Vehicle.Path originalPath1 = createPath(new LinkedList<>(List.of(nodeD, nodeC)), (v, t) -> {});
+        Vehicle.Path originalPath2 = createPath(new LinkedList<>(List.of(nodeB, nodeC)), (v, t) -> {});
 
         getMoveQueueOfVehicle(vehicle).push(originalPath2);
         getMoveQueueOfVehicle(vehicle).push(originalPath1);
@@ -434,7 +434,7 @@ public class TutorTests_H5_VehicleTest {
         when(vehicleManager.getPathCalculator().getPath(startCaptor.capture(), endCaptor.capture()))
             .thenReturn(expectedNodes);
 
-        vehicle.moveQueued(nodeA, vehicle -> {});
+        vehicle.moveQueued(nodeA, (v, t) -> {});
 
         Deque<Vehicle.Path> moveQueue = getMoveQueueOfVehicle(vehicle);
 
@@ -468,7 +468,7 @@ public class TutorTests_H5_VehicleTest {
             .build();
 
         try {
-            vehicle.moveDirect(restaurantE, vehicle -> {});
+            vehicle.moveDirect(restaurantE, (v, t) -> {});
         } catch (IllegalArgumentException e) {
             assertEquals("Vehicle " + vehicle.getId() + " cannot move to own node " + restaurantE.toString(), e.getMessage(), context,
                 TR -> "Vehicle.moveQueued(Node, Consumer<Vehicle>) did not throw an IllegalArgumentException with the correct message when the node to move to was the currently occupied node");
@@ -489,13 +489,13 @@ public class TutorTests_H5_VehicleTest {
 
         doNothing().when(vehicle).moveQueued(any(), any());
 
-        Vehicle.Path originalPath1 = createPath(new LinkedList<>(List.of(nodeD, nodeC)), v -> {});
-        Vehicle.Path originalPath2 = createPath(new LinkedList<>(List.of(nodeB, nodeC)), v -> {});
+        Vehicle.Path originalPath1 = createPath(new LinkedList<>(List.of(nodeD, nodeC)), (v, t) -> {});
+        Vehicle.Path originalPath2 = createPath(new LinkedList<>(List.of(nodeB, nodeC)), (v, t) -> {});
 
         getMoveQueueOfVehicle(vehicle).push(originalPath2);
         getMoveQueueOfVehicle(vehicle).push(originalPath1);
 
-        vehicle.moveDirect(nodeA, v -> {});
+        vehicle.moveDirect(nodeA, (v, t) -> {});
 
         Deque<Vehicle.Path> moveQueue = getMoveQueueOfVehicle(vehicle);
 
@@ -513,7 +513,7 @@ public class TutorTests_H5_VehicleTest {
             .build();
 
         Vehicle vehicle = spy(this.vehicle);
-        Consumer<Vehicle> arrivalAction = v -> {};
+        BiConsumer<Vehicle, Long> arrivalAction = (v, t) -> {};
 
         doNothing().when(vehicle).moveQueued(nodeCaptor.capture(), arrivalActionCaptor.capture());
 
@@ -542,7 +542,7 @@ public class TutorTests_H5_VehicleTest {
         Vehicle vehicle = spy(createVehicle(2, 10, vehicleManager, vehicleManager.getOccupiedRestaurant(restaurantE)));
         addVehicleToVehicleManager(vehicleManager, vehicle, vehicleManager.getOccupied(restaurantE));
 
-        Consumer<Vehicle> arrivalAction = v -> {};
+        BiConsumer<Vehicle, Long> arrivalAction = (v, t) -> {};
 
         getMoveQueueOfVehicle(vehicle).clear();
 

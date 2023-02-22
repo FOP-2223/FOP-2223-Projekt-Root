@@ -52,7 +52,7 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                             restaurant.loadOrder(vehicle, order, currentTick);
                             it.remove();
 
-                            //don't add the location of the order to the queue if the vehicle already visites the location
+                            //don't add the location of the order to the queue if the vehicle already visits the location
                             if (vehicle.getPaths().stream()
                                 .map(path -> path.nodes().peekLast())
                                 .filter(Objects::nonNull)
@@ -61,10 +61,10 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                                 continue;
                             }
 
-                            vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), v -> {
+                            vehicle.moveQueued(vehicleManager.getRegion().getNode(order.getLocation()), (v, t) -> {
                                 //deliver every possible order
                                 for (ConfirmedOrder deliveredOrder : v.getOrders().stream().filter(o -> o.getLocation().equals(order.getLocation())).toList()) {
-                                    vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied().getComponent()).deliverOrder(v, deliveredOrder, currentTick);
+                                    vehicleManager.getOccupiedNeighborhood((Region.Node) v.getOccupied().getComponent()).deliverOrder(v, deliveredOrder, t);
                                 }
                             });
                         }
