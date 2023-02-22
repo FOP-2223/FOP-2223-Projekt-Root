@@ -37,6 +37,10 @@ public interface Vehicle extends Comparable<Vehicle> {
         });
     }
 
+    /**
+     * Deletes the entire move queue and moves directly to the provided {@link Region.Node}.
+     * As soon as the vehicle arrives at the specified node, {@code arrivalAction} is run.
+     */
     void moveDirect(Region.Node node, BiConsumer<? super Vehicle, Long> arrivalAction);
 
     /**
@@ -108,8 +112,8 @@ public interface Vehicle extends Comparable<Vehicle> {
         Deque<Region.Node> nodes();
 
         /**
-         * Returns the {@link Consumer} that is supposed to be executed when the end of this {@link Path} is reached.
-         * @return The {@link Consumer} that is supposed to be executed when the end of this {@link Path} is reached.
+         * Returns the {@link BiConsumer} that is supposed to be executed when the end of this {@link Path} is reached.
+         * @return The {@link BiConsumer} that is supposed to be executed when the end of this {@link Path} is reached.
          */
         BiConsumer<? super Vehicle, Long> arrivalAction();
     }
