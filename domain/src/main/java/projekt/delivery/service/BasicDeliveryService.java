@@ -47,7 +47,7 @@ public class BasicDeliveryService extends AbstractDeliveryService {
                         }
 
                         //if the vehicle can load the order, load it and add the location to the moveQueue of the vehicle
-                        if (order.getWeight() < vehicle.getCapacity() - vehicle.getCurrentWeight()) {
+                        if (order.getWeight() <= vehicle.getCapacity() - vehicle.getCurrentWeight()) {
                             loadedAtLeastOneOrderOnVehicle = true;
                             restaurant.loadOrder(vehicle, order, currentTick);
                             it.remove();
