@@ -14,6 +14,7 @@ import projekt.h8.TutorTests_H8_AmountDeliveredRaterTest;
 import projekt.h8.TutorTests_H8_InTimeRaterTest;
 import projekt.h8.TutorTests_H8_TravelDistanceRaterTest;
 import projekt.h9.TutorTests_H9_BasicDeliveryServiceTest;
+import projekt.h9.TutorTests_H9_OurDeliveryServiceTest;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
@@ -463,15 +464,35 @@ public class Projekt_RubricProvider implements RubricProvider {
         () -> TutorTests_H9_BasicDeliveryServiceTest.class.getMethod("testArrivalAction"),
         () -> TutorTests_H9_BasicDeliveryServiceTest.class.getMethod("testMultipleRestaurants"),
         () -> TutorTests_H9_BasicDeliveryServiceTest.class.getMethod("testPathSetCorrectly"),
-        () -> TutorTests_H9_BasicDeliveryServiceTest.class.getMethod("testSameLocationMultipleTimes"),
-        () -> TutorTests_H9_BasicDeliveryServiceTest.class.getMethod("testNoOrders"));
+        () -> TutorTests_H9_BasicDeliveryServiceTest.class.getMethod("testSameLocationMultipleTimes"));
 
     public static final Criterion H9_1 = createParentCriterion("9.1", "BasicDeliveryService", H9_1_1, H9_1_2, H9_1_3, H9_1_4, H9_1_5, H9_1_6, H9_1_7, H9_1_8);
 
-    //TODO
-    public static final Criterion H9_2_1 = createCriterion("TODO", 20);
+    public static final Criterion H9_2_1 = Criterion.builder()
+        .shortDescription("Die Klasse OurDeliveryService löst Problem 1 mit einer hinreichend guten Punktzahl")
+        .maxPoints(5)
+        .grader((testCycle, criterion) -> GradeResult.of(0, 5, "Execute the test method testProblem1(int) in the class src/graderPublic/java/projekt/h9/TutorTests_H9_OurDeliveryServiceTest manually."))
+        .build();
 
-    public static final Criterion H9_2 = createParentCriterion("9.2", "Ihr eigener DeliveryService", H9_2_1);
+    public static final Criterion H9_2_2 = Criterion.builder()
+        .shortDescription("Die Klasse OurDeliveryService löst Problem 2 mit einer hinreichend guten Punktzahl")
+        .maxPoints(5)
+        .grader((testCycle, criterion) -> GradeResult.of(0, 5, "Execute the test method testProblem2(int) in the class src/graderPublic/java/projekt/h9/TutorTests_H9_OurDeliveryServiceTest manually."))
+        .build();
+
+    public static final Criterion H9_2_3 = Criterion.builder()
+        .shortDescription("Die Klasse OurDeliveryService löst Problem 3 mit einer hinreichend guten Punktzahl")
+        .maxPoints(5)
+        .grader((testCycle, criterion) -> GradeResult.of(0, 5, "Execute the test method testProblem3(int) in the class src/graderPublic/java/projekt/h9/TutorTests_H9_OurDeliveryServiceTest manually."))
+        .build();
+
+    public static final Criterion H9_2_4 = Criterion.builder()
+        .shortDescription("Die Klasse OurDeliveryService löst Problem 4 mit einer hinreichend guten Punktzahl")
+        .maxPoints(5)
+        .grader((testCycle, criterion) -> GradeResult.of(0, 5, "Execute the test method testProblem4(int) in the class src/graderPublic/java/projekt/h9/TutorTests_H9_OurDeliveryServiceTest manually."))
+        .build();
+
+    public static final Criterion H9_2 = createParentCriterion("9.2", "Ihr eigener DeliveryService", H9_2_1, H9_2_2, H9_2_3, H9_2_4);
 
     public static final Criterion H9 = createParentCriterion("9", "Einmal Lieferdienst zum Mitnehmen, bitte!", H9_1, H9_2);
 
