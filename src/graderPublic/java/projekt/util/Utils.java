@@ -3,10 +3,12 @@ package projekt.util;
 import projekt.base.Location;
 import projekt.delivery.archetype.ProblemArchetype;
 import projekt.delivery.archetype.ProblemGroup;
+import projekt.delivery.event.Event;
 import projekt.delivery.generator.OrderGenerator;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.rating.RatingCriteria;
 import projekt.delivery.routing.*;
+import projekt.delivery.service.BasicDeliveryService;
 import projekt.delivery.service.DeliveryService;
 import projekt.delivery.simulation.Simulation;
 import projekt.delivery.simulation.SimulationConfig;
@@ -16,6 +18,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static org.mockito.Mockito.mock;
@@ -176,8 +179,8 @@ public class Utils {
         pathCalculatorField.set(vehicleManager, pathCalculator);
     }
 
-    public static Vehicle.Path createPath(Deque<Region.Node> nodes, Consumer<? super Vehicle> arrivalAction) throws ReflectiveOperationException {
-        Constructor<?> constructor = Class.forName("projekt.delivery.routing.VehicleImpl$PathImpl").getDeclaredConstructor(Deque.class, Consumer.class);
+    public static Vehicle.Path createPath(Deque<Region.Node> nodes, BiConsumer<? super Vehicle, Long> arrivalAction) throws ReflectiveOperationException {
+        Constructor<?> constructor = Class.forName("projekt.delivery.routing.VehicleImpl$PathImpl").getDeclaredConstructor(Deque.class, BiConsumer.class);
         constructor.setAccessible(true);
         return (Vehicle.Path) constructor.newInstance(nodes, arrivalAction);
     }
@@ -274,5 +277,59 @@ public class Utils {
         Field orderGeneratorFactoryField = simulation.getClass().getDeclaredField("orderGeneratorFactory");
         orderGeneratorFactoryField.setAccessible(true);
         return (OrderGenerator.Factory) orderGeneratorFactoryField.get(simulation);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<Event> callTick(BasicDeliveryService basicDeliveryService, long currentTick, List<ConfirmedOrder> newOrders) throws ReflectiveOperationException{
+        Method method = basicDeliveryService.getClass().getDeclaredMethod("tick", long.class, List.class);
+        method.setAccessible(true);
+        return (List<Event>) method.invoke(basicDeliveryService, currentTick, newOrders);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void addPendingOrders(BasicDeliveryService basicDeliveryService, List<ConfirmedOrder> orders) throws ReflectiveOperationException {
+        Field pendingOrders = basicDeliveryService.getClass().getDeclaredField("pendingOrders");
+        pendingOrders.setAccessible(true);
+        ((List<ConfirmedOrder>) pendingOrders.get(basicDeliveryService)).addAll(orders);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<ConfirmedOrder> getPendingOrders(BasicDeliveryService basicDeliveryService) throws ReflectiveOperationException {
+        Field pendingOrders = basicDeliveryService.getClass().getDeclaredField("pendingOrders");
+        pendingOrders.setAccessible(true);
+        return (List<ConfirmedOrder>) pendingOrders.get(basicDeliveryService);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void addVehicleToVehicleManager(VehicleManager vehicleManager, Vehicle vehicle) throws ReflectiveOperationException {
+        Field vehiclesField = vehicleManager.getClass().getDeclaredField("vehicles");
+        vehiclesField.setAccessible(true);
+        ((List<Vehicle>) vehiclesField.get(vehicleManager)).add(vehicle);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void addVehicleToOccupied(VehicleManager.Occupied<?> occupied, Vehicle vehicle) throws ReflectiveOperationException {
+        Field vehiclesField = Class.forName("projekt.delivery.routing.AbstractOccupied").getDeclaredField("vehicles");
+        vehiclesField.setAccessible(true);
+        ((Map<Vehicle, ?>) vehiclesField.get(occupied)).put(vehicle, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<Region.Node, VehicleManager.Occupied<? extends Region.Node>> getOccupiedNodes(VehicleManager vehicleManager) throws ReflectiveOperationException {
+        Field occupiedNodesField = vehicleManager.getClass().getDeclaredField("occupiedNodes");
+        occupiedNodesField.setAccessible(true);
+        return (Map<Region.Node, VehicleManager.Occupied<? extends Region.Node>>) occupiedNodesField.get(vehicleManager);
+    }
+
+    public static void setOccupiedNodes(VehicleManager vehicleManager, Map<Region.Node, VehicleManager.Occupied<? extends Region.Node>> map) throws ReflectiveOperationException {
+        Field occupiedNodesField = vehicleManager.getClass().getDeclaredField("occupiedNodes");
+        occupiedNodesField.setAccessible(true);
+        occupiedNodesField.set(vehicleManager, map);
+    }
+
+    public static void setOccupiedOfVehicle(Vehicle vehicle, VehicleManager.Occupied<?> occupied) throws ReflectiveOperationException {
+        Field occupiedField = vehicle.getClass().getDeclaredField("occupied");
+        occupiedField.setAccessible(true);
+        occupiedField.set(vehicle, occupied);
     }
 }

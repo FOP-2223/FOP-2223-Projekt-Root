@@ -453,6 +453,7 @@ public class Projekt_RubricProvider implements RubricProvider {
         () -> TutorTests_H9_BasicDeliveryServiceTest.class.getMethod("testPathSetCorrectly"));
 
     public static final Criterion H9_1_7 = createCriterion("Die Methode tick der Klasse BasicDeliveryService setzt den Pfad der Fahrzeuge korrekt nicht doppelt wenn ein Zielort mehrfach vorkommt",
+        () -> TutorTests_H9_BasicDeliveryServiceTest.class.getMethod("testPathSetCorrectly"),
         () -> TutorTests_H9_BasicDeliveryServiceTest.class.getMethod("testSameLocationMultipleTimes"));
 
     public static final Criterion H9_1_8 = createCriterion("Die Methode tick der Klasse BasicDeliveryService funktioniert vollständig korrekt",
