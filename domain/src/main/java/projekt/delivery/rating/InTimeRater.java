@@ -103,7 +103,7 @@ public class InTimeRater implements Rater {
         }
 
         @Override
-        public Rater create() {
+        public InTimeRater create() {
             return new InTimeRater(ignoredTicksOff, maxTicksOff);
         }
 
@@ -111,8 +111,8 @@ public class InTimeRater implements Rater {
          * Creates a new {@link InTimeRater.FactoryBuilder}.
          * @return The created {@link InTimeRater.FactoryBuilder}.
          */
-        public static InTimeRater.FactoryBuilder builder() {
-            return new InTimeRater.FactoryBuilder();
+        public static FactoryBuilder builder() {
+            return new FactoryBuilder();
         }
     }
 
@@ -137,7 +137,7 @@ public class InTimeRater implements Rater {
         }
 
         @Override
-        public Rater.Factory build() {
+        public Factory build() {
             return new Factory(ignoredTicksOff, maxTicksOff);
         }
     }
