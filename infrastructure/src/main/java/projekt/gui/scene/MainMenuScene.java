@@ -211,6 +211,10 @@ public class MainMenuScene extends MenuScene<MainMenuSceneController> {
             ProblemArchetype selectedItem = table.getSelectionModel().getSelectedItem();
             table.getItems().remove(selectedItem);
             problems.remove(selectedItem);
+
+            if (problems.size() == 1) {
+                removeButton.setDisable(true);
+            }
         });
 
         return removeButton;

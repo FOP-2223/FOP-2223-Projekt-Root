@@ -10,10 +10,7 @@ import projekt.delivery.archetype.ProblemArchetype;
 import projekt.delivery.generator.OrderGenerator;
 import projekt.delivery.rating.Rater;
 import projekt.delivery.rating.RatingCriteria;
-import projekt.delivery.routing.DijkstraPathCalculator;
-import projekt.delivery.routing.PathCalculator;
-import projekt.delivery.routing.Region;
-import projekt.delivery.routing.VehicleManager;
+import projekt.delivery.routing.*;
 import projekt.gui.controller.VehicleManagerCreationSceneController;
 import projekt.gui.pane.MapPane;
 
@@ -78,10 +75,8 @@ public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreatio
         root.setRight(createOptionsScrollPane());
 
         mapPane.onNodeSelection(n -> {
-            removeNodeButton.setDisable(false);
-            if (mapPane.getSelectedVehicles() == null && n instanceof Region.Restaurant) {
-                createVehicleButton.setDisable(false);
-            }
+            removeNodeButton.setDisable(n.getAdjacentEdges().size() != 0);
+            createVehicleButton.setDisable(!(n instanceof Region.Restaurant));
         });
         mapPane.onNodeRemoveSelection(n -> {
             removeNodeButton.setDisable(true);
@@ -137,11 +132,16 @@ public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreatio
 
     private void handleValueChange() {
         createNodeButton.setDisable(!regionBuilder.checkNode(componentName, new Location(x1, y1)));
+        removeNodeButton.setDisable(mapPane.getSelectedNode() == null);
         createNeighborhoodButton.setDisable(!regionBuilder.checkNode(componentName, new Location(x1, y1)));
         createEdgeButton.setDisable(!regionBuilder.checkEdge(componentName, new Location(x1, y1), new Location(x2, y2)));
+        removeEdgeButton.setDisable(mapPane.getSelectedEdge() == null);
         createRestaurantButton.setDisable(!regionBuilder.checkNode(preset.name(), new Location(x1, y1)));
         if (capacity == 0) {
             createVehicleButton.setDisable(true);
+        }
+        if (mapPane.getSelectedNode() != null) {
+            removeNodeButton.setDisable(mapPane.getSelectedNode().getAdjacentEdges().size() != 0);
         }
     }
 
@@ -150,10 +150,28 @@ public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreatio
         vehicleManagerBuilder.region(region);
         VehicleManager vehicleManager = vehicleManagerBuilder.build();
 
+        Region.Node selectedNode = mapPane.getSelectedNode();
+        Region.Edge selectedEdge = mapPane.getSelectedEdge();
+
         mapPane.clear();
         mapPane.addAllNodes(region.getNodes());
         mapPane.addAllEdges(region.getEdges());
         mapPane.addAllVehicles(vehicleManager.getAllVehicles());
+        if (region.getNodes().size() == 1) mapPane.center();
+
+        if (selectedNode != null) {
+            selectedNode = region.getNode(selectedNode.getLocation());
+        }
+        if (selectedNode != null) {
+            mapPane.selectNode(selectedNode);
+        }
+
+        if (selectedEdge != null) {
+            selectedEdge = region.getEdge(selectedEdge.getNodeA().getLocation(), selectedEdge.getNodeB().getLocation());
+        }
+        if (selectedEdge != null) {
+            mapPane.selectEdge(selectedEdge);
+        }
     }
 
     private HBox createDistanceCalculatorChoiceBox() {
@@ -370,6 +388,8 @@ public class VehicleManagerCreationScene extends MenuScene<VehicleManagerCreatio
     private Button createRemoveNodeButton() {
         removeNodeButton.setOnAction(e -> {
             regionBuilder.removeComponent(mapPane.getSelectedNode().getName());
+            vehicleManagerBuilder.removeVehicle(mapPane.getSelectedNode().getLocation());
+
             updateMap();
             handleValueChange();
         });

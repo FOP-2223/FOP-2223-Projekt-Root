@@ -190,13 +190,18 @@ public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGenerator
         options.addAll(List.of(orderCountHBox, deliveryIntervalHBox, maxWeightHBox, varianceHBox, lastTickHBox, seedHBox));
 
         vBox.getChildren().addAll(options);
-        vBox.getChildren().add(applyButton);
+        if (!vBox.getChildren().contains(applyButton)) {
+            vBox.getChildren().add(applyButton);
+        }
     }
 
     private void setupEmptyOptions() {
         vBox.getChildren().removeAll(options);
         options.clear();
         values.clear();
+        if (!vBox.getChildren().contains(applyButton)) {
+            vBox.getChildren().add(applyButton);
+        }
     }
 
 }
