@@ -524,21 +524,112 @@ public class Projekt_RubricProvider implements RubricProvider {
 
     public static final Criterion H10 = createParentCriterion("10", "Lauf Simulation, lauf!", H10_1, H10_2);
 
-    public static final Criterion H11_1_1 = createCriterion("Startmenü", 15);
+    public static final Criterion H11_1_1 = createCriterion("Es existiert eine Übersicht über die vorhandenen Probleme", 1);
 
-    public static final Criterion H11_1 = createParentCriterion("11.1", "Startmenü", H11_1_1);
+    public static final Criterion H11_1_2 = createCriterion("In der Übersicht werden alle Probleme auf eine sinnvolle Weise angezeigt", 1);
 
-    public static final Criterion H11_2_1 = createCriterion("Endmenü", 7);
+    public static final Criterion H11_1_3 = createCriterion("Es existiert Übersicht über die Details eines ausgewählten Problems", 1);
 
-    public static final Criterion H11_2 = createParentCriterion("11.2", "Endmenü", H11_2_1);
+    public static final Criterion H11_1_4 = createCriterion("In der Detailansicht wird der Name des Problemes angezeigt", 1);
 
-    public static final Criterion H11_3_1 = createCriterion("Anzeige der Simulation", 7);
+    public static final Criterion H11_1_5 = createCriterion("In der Detailansicht wird die Simulationslänge des Problemes angezeigt", 1);
 
-    public static final Criterion H11_3 = createParentCriterion("11.3", "Anzeige der Simulation", H11_3_1);
+    public static final Criterion H11_1_6 = createCriterion("In der Detailansicht ist erkennbar, für welche Bewertungskriterien ein Rater ausgewählt wurde", 1);
 
-    public static final Criterion H11_4_1 = createCriterion("Erstellen weitere Probleme", 25);
+    public static final Criterion H11_1_7 = createCriterion("In der Detailansicht ist erkennbar, für welche Bewertungskriterien welche Art von Rater ausgewählt wurde", 1);
 
-    public static final Criterion H11_4 = createParentCriterion("11.4", "Erstellen weitere Probleme", H11_4_1);
+    public static final Criterion H11_1_8 = createCriterion("Wenn ein InTimeRater ausgewählt ist, ist in der Detailansicht ist erkennbar, welche Werte für ignoredTicksOff und maxTicksOff gewählt wurden", 1);
+
+    public static final Criterion H11_1_9 = createCriterion("Wenn ein AmountDeliveredRater ausgewählt ist, ist in der Detailansicht ist erkennbar, welche Wert für den Faktor gewählt wurden", 1);
+
+    public static final Criterion H11_1_10 = createCriterion("Wenn ein TravelDistanceRater ausgewählt ist, ist in der Detailansicht ist erkennbar, welche Wert für den Faktor gewählt wurden", 1);
+
+    public static final Criterion H11_1_11 = createCriterion("In der Detailansicht ist erkennbar, welcher Ordergenerator ausgewählt wurde", 1);
+
+    public static final Criterion H11_1_12 = createCriterion("Wenn ein FridayOrdergenerator ausgewählt ist, ist in der Detailansicht ist erkennbar, welche Werte für orderCount, deliveryInterval, maxWeight, lastTick, variance und seed gewählt wurden", 1);
+
+    public static final Criterion H11_1_13 = createCriterion("In der Detailansicht werden alle Knoten und Kanten, inklusive Name und Position(en), angezeigt", 1);
+
+    public static final Criterion H11_1_14 = createCriterion("In der Detailansicht werden alle Fahrzeuge, inklusive Kapazität und Startposition, angezeigt", 1);
+
+    public static final Criterion H11_1_15 = createCriterion("In der Detailansicht ist erkennbar, welcher DistanceCalculator zu der Region des Problemes gehört", 1);
+
+    public static final Criterion H11_1 = createParentCriterion("11.1", "Startmenü", H11_1_1, H11_1_2, H11_1_3, H11_1_4, H11_1_5, H11_1_6, H11_1_7, H11_1_8, H11_1_9, H11_1_10, H11_1_11, H11_1_12, H11_1_13, H11_1_14, H11_1_15);
+
+    public static final Criterion H11_2_1 = createCriterion("Die erreichte Punktezahl für das Bewertungskriterium IN_TIME wird korrekt angezeigt", 2);
+
+    public static final Criterion H11_2_2 = createCriterion("Die erreichte Punktezahl für das Bewertungskriterium AMOUNT_DELIVERED wird korrekt angezeigt", 2);
+
+    public static final Criterion H11_2_3 = createCriterion("Die erreichte Punktezahl für das Bewertungskriterium TRAVEL_DISTANCE wird korrekt angezeigt", 2);
+
+    public static final Criterion H11_2_4 = createCriterion("Die erreichte Punktezahlen werden korrekt angezeigt, wenn nicht für alle Bewertungskriterien Punktzahlen vorhanden sind", 1);
+
+    public static final Criterion H11_2 = createParentCriterion("11.2", "Endmenü", H11_2_1, H11_2_2, H11_2_3, H11_2_4);
+
+    public static final Criterion H11_3_1 = createCriterion("Es existiert eine Übersicht über alle Fahrzeuge", 1);
+
+    public static final Criterion H11_3_2 = createCriterion("Die Übersicht zeigt die ID aller Fahrzeuge an", 1);
+
+    public static final Criterion H11_3_3 = createCriterion("Die Übersicht über alle Fahrzeuge zeigt die Positionen der Fahrzeuge korrekt an, wenn diese sich auf einem Knoten befinden", 1);
+
+    public static final Criterion H11_3_4 = createCriterion("Die Übersicht über alle Fahrzeuge zeigt die Positionen der Fahrzeuge korrekt an, wenn diese sich auf einer Kante befinden", 1);
+
+    public static final Criterion H11_3_5 = createCriterion("Die Übersicht über alle Fahrzeuge zeigt die Essen der Bestellungen an, welche sich auf einem Fahrzeug befinden", 1);
+
+    public static final Criterion H11_3_6 = createCriterion("Die Übersicht über alle Fahrzeuge wird in jedem Tick korrekt aktualisiert", 2);
+    public static final Criterion H11_3 = createParentCriterion("11.3", "Anzeige der Simulation", H11_3_1, H11_3_2, H11_3_3, H11_3_4, H11_3_5, H11_3_6);
+
+    public static final Criterion H11_4_1 = createCriterion("Es können Probleme aus der Übersicht entfernt werden, worauf diese nicht simuliert werden", 1);
+
+    public static final Criterion H11_4_2 = createCriterion("Es existiert ein Knopf zum Hinzufügen neuer Probleme, welche eine neue Szene öffnet", 1);
+
+    public static final Criterion H11_4_3 = createCriterion("Es gibt eine Auswahl, ob entweder ein existierend hinzugefügt werden soll oder ein neues erzeugt werden soll", 1);
+
+    public static final Criterion H11_4_4 = createCriterion("Wenn ein existierendes Problem hinzugefügt wird, werden alle Probleme angezeigt", 1);
+
+    public static final Criterion H11_4_5 = createCriterion("Wenn ein existierendes Problem hinzugefügt wird, kann man eines der angezeigten Probleme auswählen und hinzufügen", 1);
+
+    public static final Criterion H11_4_6 = createCriterion("Wenn ein existierendes Problem hinzugefügt wird, werden keine Probleme angezeigt, welche bereits hinzugefügt sind", 1);
+
+    public static final Criterion H11_4_7 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man den Namen des Problemes angeben", 1);
+
+    public static final Criterion H11_4_8 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man die Simulationslänge angeben", 1);
+
+    public static final Criterion H11_4_9 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man für jedes Bewertungskriterium auswählen, ob es verwendet werden soll", 1);
+
+    public static final Criterion H11_4_10 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man die einzelnen Parameter der Rater angeben", 1);
+
+    public static final Criterion H11_4_11 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man auswählen, welche OrderGenerator verwendet werden soll", 1);
+
+    public static final Criterion H11_4_12 = createCriterion("Wenn ein neues Problem hinzugefügt wird und ein FridayOrderGenerator verwendet wird, kann man die Werte der einzelnen Parameter angeben", 1);
+
+    public static final Criterion H11_4_13 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man den verwendeten DistanceCalculator auswählen", 1);
+
+    public static final Criterion H11_4_14 = createCriterion("Wenn ein neues Problem hinzugefügt wird, wird der momentane Stand der Region in einem MapPane angezeigt", 1);
+
+    public static final Criterion H11_4_15 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man einen Knoten und eine Nachbarschaft mit gewählter Position und Name hinzufügen", 1);
+
+    public static final Criterion H11_4_16 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man eine Kante mit gewählter Position und Name hinzufügen", 1);
+
+    public static final Criterion H11_4_17 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man beim Hinzufügen eines Restaurant aus einem der Presets aus dem Interface auswählen", 1);
+
+    public static final Criterion H11_4_18 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man ein Fahrzeug mit gewählter Position und Kapazität hinzufügen", 1);
+
+    public static final Criterion H11_4_19 = createCriterion("Wenn ein neues Problem hinzugefügt wird, können nur valide Knoten und Kanten hinzugefügt werden", 1);
+
+    public static final Criterion H11_4_20 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man ausgewählte Knoten wieder entfernen", 1);
+
+    public static final Criterion H11_4_21 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man ausgewählte Kanten wieder entfernen", 1);
+
+    public static final Criterion H11_4_22 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man ausgewählte Fahrzeuge wieder entfernen", 1);
+
+    public static final Criterion H11_4_23 = createCriterion("Wenn ein neues Problem hinzugefügt wird, werden alle vorhanden Probleme in einer Übersicht angezeigt", 1);
+
+    public static final Criterion H11_4_24 = createCriterion("Wenn ein neues Problem hinzugefügt wird, werden alle gewählten Eigenschaften in einer Übersicht angezeigt", 1);
+
+    public static final Criterion H11_4_25 = createCriterion("Die Option, ein neues Problem hinzuzufügen, kann nur gewählt werden, wenn alle Eigenschaften korrekt ausgewählt werden", 1);
+
+    public static final Criterion H11_4 = createParentCriterion("11.4", "Erstellen weitere Probleme", H11_4_1, H11_4_2, H11_4_3, H11_4_4, H11_4_5, H11_4_6, H11_4_7, H11_4_8, H11_4_9, H11_4_10, H11_4_11, H11_4_12, H11_4_13, H11_4_14, H11_4_15, H11_4_16, H11_4_17, H11_4_18, H11_4_19, H11_4_20, H11_4_21, H11_4_22, H11_4_23, H11_4_24, H11_4_25);
 
     public static final Criterion H11 = createParentCriterion("11", "Die GUI", H11_1, H11_2, H11_3, H11_4);
 
