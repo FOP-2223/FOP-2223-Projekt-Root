@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 public class RegionIO {
 
     private static final Map<String, Supplier<? extends DistanceCalculator>> DESERIALIZED_DISTANCE_CALCULATOR = Map.of(
-        CachedPathCalculator.class.getSimpleName(), ChessboardDistanceCalculator::new,
+        ChessboardDistanceCalculator.class.getSimpleName(), ChessboardDistanceCalculator::new,
         EuclideanDistanceCalculator.class.getSimpleName(), EuclideanDistanceCalculator::new,
         ManhattanDistanceCalculator.class.getSimpleName(), ManhattanDistanceCalculator::new
     );
@@ -45,7 +45,7 @@ public class RegionIO {
 
                     List<String> availableFood = new ArrayList<>();
                     for (int i = 3; i < serializedNode.length; i++) {
-                        availableFood.add(serializedNode[3]);
+                        availableFood.add(serializedNode[i]);
                     }
 
                     builder.addRestaurant(parseLocation(serializedNode[1], serializedNode[2]), new Region.Restaurant.Preset(serializedNode[0], availableFood));
