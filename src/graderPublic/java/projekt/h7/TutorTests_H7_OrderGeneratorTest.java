@@ -11,11 +11,7 @@ import projekt.delivery.routing.ConfirmedOrder;
 import projekt.delivery.routing.Region;
 import projekt.delivery.routing.VehicleManager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.*;
 import static projekt.util.Utils.*;
@@ -124,14 +120,14 @@ public class TutorTests_H7_OrderGeneratorTest {
             .add("seed", seed)
             .build();
 
-        int count = 0;
+        Set<ConfirmedOrder> orders = new HashSet<>();
 
         for (int i = 0; i <= lastTick; i++) {
-            count += generator.generateOrders(i).size();
+            orders.addAll(generator.generateOrders(i));
         }
 
-        assertEquals(orderCount, count, context,
-            TR -> "Method did not create the correct amount of orders in the interval [0, %d].".formatted(lastTick));
+        assertEquals(orderCount, orders.size(), context,
+            TR -> "Method did not create the correct amount of distinct orders in the interval [0, %d].".formatted(lastTick));
 
     }
 
