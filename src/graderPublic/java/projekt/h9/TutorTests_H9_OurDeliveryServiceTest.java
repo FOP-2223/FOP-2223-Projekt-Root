@@ -24,7 +24,7 @@ import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.context
 @SuppressWarnings("DuplicatedCode")
 public class TutorTests_H9_OurDeliveryServiceTest {
 
-    SimulationConfig config = new SimulationConfig(10);
+    SimulationConfig config = new SimulationConfig(0);
     RunnerImpl runner = new RunnerImpl();
 
     @ParameterizedTest
