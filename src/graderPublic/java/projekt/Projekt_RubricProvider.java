@@ -14,7 +14,6 @@ import projekt.h8.TutorTests_H8_AmountDeliveredRaterTest;
 import projekt.h8.TutorTests_H8_InTimeRaterTest;
 import projekt.h8.TutorTests_H8_TravelDistanceRaterTest;
 import projekt.h9.TutorTests_H9_BasicDeliveryServiceTest;
-import projekt.h9.TutorTests_H9_OurDeliveryServiceTest;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
@@ -44,6 +43,14 @@ public class Projekt_RubricProvider implements RubricProvider {
                 .pointsPassedMax()
                 .build())
             .maxPoints(maxPoints)
+            .build();
+    }
+
+    private static Criterion createUntestedCriterion(String shortDescription, int maxPoints) {
+        return Criterion.builder()
+            .shortDescription(shortDescription)
+            .maxPoints(maxPoints)
+            .grader((testCycle, criterion) -> GradeResult.of(0, maxPoints, "Not tested by public tests"))
             .build();
     }
 
@@ -511,150 +518,187 @@ public class Projekt_RubricProvider implements RubricProvider {
     public static final Criterion H10_2_3 = createCriterion("Die Methode run der Klasse RunnerImpl geht korrekt mit dem resultHandler um",
         () -> TutorTests_H10_RunnerImplTest.class.getMethod("testResultHandler", int.class, double.class, double.class));
 
-
-
-    //TODO add methode zum testen ob z.B. createSimulations mit korrektem Wert aufgerufen wurde
     public static final Criterion H10_2_4 = createCriterion("Die Methode run der Klasse RunnerImpl funktioniert vollständig korrekt",
         () -> TutorTests_H10_RunnerImplTest.class.getMethod("testSimulationsExecuted", int.class),
         () -> TutorTests_H10_RunnerImplTest.class.getMethod("testSimulationSetupHandler", int.class),
         () -> TutorTests_H10_RunnerImplTest.class.getMethod("testSimulationFinishedHandler", int.class),
-        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testResultHandler", int.class, double.class, double.class));
+        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testResultHandler", int.class, double.class, double.class),
+        () -> TutorTests_H10_RunnerImplTest.class.getMethod("testCreateSimulationsCall"));
 
     public static final Criterion H10_2 = createParentCriterion("10.2", "Runner Implementationen", H10_2_1, H10_2_2, H10_2_3, H10_2_4);
 
     public static final Criterion H10 = createParentCriterion("10", "Lauf Simulation, lauf!", H10_1, H10_2);
 
-    public static final Criterion H11_1_1 = createCriterion("Es existiert eine Übersicht über die vorhandenen Probleme", 1);
+    public static final Criterion H11_1_1 = createUntestedCriterion("Es existiert eine Übersicht über die vorhandenen Probleme", 1);
 
-    public static final Criterion H11_1_2 = createCriterion("In der Übersicht werden alle Probleme auf eine sinnvolle Weise angezeigt", 1);
+    public static final Criterion H11_1_2 = createUntestedCriterion("In der Übersicht werden alle Probleme auf eine sinnvolle Weise angezeigt", 1);
 
-    public static final Criterion H11_1_3 = createCriterion("Es existiert Übersicht über die Details eines ausgewählten Problems", 1);
+    public static final Criterion H11_1_3 = createUntestedCriterion("Es existiert Übersicht über die Details eines ausgewählten Problems", 1);
 
-    public static final Criterion H11_1_4 = createCriterion("In der Detailansicht wird der Name des Problemes angezeigt", 1);
+    public static final Criterion H11_1_4 = createUntestedCriterion("In der Detailansicht wird der Name des Problemes angezeigt", 1);
 
-    public static final Criterion H11_1_5 = createCriterion("In der Detailansicht wird die Simulationslänge des Problemes angezeigt", 1);
+    public static final Criterion H11_1_5 = createUntestedCriterion("In der Detailansicht wird die Simulationslänge des Problemes angezeigt", 1);
 
-    public static final Criterion H11_1_6 = createCriterion("In der Detailansicht ist erkennbar, für welche Bewertungskriterien ein Rater ausgewählt wurde", 1);
+    public static final Criterion H11_1_6 = createUntestedCriterion("In der Detailansicht ist erkennbar, für welche Bewertungskriterien ein Rater ausgewählt wurde", 1);
 
-    public static final Criterion H11_1_7 = createCriterion("In der Detailansicht ist erkennbar, für welche Bewertungskriterien welche Art von Rater ausgewählt wurde", 1);
+    public static final Criterion H11_1_7 = createUntestedCriterion("In der Detailansicht ist erkennbar, für welche Bewertungskriterien welche Art von Rater ausgewählt wurde", 1);
 
-    public static final Criterion H11_1_8 = createCriterion("Wenn ein InTimeRater ausgewählt ist, ist in der Detailansicht ist erkennbar, welche Werte für ignoredTicksOff und maxTicksOff gewählt wurden", 1);
+    public static final Criterion H11_1_8 = createUntestedCriterion("Wenn ein InTimeRater ausgewählt ist, ist in der Detailansicht ist erkennbar, welche Werte für ignoredTicksOff und maxTicksOff gewählt wurden", 1);
 
-    public static final Criterion H11_1_9 = createCriterion("Wenn ein AmountDeliveredRater ausgewählt ist, ist in der Detailansicht ist erkennbar, welche Wert für den Faktor gewählt wurden", 1);
+    public static final Criterion H11_1_9 = createUntestedCriterion("Wenn ein AmountDeliveredRater ausgewählt ist, ist in der Detailansicht ist erkennbar, welche Wert für den Faktor gewählt wurden", 1);
 
-    public static final Criterion H11_1_10 = createCriterion("Wenn ein TravelDistanceRater ausgewählt ist, ist in der Detailansicht ist erkennbar, welche Wert für den Faktor gewählt wurden", 1);
+    public static final Criterion H11_1_10 = createUntestedCriterion("Wenn ein TravelDistanceRater ausgewählt ist, ist in der Detailansicht ist erkennbar, welche Wert für den Faktor gewählt wurden", 1);
 
-    public static final Criterion H11_1_11 = createCriterion("In der Detailansicht ist erkennbar, welcher Ordergenerator ausgewählt wurde", 1);
+    public static final Criterion H11_1_11 = createUntestedCriterion("In der Detailansicht ist erkennbar, welcher Ordergenerator ausgewählt wurde", 1);
 
-    public static final Criterion H11_1_12 = createCriterion("Wenn ein FridayOrdergenerator ausgewählt ist, ist in der Detailansicht ist erkennbar, welche Werte für orderCount, deliveryInterval, maxWeight, lastTick, variance und seed gewählt wurden", 1);
+    public static final Criterion H11_1_12 = createUntestedCriterion("Wenn ein FridayOrdergenerator ausgewählt ist, ist in der Detailansicht ist erkennbar, welche Werte für orderCount, deliveryInterval, maxWeight, lastTick, variance und seed gewählt wurden", 1);
 
-    public static final Criterion H11_1_13 = createCriterion("In der Detailansicht werden alle Knoten und Kanten, inklusive Name und Position(en), angezeigt", 1);
+    public static final Criterion H11_1_13 = createUntestedCriterion("In der Detailansicht werden alle Knoten und Kanten, inklusive Name und Position(en), angezeigt", 1);
 
-    public static final Criterion H11_1_14 = createCriterion("In der Detailansicht werden alle Fahrzeuge, inklusive Kapazität und Startposition, angezeigt", 1);
+    public static final Criterion H11_1_14 = createUntestedCriterion("In der Detailansicht werden alle Fahrzeuge, inklusive Kapazität und Startposition, angezeigt", 1);
 
-    public static final Criterion H11_1_15 = createCriterion("In der Detailansicht ist erkennbar, welcher DistanceCalculator zu der Region des Problemes gehört", 1);
+    public static final Criterion H11_1_15 = createUntestedCriterion("In der Detailansicht ist erkennbar, welcher DistanceCalculator zu der Region des Problemes gehört", 1);
 
     public static final Criterion H11_1 = createParentCriterion("11.1", "Startmenü", H11_1_1, H11_1_2, H11_1_3, H11_1_4, H11_1_5, H11_1_6, H11_1_7, H11_1_8, H11_1_9, H11_1_10, H11_1_11, H11_1_12, H11_1_13, H11_1_14, H11_1_15);
 
-    public static final Criterion H11_2_1 = createCriterion("Die erreichte Punktezahl für das Bewertungskriterium IN_TIME wird korrekt angezeigt", 2);
+    public static final Criterion H11_2_1 = createUntestedCriterion("Die erreichte Punktezahl für das Bewertungskriterium IN_TIME wird korrekt angezeigt", 2);
 
-    public static final Criterion H11_2_2 = createCriterion("Die erreichte Punktezahl für das Bewertungskriterium AMOUNT_DELIVERED wird korrekt angezeigt", 2);
+    public static final Criterion H11_2_2 = createUntestedCriterion("Die erreichte Punktezahl für das Bewertungskriterium AMOUNT_DELIVERED wird korrekt angezeigt", 2);
 
-    public static final Criterion H11_2_3 = createCriterion("Die erreichte Punktezahl für das Bewertungskriterium TRAVEL_DISTANCE wird korrekt angezeigt", 2);
+    public static final Criterion H11_2_3 = createUntestedCriterion("Die erreichte Punktezahl für das Bewertungskriterium TRAVEL_DISTANCE wird korrekt angezeigt", 2);
 
-    public static final Criterion H11_2_4 = createCriterion("Die erreichte Punktezahlen werden korrekt angezeigt, wenn nicht für alle Bewertungskriterien Punktzahlen vorhanden sind", 1);
+    public static final Criterion H11_2_4 = createUntestedCriterion("Die erreichte Punktezahlen werden korrekt angezeigt, wenn nicht für alle Bewertungskriterien Punktzahlen vorhanden sind", 1);
 
     public static final Criterion H11_2 = createParentCriterion("11.2", "Endmenü", H11_2_1, H11_2_2, H11_2_3, H11_2_4);
 
-    public static final Criterion H11_3_1 = createCriterion("Es existiert eine Übersicht über alle Fahrzeuge", 1);
+    public static final Criterion H11_3_1 = createUntestedCriterion("Es existiert eine Übersicht über alle Fahrzeuge", 1);
 
-    public static final Criterion H11_3_2 = createCriterion("Die Übersicht zeigt die ID aller Fahrzeuge an", 1);
+    public static final Criterion H11_3_2 = createUntestedCriterion("Die Übersicht zeigt die ID aller Fahrzeuge an", 1);
 
-    public static final Criterion H11_3_3 = createCriterion("Die Übersicht über alle Fahrzeuge zeigt die Positionen der Fahrzeuge korrekt an, wenn diese sich auf einem Knoten befinden", 1);
+    public static final Criterion H11_3_3 = createUntestedCriterion("Die Übersicht über alle Fahrzeuge zeigt die Positionen der Fahrzeuge korrekt an, wenn diese sich auf einem Knoten befinden", 1);
 
-    public static final Criterion H11_3_4 = createCriterion("Die Übersicht über alle Fahrzeuge zeigt die Positionen der Fahrzeuge korrekt an, wenn diese sich auf einer Kante befinden", 1);
+    public static final Criterion H11_3_4 = createUntestedCriterion("Die Übersicht über alle Fahrzeuge zeigt die Positionen der Fahrzeuge korrekt an, wenn diese sich auf einer Kante befinden", 1);
 
-    public static final Criterion H11_3_5 = createCriterion("Die Übersicht über alle Fahrzeuge zeigt die Essen der Bestellungen an, welche sich auf einem Fahrzeug befinden", 1);
+    public static final Criterion H11_3_5 = createUntestedCriterion("Die Übersicht über alle Fahrzeuge zeigt die Essen der Bestellungen an, welche sich auf einem Fahrzeug befinden", 1);
 
-    public static final Criterion H11_3_6 = createCriterion("Die Übersicht über alle Fahrzeuge wird in jedem Tick korrekt aktualisiert", 2);
+    public static final Criterion H11_3_6 = createUntestedCriterion("Die Übersicht über alle Fahrzeuge wird in jedem Tick korrekt aktualisiert", 2);
     public static final Criterion H11_3 = createParentCriterion("11.3", "Anzeige der Simulation", H11_3_1, H11_3_2, H11_3_3, H11_3_4, H11_3_5, H11_3_6);
 
-    public static final Criterion H11_4_1 = createCriterion("Es können Probleme aus der Übersicht entfernt werden, worauf diese nicht simuliert werden", 1);
+    public static final Criterion H11_4_1 = createUntestedCriterion("Es können Probleme aus der Übersicht entfernt werden, worauf diese nicht simuliert werden", 1);
 
-    public static final Criterion H11_4_2 = createCriterion("Es existiert ein Knopf zum Hinzufügen neuer Probleme, welche eine neue Szene öffnet", 1);
+    public static final Criterion H11_4_2 = createUntestedCriterion("Es existiert ein Knopf zum Hinzufügen neuer Probleme, welche eine neue Szene öffnet", 1);
 
-    public static final Criterion H11_4_3 = createCriterion("Es gibt eine Auswahl, ob entweder ein existierend hinzugefügt werden soll oder ein neues erzeugt werden soll", 1);
+    public static final Criterion H11_4_3 = createUntestedCriterion("Es gibt eine Auswahl, ob entweder ein existierend hinzugefügt werden soll oder ein neues erzeugt werden soll", 1);
 
-    public static final Criterion H11_4_4 = createCriterion("Wenn ein existierendes Problem hinzugefügt wird, werden alle Probleme angezeigt", 1);
+    public static final Criterion H11_4_4 = createUntestedCriterion("Wenn ein existierendes Problem hinzugefügt wird, werden alle Probleme angezeigt", 1);
 
-    public static final Criterion H11_4_5 = createCriterion("Wenn ein existierendes Problem hinzugefügt wird, kann man eines der angezeigten Probleme auswählen und hinzufügen", 1);
+    public static final Criterion H11_4_5 = createUntestedCriterion("Wenn ein existierendes Problem hinzugefügt wird, kann man eines der angezeigten Probleme auswählen und hinzufügen", 1);
 
-    public static final Criterion H11_4_6 = createCriterion("Wenn ein existierendes Problem hinzugefügt wird, werden keine Probleme angezeigt, welche bereits hinzugefügt sind", 1);
+    public static final Criterion H11_4_6 = createUntestedCriterion("Wenn ein existierendes Problem hinzugefügt wird, werden keine Probleme angezeigt, welche bereits hinzugefügt sind", 1);
 
-    public static final Criterion H11_4_7 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man den Namen des Problemes angeben", 1);
+    public static final Criterion H11_4_7 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, kann man den Namen des Problemes angeben", 1);
 
-    public static final Criterion H11_4_8 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man die Simulationslänge angeben", 1);
+    public static final Criterion H11_4_8 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, kann man die Simulationslänge angeben", 1);
 
-    public static final Criterion H11_4_9 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man für jedes Bewertungskriterium auswählen, ob es verwendet werden soll", 1);
+    public static final Criterion H11_4_9 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, kann man für jedes Bewertungskriterium auswählen, ob es verwendet werden soll", 1);
 
-    public static final Criterion H11_4_10 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man die einzelnen Parameter der Rater angeben", 1);
+    public static final Criterion H11_4_10 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, kann man die einzelnen Parameter der Rater angeben", 1);
 
-    public static final Criterion H11_4_11 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man auswählen, welche OrderGenerator verwendet werden soll", 1);
+    public static final Criterion H11_4_11 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, kann man auswählen, welche OrderGenerator verwendet werden soll", 1);
 
-    public static final Criterion H11_4_12 = createCriterion("Wenn ein neues Problem hinzugefügt wird und ein FridayOrderGenerator verwendet wird, kann man die Werte der einzelnen Parameter angeben", 1);
+    public static final Criterion H11_4_12 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird und ein FridayOrderGenerator verwendet wird, kann man die Werte der einzelnen Parameter angeben", 1);
 
-    public static final Criterion H11_4_13 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man den verwendeten DistanceCalculator auswählen", 1);
+    public static final Criterion H11_4_13 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, kann man den verwendeten DistanceCalculator auswählen", 1);
 
-    public static final Criterion H11_4_14 = createCriterion("Wenn ein neues Problem hinzugefügt wird, wird der momentane Stand der Region in einem MapPane angezeigt", 1);
+    public static final Criterion H11_4_14 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, wird der momentane Stand der Region in einem MapPane angezeigt", 1);
 
-    public static final Criterion H11_4_15 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man einen Knoten und eine Nachbarschaft mit gewählter Position und Name hinzufügen", 1);
+    public static final Criterion H11_4_15 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, kann man einen Knoten und eine Nachbarschaft mit gewählter Position und Name hinzufügen", 1);
 
-    public static final Criterion H11_4_16 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man eine Kante mit gewählter Position und Name hinzufügen", 1);
+    public static final Criterion H11_4_16 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, kann man eine Kante mit gewählter Position und Name hinzufügen", 1);
 
-    public static final Criterion H11_4_17 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man beim Hinzufügen eines Restaurant aus einem der Presets aus dem Interface auswählen", 1);
+    public static final Criterion H11_4_17 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, kann man beim Hinzufügen eines Restaurant aus einem der Presets aus dem Interface auswählen", 1);
 
-    public static final Criterion H11_4_18 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man ein Fahrzeug mit gewählter Position und Kapazität hinzufügen", 1);
+    public static final Criterion H11_4_18 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, kann man ein Fahrzeug mit gewählter Position und Kapazität hinzufügen", 1);
 
-    public static final Criterion H11_4_19 = createCriterion("Wenn ein neues Problem hinzugefügt wird, können nur valide Knoten und Kanten hinzugefügt werden", 1);
+    public static final Criterion H11_4_19 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, können nur valide Knoten und Kanten hinzugefügt werden", 1);
 
-    public static final Criterion H11_4_20 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man ausgewählte Knoten wieder entfernen", 1);
+    public static final Criterion H11_4_20 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, kann man ausgewählte Knoten wieder entfernen", 1);
 
-    public static final Criterion H11_4_21 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man ausgewählte Kanten wieder entfernen", 1);
+    public static final Criterion H11_4_21 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, kann man ausgewählte Kanten wieder entfernen", 1);
 
-    public static final Criterion H11_4_22 = createCriterion("Wenn ein neues Problem hinzugefügt wird, kann man ausgewählte Fahrzeuge wieder entfernen", 1);
+    public static final Criterion H11_4_22 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, kann man ausgewählte Fahrzeuge wieder entfernen", 1);
 
-    public static final Criterion H11_4_23 = createCriterion("Wenn ein neues Problem hinzugefügt wird, werden alle vorhanden Probleme in einer Übersicht angezeigt", 1);
+    public static final Criterion H11_4_23 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, werden alle vorhanden Probleme in einer Übersicht angezeigt", 1);
 
-    public static final Criterion H11_4_24 = createCriterion("Wenn ein neues Problem hinzugefügt wird, werden alle gewählten Eigenschaften in einer Übersicht angezeigt", 1);
+    public static final Criterion H11_4_24 = createUntestedCriterion("Wenn ein neues Problem hinzugefügt wird, werden alle gewählten Eigenschaften in einer Übersicht angezeigt", 1);
 
-    public static final Criterion H11_4_25 = createCriterion("Die Option, ein neues Problem hinzuzufügen, kann nur gewählt werden, wenn alle Eigenschaften korrekt ausgewählt werden", 1);
+    public static final Criterion H11_4_25 = createUntestedCriterion("Die Option, ein neues Problem hinzuzufügen, kann nur gewählt werden, wenn alle Eigenschaften korrekt ausgewählt werden", 1);
 
     public static final Criterion H11_4 = createParentCriterion("11.4", "Erstellen weitere Probleme", H11_4_1, H11_4_2, H11_4_3, H11_4_4, H11_4_5, H11_4_6, H11_4_7, H11_4_8, H11_4_9, H11_4_10, H11_4_11, H11_4_12, H11_4_13, H11_4_14, H11_4_15, H11_4_16, H11_4_17, H11_4_18, H11_4_19, H11_4_20, H11_4_21, H11_4_22, H11_4_23, H11_4_24, H11_4_25);
 
     public static final Criterion H11 = createParentCriterion("11", "Die GUI", H11_1, H11_2, H11_3, H11_4);
 
-    public static final Criterion H12_1_1 = createCriterion("ObjectsTestsTest", 5);
+    public static final Criterion H12_1_1 = createUntestedCriterion("Die Methode initialize der Klasse ObjectUnitTests initialisiert die Arrays testObjects und testObjectsReferenceEquality korrekt", 1);
 
-    public static final Criterion H12_1_2 = createCriterion("ComparableTestsTest", 5);
+    public static final Criterion H12_1_2 = createUntestedCriterion("Die Methode initialize der Klasse ObjectUnitTests initialisiert alle Arrays korrekt", 1);
 
+    public static final Criterion H12_1_3 = createUntestedCriterion("Die Methode testEquals der Klasse ObjectUnitTests testet die Gleichheit der Elemente korrekt", 1);
 
-    public static final Criterion H12_1 = createParentCriterion("12.1", "Object- und Comparable Tests", H12_1_1, H12_1_2);
+    public static final Criterion H12_1_4 = createUntestedCriterion("Die Methode testEquals der Klasse ObjectUnitTests testet die Ungleichheit der Elemente korrekt", 1);
 
-    public static final Criterion H12_2_1 = createCriterion("LocationTest", 3);
+    public static final Criterion H12_1_5 = createUntestedCriterion("Die Methode testEquals der Klasse ObjectUnitTests testHashCode funktioniert vollständig korrekt", 1);
 
-    public static final Criterion H12_2 = createParentCriterion("12.2", "Location", H12_2_1);
+    public static final Criterion H12_1_6 = createUntestedCriterion("Die Methode testToString der Klasse ObjectUnitTests funktioniert vollständig korrekt", 1);
 
-    public static final Criterion H12_3_1 = createCriterion("RegionImplTest", 6);
+    public static final Criterion H12_1_7 = createUntestedCriterion("Die Methode initialize der Klasse ComparableUnitTests initialisiert das Array korrekt", 1);
 
-    public static final Criterion H12_3 = createParentCriterion("12.3", "RegionImpl", H12_3_1);
+    public static final Criterion H12_1_8 = createUntestedCriterion("Die Methode testBiggerThen der Klasse ComparableUnitTests funktioniert vollständig korrekt", 1);
 
-    public static final Criterion H12_4_1 = createCriterion("NodeImplTest", 6);
+    public static final Criterion H12_1_9 = createUntestedCriterion("Die Methode testAsBigAs der Klasse ComparableUnitTests funktioniert vollständig korrekt", 1);
 
-    public static final Criterion H12_4 = createParentCriterion("12.4", "NodeImpl", H12_4_1);
+    public static final Criterion H12_1_10 = createUntestedCriterion("Die Methode testSmallerThen der Klasse ComparableUnitTests funktioniert vollständig korrekt", 1);
 
-    public static final Criterion H12_5_1 = createCriterion("EdgeImplTest", 4);
+    public static final Criterion H12_1 = createParentCriterion("12.1", "Object- und Comparable Tests", H12_1_1, H12_1_2, H12_1_3, H12_1_4, H12_1_5, H12_1_6, H12_1_7, H12_1_8, H12_1_9, H12_1_10);
 
-    public static final Criterion H12_5 = createParentCriterion("12.5", "EdgeImpl", H12_5_1);
+    public static final Criterion H12_2_1 = createUntestedCriterion("Die methode Initialize der Klasse LocationUnitTests initialisiert die ObjectUnitTests korrekt", 1);
+
+    public static final Criterion H12_2_2 = createUntestedCriterion("Die methode Initialize der Klasse LocationUnitTests initialisiert die ComparableUnitTests korrekt", 1);
+
+    public static final Criterion H12_2_3 = createUntestedCriterion("Die test Methoden der Klasse LocationUnitTests funktionieren vollständig korrekt", 1);
+
+    public static final Criterion H12_2 = createParentCriterion("12.2", "Location", H12_2_1, H12_2_2, H12_2_3);
+
+    public static final Criterion H12_3_1 = createUntestedCriterion("Die Methode initialize der Klasse RegionImplUnitTests initialisiert die ObjectUnitTests korrekt", 2);
+
+    public static final Criterion H12_3_2 = createUntestedCriterion("Die Methode testNodes der Klasse RegionImplUnitTests funktioniert vollständig korrekt", 2);
+
+    public static final Criterion H12_3_3 = createUntestedCriterion("Die Methode testEdges der Klasse RegionImplUnitTests funktioniert vollständig korrekt", 2);
+
+    public static final Criterion H12_3 = createParentCriterion("12.3", "RegionImpl", H12_3_1, H12_3_2, H12_3_3);
+
+    public static final Criterion H12_4_1 = createUntestedCriterion("Die Methode initialize der Klasse NodeImplUnitTests initialisiert die Region korrekt", 1);
+
+    public static final Criterion H12_4_2 = createUntestedCriterion("Die Methode initialize der Klasse NodeImplUnitTests initialisiert die ObjectUnitTests korrekt und verwendet die zugehörigen Test Methoden korrekt", 1);
+
+    public static final Criterion H12_4_3 = createUntestedCriterion("Die Methode initialize der Klasse NodeImplUnitTests initialisiert die ComparableUnitTests korrekt und verwendet die zugehörigen Test Methoden korrekt", 1);
+
+    public static final Criterion H12_4_4 = createUntestedCriterion("Die Methode testGetEdge der Klasse NodeImplUnitTests funktioniert vollständig korrekt", 1);
+
+    public static final Criterion H12_4_5 = createUntestedCriterion("Die Methode testAdjacentNodes der Klasse NodeImplUnitTests funktioniert vollständig korrekt", 1);
+
+    public static final Criterion H12_4_6 = createUntestedCriterion("Die Methode testAdjacentEdges der Klasse NodeImplUnitTests funktioniert vollständig korrekt", 1);
+
+    public static final Criterion H12_4 = createParentCriterion("12.4", "NodeImpl", H12_4_1, H12_4_2, H12_4_3, H12_4_4, H12_4_5, H12_4_6);
+
+    public static final Criterion H12_5_1 = createUntestedCriterion("Die Methode initialize der Klasse EdgeImplUnitTests initialisiert die Region korrekt", 1);
+
+    public static final Criterion H12_5_2 = createUntestedCriterion("Die Methode initialize der Klasse EdgeImplUnitTests initialisiert die ObjectUnitTests korrekt und verwendet die zugehörigen Test Methoden korrekt", 1);
+
+    public static final Criterion H12_5_3 = createUntestedCriterion("Die Methode initialize der Klasse EdgeImplUnitTests initialisiert die ComparableUnitTests korrekt und verwendet die zugehörigen Test Methoden korrekt", 1);
+
+    public static final Criterion H12_5_4 = createUntestedCriterion("Die Methode testGetNode der Klasse EdgeImplUnitTests funktioniert vollständig korrekt", 1);
+
+    public static final Criterion H12_5 = createParentCriterion("12.5", "EdgeImpl", H12_5_1, H12_5_2, H12_5_3, H12_5_4);
 
     public static final Criterion H12 = createParentCriterion("12", "Unit Tests", H12_1, H12_2, H12_3, H12_4, H12_5);
 
@@ -662,7 +706,6 @@ public class Projekt_RubricProvider implements RubricProvider {
         .title("Projekt")
         .addChildCriteria(H1, H2, H3, H4, H5, H6, H7, H8, H9, H10, H11, H12)
         .build();
-
 
     @Override
     public Rubric getRubric() {
