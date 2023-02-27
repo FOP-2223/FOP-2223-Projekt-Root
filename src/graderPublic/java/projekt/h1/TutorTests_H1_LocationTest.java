@@ -129,7 +129,7 @@ public class TutorTests_H1_LocationTest {
 
         Location location = new Location(x, y);
 
-        assertEquals(location.toString(), "(" + x + ", " + y + ")", context, TR -> "Method did not return the correct string");
+        assertEquals(location.toString(), "(" + x + "," + y + ")", context, TR -> "Method did not return the correct string");
     }
 
 }
