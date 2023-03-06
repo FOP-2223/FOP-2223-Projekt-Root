@@ -13,6 +13,9 @@ jagr {
     assignmentId.set("projekt")
     submissions {
         val main by creating {
+            from(project(":application"))
+            from(project(":domain"))
+            from(project(":infrastructure"))
             studentId.set("ab12cdef")
             firstName.set("sol_first")
             lastName.set("sol_last")
