@@ -73,8 +73,8 @@ public class OrderGeneratorFactoryIO {
                 writer.write(" %d %d %s %s %d %d\n".formatted(
                     fridayFactory.orderCount,
                     fridayFactory.deliveryInterval,
-                    fridayFactory.maxWeight,
-                    fridayFactory.standardDeviation,
+                    Double.toString(fridayFactory.maxWeight),
+                    Double.toString(fridayFactory.standardDeviation),
                     fridayFactory.lastTick,
                     fridayFactory.seed)
                 );
