@@ -13,6 +13,7 @@ jagr {
     assignmentId.set("projekt")
     submissions {
         val main by creating {
+            from(project(":"))
             from(project(":application"))
             from(project(":domain"))
             from(project(":infrastructure"))
