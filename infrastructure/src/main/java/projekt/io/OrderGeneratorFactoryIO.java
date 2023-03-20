@@ -70,7 +70,7 @@ public class OrderGeneratorFactoryIO {
             writer.write("O %s".formatted(factory.getClass().getName()));
 
             if (factory instanceof FridayOrderGenerator.Factory fridayFactory) {
-                writer.write(" %d %d %f %f %d %d\n".formatted(
+                writer.write(" %d %d %s %s %d %d\n".formatted(
                     fridayFactory.orderCount,
                     fridayFactory.deliveryInterval,
                     fridayFactory.maxWeight,
