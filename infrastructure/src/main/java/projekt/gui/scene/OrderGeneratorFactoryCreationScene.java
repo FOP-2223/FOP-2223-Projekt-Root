@@ -83,7 +83,7 @@ public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGenerator
                     .setOrderCount((Integer) values.get("orderCount"))
                     .setDeliveryInterval((Integer) values.get("deliveryInterval"))
                     .setMaxWeight((Double) values.get("maxWeight"))
-                    .setVariance((Double) values.get("variance"))
+                    .setStandardDeviation((Double) values.get("standardDeviation"))
                     .setLastTick((Long) values.get("lastTick"))
                     .setVehicleManager(vehicleManager)
                     .setSeed(seedCheckBox.isSelected() ? (Integer) values.get("seed") : -1);
@@ -140,7 +140,7 @@ public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGenerator
             values.put("orderCount", 0);
             values.put("deliveryInterval", 0);
             values.put("maxWeight", 0.0);
-            values.put("variance", 0.0);
+            values.put("standardDeviation", 0.0);
             values.put("lastTick", 0L);
             values.put("seed", 0);
         } else {
@@ -148,7 +148,7 @@ public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGenerator
             values.put("orderCount", fridayBuilder.orderCount);
             values.put("deliveryInterval", fridayBuilder.deliveryInterval);
             values.put("maxWeight", fridayBuilder.maxWeight);
-            values.put("variance", fridayBuilder.variance);
+            values.put("standardDeviation", fridayBuilder.standardDeviation);
             values.put("lastTick", fridayBuilder.lastTick);
             values.put("seed", fridayBuilder.seed == -1 ? 0 : fridayBuilder.seed);
         }
@@ -168,10 +168,10 @@ public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGenerator
         TextField maxWeightTextField = createPositiveDoubleTextField(value -> values.put("maxWeight", value), (Double) values.get("maxWeight"));
         maxWeightHBox.getChildren().addAll(maxWeightLabel, createIntermediateRegion(0), maxWeightTextField);
 
-        HBox varianceHBox = new HBox();
-        Label varianceLabel = createIndentedLabel("Variance");
-        TextField varianceTextField = createPositiveDoubleTextField(value -> values.put("variance", value), (Double) values.get("variance"));
-        varianceHBox.getChildren().addAll(varianceLabel, createIntermediateRegion(0), varianceTextField);
+        HBox standardDeviationHBox = new HBox();
+        Label standardDeviationLabel = createIndentedLabel("standardDeviation");
+        TextField standardDeviationTextField = createPositiveDoubleTextField(value -> values.put("standardDeviation", value), (Double) values.get("standardDeviation"));
+        standardDeviationHBox.getChildren().addAll(standardDeviationLabel, createIntermediateRegion(0), standardDeviationTextField);
 
         HBox lastTickHBox = new HBox();
         Label lastTickLabel = createIndentedLabel("Last Tick");
@@ -187,7 +187,7 @@ public class OrderGeneratorFactoryCreationScene extends MenuScene<OrderGenerator
         if (orderGeneratorFactoryBuilder == null || ((FridayOrderGenerator.FactoryBuilder) orderGeneratorFactoryBuilder).seed == -1)
             seedTextField.setDisable(true);
 
-        options.addAll(List.of(orderCountHBox, deliveryIntervalHBox, maxWeightHBox, varianceHBox, lastTickHBox, seedHBox));
+        options.addAll(List.of(orderCountHBox, deliveryIntervalHBox, maxWeightHBox, standardDeviationHBox, lastTickHBox, seedHBox));
 
         vBox.getChildren().addAll(options);
         if (!vBox.getChildren().contains(applyButton)) {

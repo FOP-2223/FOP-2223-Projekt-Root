@@ -71,7 +71,7 @@ public class ProblemArchetypeOverviewPane extends Pane {
                 .setOrderCount(fridayOrderGenerator.orderCount)
                 .setDeliveryInterval(fridayOrderGenerator.deliveryInterval)
                 .setMaxWeight(fridayOrderGenerator.maxWeight)
-                .setVariance(fridayOrderGenerator.variance)
+                .setStandardDeviation(fridayOrderGenerator.standardDeviation)
                 .setLastTick(fridayOrderGenerator.lastTick)
                 .setSeed(fridayOrderGenerator.seed);
         } else {
@@ -182,7 +182,7 @@ public class ProblemArchetypeOverviewPane extends Pane {
             properties.add(createProperty("OrderCount", fridayFactory.orderCount, 1));
             properties.add(createProperty("deliveryInterval", fridayFactory.deliveryInterval, 1));
             properties.add(createProperty("maxWeight", fridayFactory.maxWeight, 1));
-            properties.add(createProperty("variance", fridayFactory.variance, 1));
+            properties.add(createProperty("variance", fridayFactory.standardDeviation, 1));
             properties.add(createProperty("lastTick", fridayFactory.lastTick, 1));
             properties.add(createProperty("seed", fridayFactory.seed == -1 ? "Random" : fridayFactory.seed, 1));
         } else if (builder instanceof EmptyOrderGenerator.FactoryBuilder) {
