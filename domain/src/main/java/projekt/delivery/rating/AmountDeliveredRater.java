@@ -80,21 +80,21 @@ public class AmountDeliveredRater implements Rater {
         }
 
         @Override
-        public Rater create() {
+        public AmountDeliveredRater create() {
             return new AmountDeliveredRater(factor);
         }
 
         /**
-         * Creates a new {@link AmountDeliveredRater.FactoryBuilder}.
-         * @return The created {@link AmountDeliveredRater.FactoryBuilder}.
+         * Creates a new {@link FactoryBuilder}.
+         * @return The created {@link FactoryBuilder}.
          */
-        public static AmountDeliveredRater.FactoryBuilder builder() {
-            return new AmountDeliveredRater.FactoryBuilder();
+        public static FactoryBuilder builder() {
+            return new FactoryBuilder();
         }
     }
 
     /**
-     * A {@link Rater.FactoryBuilder} form constructing a new {@link AmountDeliveredRater.Factory}.
+     * A {@link Rater.FactoryBuilder} for constructing a new {@link AmountDeliveredRater.Factory}.
      */
     public static class FactoryBuilder implements Rater.FactoryBuilder {
 
@@ -103,7 +103,7 @@ public class AmountDeliveredRater implements Rater {
         private FactoryBuilder() {}
 
         @Override
-        public Rater.Factory build() {
+        public Factory build() {
             return new Factory(factor);
         }
 

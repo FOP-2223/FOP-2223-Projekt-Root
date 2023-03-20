@@ -13,6 +13,10 @@ jagr {
     assignmentId.set("projekt")
     submissions {
         val main by creating {
+            from(project(":"))
+            from(project(":application"))
+            from(project(":domain"))
+            from(project(":infrastructure"))
             studentId.set("ab12cdef")
             firstName.set("sol_first")
             lastName.set("sol_last")
@@ -24,6 +28,7 @@ jagr {
             rubricProviderName.set("projekt.Projekt_RubricProvider")
             configureDependencies {
                 implementation(libs.algoutils.tutor)
+                implementation(libs.mockito.inline)
             }
         }
         val graderPrivate by creating {
@@ -38,6 +43,9 @@ dependencies {
     implementation(libs.algoutils.student)
     implementation(libs.flatlaf)
     testImplementation(libs.junit.core)
+    testImplementation(project(":application"))
+    testImplementation(project(":infrastructure"))
+    testImplementation(project(":domain"))
     implementation(project(":application"))
     runtimeOnly(project(":infrastructure"))
 }

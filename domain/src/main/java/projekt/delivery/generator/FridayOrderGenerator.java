@@ -25,17 +25,17 @@ public class FridayOrderGenerator implements OrderGenerator {
      * @param vehicleManager The {@link VehicleManager} this {@link OrderGenerator} will create orders for.
      * @param deliveryInterval The amount of ticks between the start and end tick of the deliveryInterval of the created orders.
      * @param maxWeight The maximum weight of a created order.
-     * @param variance The variance of the normal distribution.
+     * @param standardDeviation The standardDeviation of the normal distribution.
      * @param lastTick The last tick this {@link OrderGenerator} can return a non-empty list.
      * @param seed The seed for the used {@link Random} instance. If negative a random seed will be used.
      */
-    private FridayOrderGenerator(int orderCount, VehicleManager vehicleManager, int deliveryInterval, double maxWeight, double variance, long lastTick, int seed) {
+    private FridayOrderGenerator(int orderCount, VehicleManager vehicleManager, int deliveryInterval, double maxWeight, double standardDeviation, long lastTick, int seed) {
         random = seed < 0 ? new Random() : new Random(seed);
 
         for (int i = 0; i < orderCount; i++) {
             long deliveryTime;
             do {
-                deliveryTime = (long) ((random.nextGaussian(0.5, variance)) * lastTick);
+                deliveryTime = (long) ((random.nextGaussian(0.5, standardDeviation)) * lastTick);
             } while (deliveryTime < 0.0 || deliveryTime > lastTick);
 
             if (orders.containsKey(deliveryTime)) {
@@ -85,23 +85,23 @@ public class FridayOrderGenerator implements OrderGenerator {
         public final VehicleManager vehicleManager;
         public final int deliveryInterval;
         public final double maxWeight;
-        public final double variance;
+        public final double standardDeviation;
         public final long lastTick;
         public final int seed;
 
-        private Factory(int orderCount, VehicleManager vehicleManager, int deliveryInterval, double maxWeight, double variance, long lastTick, int seed) {
+        private Factory(int orderCount, VehicleManager vehicleManager, int deliveryInterval, double maxWeight, double standardDeviation, long lastTick, int seed) {
             this.orderCount = orderCount;
             this.vehicleManager = vehicleManager;
             this.deliveryInterval = deliveryInterval;
             this.maxWeight = maxWeight;
-            this.variance = variance;
+            this.standardDeviation = standardDeviation;
             this.lastTick = lastTick;
             this.seed = seed;
         }
 
         @Override
         public OrderGenerator create() {
-            return new FridayOrderGenerator(orderCount, vehicleManager, deliveryInterval, maxWeight, variance, lastTick, seed);
+            return new FridayOrderGenerator(orderCount, vehicleManager, deliveryInterval, maxWeight, standardDeviation, lastTick, seed);
         }
 
         /**
@@ -123,7 +123,7 @@ public class FridayOrderGenerator implements OrderGenerator {
         public VehicleManager vehicleManager = null;
         public int deliveryInterval = 15;
         public double maxWeight = 0.5;
-        public double variance = 0.5;
+        public double standardDeviation = 0.5;
         public long lastTick = 480;
         public int seed = -1;
 
@@ -149,8 +149,8 @@ public class FridayOrderGenerator implements OrderGenerator {
             return this;
         }
 
-        public FactoryBuilder setVariance(double variance) {
-            this.variance = variance;
+        public FactoryBuilder setStandardDeviation(double standardDeviation) {
+            this.standardDeviation = standardDeviation;
             return this;
         }
 
@@ -167,7 +167,7 @@ public class FridayOrderGenerator implements OrderGenerator {
         @Override
         public Factory build() {
             Objects.requireNonNull(vehicleManager);
-            return new Factory(orderCount, vehicleManager, deliveryInterval, maxWeight, variance, lastTick, seed);
+            return new Factory(orderCount, vehicleManager, deliveryInterval, maxWeight, standardDeviation, lastTick, seed);
         }
     }
 }

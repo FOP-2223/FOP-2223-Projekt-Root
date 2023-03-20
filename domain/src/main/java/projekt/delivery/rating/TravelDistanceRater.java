@@ -1,6 +1,7 @@
 package projekt.delivery.rating;
 
 import projekt.delivery.event.ArrivedAtNodeEvent;
+import projekt.delivery.event.DeliverOrderEvent;
 import projekt.delivery.event.Event;
 import projekt.delivery.event.OrderReceivedEvent;
 import projekt.delivery.routing.PathCalculator;
@@ -55,9 +56,10 @@ public class TravelDistanceRater implements Rater {
     public void onTick(List<Event> events, long tick) {
 
         events.stream()
-            .filter(OrderReceivedEvent.class::isInstance)
-            .map(OrderReceivedEvent.class::cast)
-            .forEach(orderReceivedEvent -> worstDistance += 2 * getDistance(orderReceivedEvent.getRestaurant(), region.getNode(orderReceivedEvent.getOrder().getLocation())));
+            .filter(DeliverOrderEvent.class::isInstance)
+            .map(DeliverOrderEvent.class::cast)
+            .forEach(deliverOrderEvent -> worstDistance += 2 * getDistance(deliverOrderEvent.getOrder().getRestaurant().getComponent(),
+                region.getNode(deliverOrderEvent.getOrder().getLocation())));
 
         events.stream()
             .filter(ArrivedAtNodeEvent.class::isInstance)
@@ -67,6 +69,11 @@ public class TravelDistanceRater implements Rater {
 
     private double getDistance(Region.Node node1, Region.Node node2) {
         Deque<Region.Node> path = pathCalculator.getPath(node1, node2);
+
+        if (path.isEmpty()) {
+            return 0;
+        }
+
         long distance = 0;
         Region.Node previousNode = node1;
         Region.Node node = path.pollFirst();
@@ -95,7 +102,7 @@ public class TravelDistanceRater implements Rater {
         }
 
         @Override
-        public Rater create() {
+        public TravelDistanceRater create() {
             return new TravelDistanceRater(vehicleManager, factor);
         }
 
@@ -103,8 +110,8 @@ public class TravelDistanceRater implements Rater {
          * Creates a new {@link TravelDistanceRater.FactoryBuilder}.
          * @return The created {@link TravelDistanceRater.FactoryBuilder}.
          */
-        public static TravelDistanceRater.FactoryBuilder builder() {
-            return new TravelDistanceRater.FactoryBuilder();
+        public static FactoryBuilder builder() {
+            return new FactoryBuilder();
         }
 
 
@@ -121,7 +128,7 @@ public class TravelDistanceRater implements Rater {
         private FactoryBuilder() {}
 
         @Override
-        public Rater.Factory build() {
+        public Factory build() {
             return new Factory(vehicleManager, factor);
         }
 

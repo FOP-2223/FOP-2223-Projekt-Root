@@ -6,6 +6,10 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import projekt.base.ChessboardDistanceCalculator;
+import projekt.base.DistanceCalculator;
+import projekt.base.EuclideanDistanceCalculator;
+import projekt.base.ManhattanDistanceCalculator;
 import projekt.delivery.archetype.ProblemArchetype;
 import projekt.delivery.generator.EmptyOrderGenerator;
 import projekt.delivery.generator.FridayOrderGenerator;
@@ -44,6 +48,7 @@ public class ProblemArchetypeOverviewPane extends Pane {
 
         box.getChildren().addAll(createNameProperties(name));
         box.getChildren().addAll(createProperty("SimulationLength", simulationLength, 0));
+        box.getChildren().addAll(createDistanceCalculatorProperties(vehicleManager));
         box.getChildren().addAll(createOrderGeneratorProperties(orderGenerator));
         box.getChildren().addAll(createRaterFactoryMapProperties(raterFactoryMap));
         box.getChildren().addAll(createVehicleManagerProperties(vehicleManager));
@@ -66,7 +71,7 @@ public class ProblemArchetypeOverviewPane extends Pane {
                 .setOrderCount(fridayOrderGenerator.orderCount)
                 .setDeliveryInterval(fridayOrderGenerator.deliveryInterval)
                 .setMaxWeight(fridayOrderGenerator.maxWeight)
-                .setVariance(fridayOrderGenerator.variance)
+                .setStandardDeviation(fridayOrderGenerator.standardDeviation)
                 .setLastTick(fridayOrderGenerator.lastTick)
                 .setSeed(fridayOrderGenerator.seed);
         } else {
@@ -101,6 +106,32 @@ public class ProblemArchetypeOverviewPane extends Pane {
             properties.add(createProperty("Name", "Not set", 0));
         } else {
             properties.add(createProperty("Name", name, 0));
+        }
+
+        return properties;
+    }
+
+    private List<HBox> createDistanceCalculatorProperties(VehicleManager vehicleManager) {
+        List<HBox> properties = new ArrayList<>();
+
+        if (vehicleManager == null || vehicleManager.getRegion() == null) {
+            properties.add(createProperty("DistanceCalculator", "Not set", 0));
+            return properties;
+        }
+
+        DistanceCalculator distanceCalculator = vehicleManager.getRegion().getDistanceCalculator();
+
+        if (distanceCalculator == null) {
+            properties.add(createProperty("DistanceCalculator", "Not set", 0));
+            return properties;
+        } else if (distanceCalculator instanceof EuclideanDistanceCalculator) {
+            properties.add(createProperty("DistanceCalculator", "Euclidean", 0));
+        } else if (distanceCalculator instanceof ManhattanDistanceCalculator) {
+            properties.add(createProperty("DistanceCalculator", "Manhattan", 0));
+        } else if (distanceCalculator instanceof ChessboardDistanceCalculator) {
+            properties.add(createProperty("DistanceCalculator", "Chessboard", 0));
+        } else {
+            properties.add(createProperty("DistanceCalculator", "Unknown", 0));
         }
 
         return properties;
@@ -151,7 +182,7 @@ public class ProblemArchetypeOverviewPane extends Pane {
             properties.add(createProperty("OrderCount", fridayFactory.orderCount, 1));
             properties.add(createProperty("deliveryInterval", fridayFactory.deliveryInterval, 1));
             properties.add(createProperty("maxWeight", fridayFactory.maxWeight, 1));
-            properties.add(createProperty("variance", fridayFactory.variance, 1));
+            properties.add(createProperty("variance", fridayFactory.standardDeviation, 1));
             properties.add(createProperty("lastTick", fridayFactory.lastTick, 1));
             properties.add(createProperty("seed", fridayFactory.seed == -1 ? "Random" : fridayFactory.seed, 1));
         } else if (builder instanceof EmptyOrderGenerator.FactoryBuilder) {
