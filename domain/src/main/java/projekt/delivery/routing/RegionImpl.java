@@ -7,14 +7,14 @@ import projekt.base.Location;
 
 import java.util.*;
 
-class RegionImpl implements Region {
+public class RegionImpl implements Region {
 
-    private final Map<Location, NodeImpl> nodes = new HashMap<>();
-    private final Map<Location, Map<Location, EdgeImpl>> edges = new HashMap<>();
-    private final List<EdgeImpl> allEdges = new ArrayList<>();
-    private final Collection<Node> unmodifiableNodes = Collections.unmodifiableCollection(nodes.values());
-    private final Collection<Edge> unmodifiableEdges = Collections.unmodifiableCollection(allEdges);
-    private final DistanceCalculator distanceCalculator;
+    public final Map<Location, NodeImpl> nodes = new HashMap<>();
+    public final Map<Location, Map<Location, EdgeImpl>> edges = new HashMap<>();
+    public final List<EdgeImpl> allEdges = new ArrayList<>();
+    public final Collection<Node> unmodifiableNodes = Collections.unmodifiableCollection(nodes.values());
+    public final Collection<Edge> unmodifiableEdges = Collections.unmodifiableCollection(allEdges);
+    public final DistanceCalculator distanceCalculator;
 
     /**
      * Creates a new, empty {@link RegionImpl} instance using a {@link EuclideanDistanceCalculator}.
@@ -68,7 +68,7 @@ class RegionImpl implements Region {
      * Adds the given {@link NodeImpl} to this {@link RegionImpl}.
      * @param node the {@link NodeImpl} to add.
      */
-    void putNode(NodeImpl node) {
+    public void putNode(NodeImpl node) {
         if (this != node.getRegion()) {
             throw new IllegalArgumentException("Node %s has incorrect region".formatted(node.toString()));
         }
@@ -79,7 +79,7 @@ class RegionImpl implements Region {
      * Adds the given {@link EdgeImpl} to this {@link RegionImpl}.
      * @param edge the {@link EdgeImpl} to add.
      */
-    void putEdge(EdgeImpl edge) {
+    public void putEdge(EdgeImpl edge) {
         if (this != edge.getRegion()) {
             throw new IllegalArgumentException("Edge %s has incorrect region".formatted(edge.toString()));
         }

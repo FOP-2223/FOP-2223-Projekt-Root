@@ -9,17 +9,16 @@ import java.util.Objects;
 /**
  * Represents a weighted edge in a graph.
  */
-@SuppressWarnings("ClassCanBeRecord")
-class EdgeImpl implements Region.Edge {
+public class EdgeImpl implements Region.Edge {
 
     private final static Comparator<Region.Edge> COMPARATOR =
         Comparator.comparing(Region.Edge::getNodeA).thenComparing(Region.Edge::getNodeB);
 
-    private final Region region;
-    private final String name;
-    private final Location locationA;
-    private final Location locationB;
-    private final long duration;
+    public final Region region;
+    public final String name;
+    public final Location locationA;
+    public final Location locationB;
+    public final long duration;
 
     /**
      * Creates a new {@link EdgeImpl} instance.
@@ -29,7 +28,7 @@ class EdgeImpl implements Region.Edge {
      * @param locationB The end of this {@link EdgeImpl}.
      * @param duration The length of this {@link EdgeImpl}.
      */
-    EdgeImpl(
+    public EdgeImpl(
         Region region,
         String name,
         Location locationA,

@@ -5,14 +5,14 @@ import projekt.delivery.event.ArrivedAtNodeEvent;
 import java.util.List;
 import java.util.Map;
 
-class OccupiedNodeImpl<C extends Region.Node> extends AbstractOccupied<C> {
+public class OccupiedNodeImpl<C extends Region.Node> extends AbstractOccupied<C> {
 
     /**
      * Creates a new {@link OccupiedNodeImpl} instance.
      * @param node The represented {@link Region.Node}.
      * @param vehicleManager the corresponding {@link VehicleManager}.
      */
-    OccupiedNodeImpl(C node, VehicleManager vehicleManager) {
+    public OccupiedNodeImpl(C node, VehicleManager vehicleManager) {
         super(node, vehicleManager);
     }
 

@@ -5,15 +5,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.BiConsumer;
 
-class VehicleImpl implements Vehicle {
+public class VehicleImpl implements Vehicle {
 
-    private final int id;
-    private final double capacity;
-    private final List<ConfirmedOrder> orders = new ArrayList<>();
-    private final VehicleManagerImpl vehicleManager;
-    private final Deque<PathImpl> moveQueue = new LinkedList<>();
-    private final VehicleManager.OccupiedRestaurant startingNode;
-    private AbstractOccupied<?> occupied;
+    public final int id;
+    public final double capacity;
+    public final List<ConfirmedOrder> orders = new ArrayList<>();
+    public final VehicleManagerImpl vehicleManager;
+    public final Deque<PathImpl> moveQueue = new LinkedList<>();
+    public final VehicleManager.OccupiedRestaurant startingNode;
+    public AbstractOccupied<?> occupied;
 
     public VehicleImpl(
         int id,
@@ -43,7 +43,7 @@ class VehicleImpl implements Vehicle {
         return new LinkedList<>(moveQueue);
     }
 
-    void setOccupied(AbstractOccupied<?> occupied) {
+    public void setOccupied(AbstractOccupied<?> occupied) {
         this.occupied = occupied;
     }
 
@@ -129,7 +129,7 @@ class VehicleImpl implements Vehicle {
         }
     }
 
-    void move(long currentTick) {
+    public void move(long currentTick) {
         final Region region = vehicleManager.getRegion();
         if (moveQueue.isEmpty()) {
             return;
@@ -156,7 +156,7 @@ class VehicleImpl implements Vehicle {
         }
     }
 
-    void loadOrder(ConfirmedOrder order) {
+    public void loadOrder(ConfirmedOrder order) {
         double capacityNeeded = getCurrentWeight() + order.getWeight();
 
         if (capacityNeeded > capacity) {
@@ -166,7 +166,7 @@ class VehicleImpl implements Vehicle {
         orders.add(order);
     }
 
-    void unloadOrder(ConfirmedOrder order) {
+    public void unloadOrder(ConfirmedOrder order) {
         orders.remove(order);
     }
 
@@ -185,7 +185,7 @@ class VehicleImpl implements Vehicle {
             + ')';
     }
 
-    private record PathImpl(Deque<Region.Node> nodes, BiConsumer<? super Vehicle, Long> arrivalAction) implements Path {
+    public record PathImpl(Deque<Region.Node> nodes, BiConsumer<? super Vehicle, Long> arrivalAction) implements Path {
 
     }
 }

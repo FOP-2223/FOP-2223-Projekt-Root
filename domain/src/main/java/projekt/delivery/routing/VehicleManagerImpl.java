@@ -10,18 +10,18 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-class VehicleManagerImpl implements VehicleManager {
+public class VehicleManagerImpl implements VehicleManager {
 
-    final Map<Region.Node, OccupiedNodeImpl<? extends Region.Node>> occupiedNodes;
-    final Map<Region.Edge, OccupiedEdgeImpl> occupiedEdges;
-    private final Region region;
-    private final PathCalculator pathCalculator;
-    private final List<VehicleImpl> vehiclesToSpawn = new ArrayList<>();
-    private final List<VehicleImpl> vehicles = new ArrayList<>();
+    public final Map<Region.Node, OccupiedNodeImpl<? extends Region.Node>> occupiedNodes;
+    public final Map<Region.Edge, OccupiedEdgeImpl> occupiedEdges;
+    public final Region region;
+    public final PathCalculator pathCalculator;
+    public final List<VehicleImpl> vehiclesToSpawn = new ArrayList<>();
+    public final List<VehicleImpl> vehicles = new ArrayList<>();
     private final Collection<Vehicle> unmodifiableVehicles = Collections.unmodifiableCollection(vehicles);
-    private final EventBus eventBus = new EventBus();
+    public final EventBus eventBus = new EventBus();
 
-    VehicleManagerImpl(
+    public VehicleManagerImpl(
         Region region,
         PathCalculator pathCalculator
     ) {

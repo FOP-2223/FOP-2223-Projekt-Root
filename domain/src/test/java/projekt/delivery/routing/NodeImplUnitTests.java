@@ -13,16 +13,16 @@ import java.util.function.Function;
 
 public class NodeImplUnitTests {
 
-    private static ComparableUnitTests<NodeImpl> comparableUnitTests;
-    private static ObjectUnitTests<NodeImpl> objectUnitTests;
-    private static NodeImpl nodeA;
-    private static NodeImpl nodeB;
-    private static NodeImpl nodeC;
-    private static NodeImpl nodeD;
+    public static ComparableUnitTests<NodeImpl> comparableUnitTests;
+    public static ObjectUnitTests<NodeImpl> objectUnitTests;
+    public static NodeImpl nodeA;
+    public static NodeImpl nodeB;
+    public static NodeImpl nodeC;
+    public static NodeImpl nodeD;
 
-    private static EdgeImpl edgeAA;
-    private static EdgeImpl edgeAB;
-    private static EdgeImpl edgeBC;
+    public static EdgeImpl edgeAA;
+    public static EdgeImpl edgeAB;
+    public static EdgeImpl edgeBC;
 
     @BeforeAll
     public static void initialize() {

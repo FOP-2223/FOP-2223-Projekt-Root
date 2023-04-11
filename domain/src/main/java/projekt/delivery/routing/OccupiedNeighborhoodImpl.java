@@ -3,14 +3,14 @@ package projekt.delivery.routing;
 import projekt.delivery.event.ArrivedAtNeighborhoodEvent;
 import projekt.delivery.event.DeliverOrderEvent;
 
-class OccupiedNeighborhoodImpl extends OccupiedNodeImpl<Region.Neighborhood> implements VehicleManager.OccupiedNeighborhood {
+public class OccupiedNeighborhoodImpl extends OccupiedNodeImpl<Region.Neighborhood> implements VehicleManager.OccupiedNeighborhood {
 
     /**
      * Creates a new {@link OccupiedNeighborhoodImpl} instance.
      * @param neighborhood The represented {@link Region.Neighborhood}.
      * @param vehicleManager the corresponding {@link VehicleManager}.
      */
-    OccupiedNeighborhoodImpl(Region.Neighborhood neighborhood, VehicleManager vehicleManager) {
+    public OccupiedNeighborhoodImpl(Region.Neighborhood neighborhood, VehicleManager vehicleManager) {
         super(neighborhood, vehicleManager);
     }
 

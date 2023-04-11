@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class RestaurantImpl extends NodeImpl implements Region.Restaurant {
 
-    private final List<String> availableFood;
+    public final List<String> availableFood;
 
     /**
      * Creates a new {@link RestaurantImpl} instance.
@@ -18,7 +18,7 @@ public class RestaurantImpl extends NodeImpl implements Region.Restaurant {
      * @param connections All {@link Location}s this {@link RestaurantImpl} has an {@link Region.Edge} to.
      * @param availableFood The available food of this {@link RestaurantImpl}.
      */
-    RestaurantImpl(
+    public RestaurantImpl(
         Region region,
         String name,
         Location location,

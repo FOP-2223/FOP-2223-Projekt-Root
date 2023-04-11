@@ -5,7 +5,7 @@ import projekt.base.Location;
 import java.util.Objects;
 import java.util.Set;
 
-class NeighborhoodImpl extends NodeImpl implements Region.Neighborhood {
+public class NeighborhoodImpl extends NodeImpl implements Region.Neighborhood {
 
     /**
      * Creates a new {@link NeighborhoodImpl} instance.
@@ -14,7 +14,7 @@ class NeighborhoodImpl extends NodeImpl implements Region.Neighborhood {
      * @param location The {@link Location} of this {@link RestaurantImpl}.
      * @param connections All {@link Location}s this {@link NeighborhoodImpl} has an {@link Region.Edge} to.
      */
-    NeighborhoodImpl(
+    public NeighborhoodImpl(
         Region region,
         String name,
         Location location,

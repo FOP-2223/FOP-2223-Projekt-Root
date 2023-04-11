@@ -5,14 +5,14 @@ import projekt.delivery.event.ArrivedAtEdgeEvent;
 import java.util.List;
 import java.util.Map;
 
-class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
+public class OccupiedEdgeImpl extends AbstractOccupied<Region.Edge> {
 
     /**
      * Creates a new {@link OccupiedEdgeImpl} instance.
      * @param edge The represented {@link Region.Edge}.
      * @param vehicleManager the corresponding {@link VehicleManager}.
      */
-    OccupiedEdgeImpl(Region.Edge edge, VehicleManager vehicleManager) {
+    public OccupiedEdgeImpl(Region.Edge edge, VehicleManager vehicleManager) {
         super(edge, vehicleManager);
     }
 

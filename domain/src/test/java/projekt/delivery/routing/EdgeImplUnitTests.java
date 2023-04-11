@@ -12,15 +12,15 @@ import java.util.function.Function;
 
 public class EdgeImplUnitTests {
 
-    private static ComparableUnitTests<Region.Edge> comparableUnitTests;
-    private static ObjectUnitTests<Region.Edge> objectUnitTests;
-    private static NodeImpl nodeA;
-    private static NodeImpl nodeB;
-    private static NodeImpl nodeC;
+    public static ComparableUnitTests<Region.Edge> comparableUnitTests;
+    public static ObjectUnitTests<Region.Edge> objectUnitTests;
+    public static NodeImpl nodeA;
+    public static NodeImpl nodeB;
+    public static NodeImpl nodeC;
 
-    private static EdgeImpl edgeAA;
-    private static EdgeImpl edgeAB;
-    private static EdgeImpl edgeBC;
+    public static EdgeImpl edgeAA;
+    public static EdgeImpl edgeAB;
+    public static EdgeImpl edgeBC;
 
     @BeforeAll
     public static void initialize() {
@@ -119,5 +119,6 @@ public class EdgeImplUnitTests {
 
         Assertions.assertEquals(edgeBC.getNodeA(), nodeB);
         Assertions.assertEquals(edgeBC.getNodeB(), nodeC);
+
     }
 }

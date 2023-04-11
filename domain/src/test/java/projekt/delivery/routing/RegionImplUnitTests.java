@@ -13,12 +13,12 @@ import java.util.function.Function;
 
 public class RegionImplUnitTests {
 
-    private static ObjectUnitTests<Region> objectUnitTests;
+    private static ObjectUnitTests<RegionImpl> objectUnitTests;
 
     @BeforeAll
     public static void initialize() {
 
-        Function<Integer, Region> testObjectFactory = i -> {
+        Function<Integer, RegionImpl> testObjectFactory = i -> {
             RegionImpl region = new RegionImpl();
 
             NodeImpl A;

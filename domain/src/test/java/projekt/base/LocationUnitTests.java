@@ -24,7 +24,7 @@ public class LocationUnitTests {
         };
 
         objectUnitTests = new ObjectUnitTests<>(testObjectFactory, o ->
-            String.format("(%d, %d)", o.getX(), o.getY()));
+            String.format("(%d,%d)", o.getX(), o.getY()));
         comparableUnitTests = new ComparableUnitTests<>(testObjectFactory);
 
         objectUnitTests.initialize(10);

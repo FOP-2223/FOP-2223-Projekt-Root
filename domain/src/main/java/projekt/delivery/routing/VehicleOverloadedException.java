@@ -10,7 +10,7 @@ public class VehicleOverloadedException extends RuntimeException {
      * @param vehicle The overloaded {@link Vehicle}.
      * @param necessaryCapacity The capacity the {@link Vehicle} would need in order to not be overloaded.
      */
-    VehicleOverloadedException(Vehicle vehicle, double necessaryCapacity) {
+    public VehicleOverloadedException(Vehicle vehicle, double necessaryCapacity) {
         super(String.format(
             "Vehicle with id %d is overloaded! Maximum capacity: %f Necessary capacity: %f",
             vehicle.getId(),

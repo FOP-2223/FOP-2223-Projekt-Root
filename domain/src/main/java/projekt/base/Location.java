@@ -7,13 +7,13 @@ import java.util.Comparator;
 /**
  * A tuple for the x- and y-coordinates of a point.
  */
-public final class Location implements Comparable<Location> {
+public class Location implements Comparable<Location> {
 
     private final static Comparator<Location> COMPARATOR =
         Comparator.comparing(Location::getX).thenComparing(Location::getY);
 
-    private final int x;
-    private final int y;
+    public final int x;
+    public final int y;
     private final int hashcode;
 
     /**

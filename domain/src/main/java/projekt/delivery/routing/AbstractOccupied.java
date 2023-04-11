@@ -11,15 +11,15 @@ import java.util.Map;
  * An abstract class combining basic functionality of all {@link VehicleManager.Occupied} implementations.
  * @param <C> The type of the occupied {@link Region.Component}.
  */
-abstract class AbstractOccupied<C extends Region.Component<? super C>> implements VehicleManager.Occupied<C> {
+public abstract class AbstractOccupied<C extends Region.Component<? super C>> implements VehicleManager.Occupied<C> {
 
-    protected final C component;
-    protected final VehicleManager vehicleManager;
-    protected final Map<VehicleImpl, VehicleStats> vehicles = new HashMap<>();
+    public final C component;
+    public final VehicleManager vehicleManager;
+    public final Map<VehicleImpl, VehicleStats> vehicles = new HashMap<>();
     private final Collection<Vehicle> unmodifiableVehicles =
         Collections.unmodifiableCollection(vehicles.keySet());
 
-    AbstractOccupied(C component, VehicleManager vehicleManager) {
+    public AbstractOccupied(C component, VehicleManager vehicleManager) {
         this.component = component;
         this.vehicleManager = vehicleManager;
     }
@@ -44,9 +44,9 @@ abstract class AbstractOccupied<C extends Region.Component<? super C>> implement
         vehicles.clear();
     }
 
-    protected static class VehicleStats {
-        final long arrived;
-        final @Nullable VehicleManager.Occupied<?> previous;
+    public static class VehicleStats {
+        public final long arrived;
+        public final @Nullable VehicleManager.Occupied<?> previous;
 
         public VehicleStats(long arrived, @Nullable VehicleManager.Occupied<?> previous) {
             this.arrived = arrived;

@@ -7,12 +7,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class NodeImpl implements Region.Node {
+public class NodeImpl implements Region.Node {
 
-    protected final Set<Location> connections;
-    protected final Region region;
-    protected final String name;
-    protected final Location location;
+    public final Set<Location> connections;
+    public final Region region;
+    public final String name;
+    public final Location location;
 
     /**
      * Creates a new {@link NodeImpl} instance.
@@ -21,7 +21,7 @@ class NodeImpl implements Region.Node {
      * @param location The {@link Location} of this {@link EdgeImpl}.
      * @param connections All {@link Location}s this {@link NeighborhoodImpl} has an {@link Region.Edge} to.
      */
-    NodeImpl(
+    public NodeImpl(
         Region region,
         String name,
         Location location,
