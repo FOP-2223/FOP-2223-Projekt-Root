@@ -26,8 +26,10 @@ import projekt.h8.TutorTests_H8_AmountDeliveredRaterTest_Private;
 import projekt.h8.TutorTests_H8_InTimeRaterTest_Private;
 import projekt.h8.TutorTests_H8_TravelDistanceRaterTest_Private;
 import projekt.h9.TutorTests_H9_BasicDeliveryServiceTest_Private;
+import projekt.h9.TutorTests_H9_OurDeliveryServiceTest_Private;
 import projekt.transformer.AccessTransformer;
 import projekt.transformer.FinalClassTransformer;
+import projekt.transformer.TimeoutTransformer;
 import projekt.transformer.UnitTestsTransformer;
 
 import java.lang.reflect.Method;
@@ -493,40 +495,41 @@ public class Projekt_RubricProvider_Private implements RubricProvider {
 
     public static final Criterion H9_1 = createParentCriterion("9.1", "BasicDeliveryService", H9_1_1, H9_1_2, H9_1_3, H9_1_4, H9_1_5, H9_1_6, H9_1_7, H9_1_8);
 
-    public static final Criterion H9_2_1 = Criterion.builder()
-        .shortDescription("Die Klasse OurDeliveryService löst Problem 1 mit einer hinreichend guten Punktzahl")
-        .maxPoints(5)
-        .grader((testCycle, criterion) -> GradeResult.of(0, 5, "Execute the test method testProblem1(int) in the class src/graderPublic/java/projekt/h9/TutorTests_H9_OurDeliveryServiceTest manually."))
-        .build();
-
-    public static final Criterion H9_2_2 = Criterion.builder()
-        .shortDescription("Die Klasse OurDeliveryService löst Problem 2 mit einer hinreichend guten Punktzahl")
-        .maxPoints(5)
-        .grader((testCycle, criterion) -> GradeResult.of(0, 5, "Execute the test method testProblem2(int) in the class src/graderPublic/java/projekt/h9/TutorTests_H9_OurDeliveryServiceTest manually."))
-        .build();
-
-    public static final Criterion H9_2_3 = Criterion.builder()
-        .shortDescription("Die Klasse OurDeliveryService löst Problem 3 mit einer hinreichend guten Punktzahl")
-        .maxPoints(5)
-        .grader((testCycle, criterion) -> GradeResult.of(0, 5, "Execute the test method testProblem3(int) in the class src/graderPublic/java/projekt/h9/TutorTests_H9_OurDeliveryServiceTest manually."))
-        .build();
-
-    public static final Criterion H9_2_4 = Criterion.builder()
-        .shortDescription("Die Klasse OurDeliveryService löst Problem 4 mit einer hinreichend guten Punktzahl")
-        .maxPoints(5)
-        .grader((testCycle, criterion) -> GradeResult.of(0, 5, "Execute the test method testProblem4(int) in the class src/graderPublic/java/projekt/h9/TutorTests_H9_OurDeliveryServiceTest manually."))
-        .build();
-
-//    public static final Criterion H9_2_1 = createCriterion("Die Klasse OurDeliveryService löst Problem 1 mit einer hinreichend guten Punktzahl", 5,
-//        () -> TutorTests_H9_OurDeliveryServiceTest_Private.class.getMethod("testProblem1", int.class));
+//    public static final Criterion H9_2_1 = Criterion.builder()
+//        .shortDescription("Die Klasse OurDeliveryService löst Problem 1 mit einer hinreichend guten Punktzahl")
+//        .maxPoints(5)
+//        .grader((testCycle, criterion) -> GradeResult.of(0, 5, "Execute the test method testProblem1(int) in the class src/graderPublic/java/projekt/h9/TutorTests_H9_OurDeliveryServiceTest manually."))
+//        .build();
 //
-//    public static final Criterion H9_2_2 = createCriterion("Die Klasse OurDeliveryService löst Problem 2 mit einer hinreichend guten Punktzahl", 5,
-//        () -> TutorTests_H9_OurDeliveryServiceTest_Private.class.getMethod("testProblem2", int.class));
-//    public static final Criterion H9_2_3 = createCriterion("Die Klasse OurDeliveryService löst Problem 3 mit einer hinreichend guten Punktzahl", 5,
-//        () -> TutorTests_H9_OurDeliveryServiceTest_Private.class.getMethod("testProblem3", int.class));
+//    public static final Criterion H9_2_2 = Criterion.builder()
+//        .shortDescription("Die Klasse OurDeliveryService löst Problem 2 mit einer hinreichend guten Punktzahl")
+//        .maxPoints(5)
+//        .grader((testCycle, criterion) -> GradeResult.of(0, 5, "Execute the test method testProblem2(int) in the class src/graderPublic/java/projekt/h9/TutorTests_H9_OurDeliveryServiceTest manually."))
+//        .build();
 //
-//    public static final Criterion H9_2_4 = createCriterion("Die Klasse OurDeliveryService löst Problem 4 mit einer hinreichend guten Punktzahl", 5,
-//        () -> TutorTests_H9_OurDeliveryServiceTest_Private.class.getMethod("testProblem4", int.class));
+//    public static final Criterion H9_2_3 = Criterion.builder()
+//        .shortDescription("Die Klasse OurDeliveryService löst Problem 3 mit einer hinreichend guten Punktzahl")
+//        .maxPoints(5)
+//        .grader((testCycle, criterion) -> GradeResult.of(0, 5, "Execute the test method testProblem3(int) in the class src/graderPublic/java/projekt/h9/TutorTests_H9_OurDeliveryServiceTest manually."))
+//        .build();
+//
+//    public static final Criterion H9_2_4 = Criterion.builder()
+//        .shortDescription("Die Klasse OurDeliveryService löst Problem 4 mit einer hinreichend guten Punktzahl")
+//        .maxPoints(5)
+//        .grader((testCycle, criterion) -> GradeResult.of(0, 5, "Execute the test method testProblem4(int) in the class src/graderPublic/java/projekt/h9/TutorTests_H9_OurDeliveryServiceTest manually."))
+//        .build();
+
+    public static final Criterion H9_2_1 = createCriterion("Die Klasse OurDeliveryService löst Problem 1 mit einer hinreichend guten Punktzahl", 5,
+        () -> TutorTests_H9_OurDeliveryServiceTest_Private.class.getMethod("testProblem1", int.class));
+
+    public static final Criterion H9_2_2 = createCriterion("Die Klasse OurDeliveryService löst Problem 2 mit einer hinreichend guten Punktzahl", 5,
+        () -> TutorTests_H9_OurDeliveryServiceTest_Private.class.getMethod("testProblem2", int.class));
+
+    public static final Criterion H9_2_3 = createCriterion("Die Klasse OurDeliveryService löst Problem 3 mit einer hinreichend guten Punktzahl", 5,
+        () -> TutorTests_H9_OurDeliveryServiceTest_Private.class.getMethod("testProblem3", int.class));
+
+    public static final Criterion H9_2_4 = createCriterion("Die Klasse OurDeliveryService löst Problem 4 mit einer hinreichend guten Punktzahl", 5,
+        () -> TutorTests_H9_OurDeliveryServiceTest_Private.class.getMethod("testProblem4", int.class));
 
     public static final Criterion H9_2 = createParentCriterion("9.2", "Ihr eigener DeliveryService", H9_2_1, H9_2_2, H9_2_3, H9_2_4);
 
@@ -802,5 +805,6 @@ public class Projekt_RubricProvider_Private implements RubricProvider {
         configuration.addTransformer(new FinalClassTransformer());
         configuration.addTransformer(new AccessTransformer());
         configuration.addTransformer(new UnitTestsTransformer());
+        configuration.addTransformer(new TimeoutTransformer());
     }
 }

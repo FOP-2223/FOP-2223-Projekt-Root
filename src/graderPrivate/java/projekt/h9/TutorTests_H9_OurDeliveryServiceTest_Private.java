@@ -24,6 +24,7 @@ import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.assertT
 import static org.tudalgo.algoutils.tutor.general.assertions.Assertions2.contextBuilder;
 
 @SuppressWarnings("DuplicatedCode")
+@TestForSubmission
 public class TutorTests_H9_OurDeliveryServiceTest_Private {
 
     SimulationConfig config = new SimulationConfig(0);
