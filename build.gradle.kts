@@ -40,6 +40,15 @@ jagr {
     }
 }
 
+allprojects {
+    apply(plugin = "java")
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
+}
+
 dependencies {
     implementation(libs.annotations)
     implementation(libs.algoutils.student)
@@ -73,11 +82,5 @@ tasks {
     }
     withType<JavaCompile> {
         options.encoding = "UTF-8"
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
     }
-}
-
-subprojects {
-    apply(plugin = "java")
 }
