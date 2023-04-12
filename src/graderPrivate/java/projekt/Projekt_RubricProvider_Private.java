@@ -65,7 +65,7 @@ public class Projekt_RubricProvider_Private implements RubricProvider {
         return Criterion.builder()
             .shortDescription(shortDescription)
             .maxPoints(maxPoints)
-            .grader((testCycle, criterion) -> GradeResult.of(0, maxPoints, "Not tested by public tests"))
+            .grader((testCycle, criterion) -> GradeResult.of(0, maxPoints, "This Criterion will be graded manually soon"))
             .build();
     }
 
