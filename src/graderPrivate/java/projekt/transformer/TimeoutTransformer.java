@@ -18,7 +18,6 @@ public class TimeoutTransformer implements ClassTransformer {
     @Override
     public void transform(ClassReader reader, ClassWriter writer) {
         if ((reader.getClassName().startsWith("projekt/delivery/service") && !reader.getClassName().equals("projekt/delivery/service/BasicDeliveryService")
-            || reader.getClassName().equals("projekt/delivery/service/")
             || reader.getClassName().startsWith("projekt/solution"))
             || reader.getClassName().equals("projekt/delivery/routing/DijkstraPathCalculator")
             || reader.getClassName().equals("projekt/delivery/routing/DijkstraPathCalculator$DijkstraNode")
